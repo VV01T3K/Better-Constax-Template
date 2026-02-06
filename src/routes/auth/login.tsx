@@ -85,7 +85,8 @@ function LoginPage() {
 							name="name"
 							validators={{
 								onBlur: ({ value }) => {
-									if (!value || value.trim().length === 0) return "Name is required";
+									if (!value || value.trim().length === 0)
+										return "Name is required";
 									return undefined;
 								},
 							}}
@@ -180,20 +181,14 @@ function LoginPage() {
 								disabled={isSubmitting}
 								className="w-full py-3 bg-cyan-500 hover:bg-cyan-600 disabled:bg-cyan-500/50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
 							>
-								{isSubmitting
-									? "Loading..."
-									: isSignUp
-										? "Sign Up"
-										: "Sign In"}
+								{isSubmitting ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
 							</button>
 						)}
 					</form.Subscribe>
 				</form>
 
 				<p className="mt-6 text-center text-slate-400 text-sm">
-					{isSignUp
-						? "Already have an account?"
-						: "Don't have an account?"}{" "}
+					{isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
 					<button
 						type="button"
 						onClick={() => {
