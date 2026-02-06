@@ -1,4 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { convexQuery } from '@convex-dev/react-query'
+import { api } from '../../convex/_generated/api'
 import {
   Zap,
   Server,
@@ -8,7 +10,14 @@ import {
   Sparkles,
 } from 'lucide-react'
 
-export const Route = createFileRoute('/')({ component: App })
+export const Route = createFileRoute('/')({
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(
+      convexQuery(api.auth.getCurrentUser, {}),
+    )
+  },
+  component: App,
+})
 
 function App() {
   const features = [

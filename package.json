@@ -3,14 +3,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --bun vite dev --port 3000 --host",
+    "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 bun --bun vite dev --port 3000 --host",
     "build": "bun --bun vite build",
     "preview": "bun --bun vite preview",
     "test": "bun --bun vitest run",
     "format": "biome format",
     "lint": "biome lint",
     "check": "biome check",
-    "typecheck": "tsgo -noEmit"
+    "typecheck": "tsgo -noEmit",
+    "auth:generate": "cd convex/betterAuth && bunx @better-auth/cli generate -y"
   },
   "dependencies": {
     "@convex-dev/better-auth": "0.10.10",

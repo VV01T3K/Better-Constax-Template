@@ -9,39 +9,76 @@ import {
   Globe,
   Home,
   LogIn,
+  LogOut,
   Menu,
   Network,
   SquareFunction,
   StickyNote,
   Table,
+  User,
   X,
 } from 'lucide-react'
+import { authClient } from '../lib/auth-client'
 
 export default function Header() {
+  const { data: session } = authClient.useSession()
   const [isOpen, setIsOpen] = useState(false)
   const [groupedExpanded, setGroupedExpanded] = useState<
     Record<string, boolean>
   >({})
 
+  const handleSignOut = async () => {
+    await authClient.signOut()
+    window.location.href = '/'
+  }
+
   return (
     <>
-      <header className="p-4 flex items-center bg-gray-800 text-white shadow-lg">
-        <button
-          onClick={() => setIsOpen(true)}
-          className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-          aria-label="Open menu"
-        >
-          <Menu size={24} />
-        </button>
-        <h1 className="ml-4 text-xl font-semibold">
-          <Link to="/">
-            <img
-              src="/tanstack-word-logo-white.svg"
-              alt="TanStack Logo"
-              className="h-10"
-            />
-          </Link>
-        </h1>
+      <header className="p-4 flex items-center justify-between bg-gray-800 text-white shadow-lg">
+        <div className="flex items-center">
+          <button
+            onClick={() => setIsOpen(true)}
+            className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+            aria-label="Open menu"
+          >
+            <Menu size={24} />
+          </button>
+          <h1 className="ml-4 text-xl font-semibold">
+            <Link to="/">
+              <img
+                src="/tanstack-word-logo-white.svg"
+                alt="TanStack Logo"
+                className="h-10"
+              />
+            </Link>
+          </h1>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {session ? (
+            <>
+              <span className="flex items-center gap-2 text-sm text-gray-300">
+                <User size={16} />
+                {session.user.name || session.user.email}
+              </span>
+              <button
+                onClick={handleSignOut}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+              >
+                <LogOut size={16} />
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/auth/login"
+              className="flex items-center gap-2 px-3 py-1.5 text-sm bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors"
+            >
+              <LogIn size={16} />
+              Sign In
+            </Link>
+          )}
+        </div>
       </header>
 
       <aside
@@ -255,18 +292,31 @@ export default function Header() {
           {/* Demo Links End */}
 
           <div className="border-t border-gray-700 mt-2 pt-2">
-            <Link
-              to="/auth/login"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
-              activeProps={{
-                className:
-                  'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
-              }}
-            >
-              <LogIn size={20} />
-              <span className="font-medium">Login / Sign Up</span>
-            </Link>
+            {session ? (
+              <button
+                onClick={() => {
+                  setIsOpen(false)
+                  handleSignOut()
+                }}
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2 w-full"
+              >
+                <LogOut size={20} />
+                <span className="font-medium">Sign Out</span>
+              </button>
+            ) : (
+              <Link
+                to="/auth/login"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
+                activeProps={{
+                  className:
+                    'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
+                }}
+              >
+                <LogIn size={20} />
+                <span className="font-medium">Login / Sign Up</span>
+              </Link>
+            )}
           </div>
         </nav>
       </aside>

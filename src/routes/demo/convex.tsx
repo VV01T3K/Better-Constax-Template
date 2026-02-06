@@ -1,18 +1,24 @@
 import { useCallback, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { useQuery, useMutation } from 'convex/react'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { convexQuery } from '@convex-dev/react-query'
+import { useMutation } from 'convex/react'
 import { Trash2, Plus, Check, Circle } from 'lucide-react'
 
 import { api } from '../../../convex/_generated/api'
-import { Id } from '../../../convex/_generated/dataModel'
+import type { Id } from '../../../convex/_generated/dataModel'
 
 export const Route = createFileRoute('/demo/convex')({
-  ssr: false,
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(
+      convexQuery(api.todos.list, {}),
+    )
+  },
   component: ConvexTodos,
 })
 
 function ConvexTodos() {
-  const todos = useQuery(api.todos.list)
+  const { data: todos } = useSuspenseQuery(convexQuery(api.todos.list, {}))
   const addTodo = useMutation(api.todos.add)
   const toggleTodo = useMutation(api.todos.toggle)
   const removeTodo = useMutation(api.todos.remove)
@@ -40,8 +46,8 @@ function ConvexTodos() {
     [removeTodo],
   )
 
-  const completedCount = todos?.filter((todo) => todo.completed).length || 0
-  const totalCount = todos?.length || 0
+  const completedCount = todos.filter((todo) => todo.completed).length
+  const totalCount = todos.length
 
   return (
     <div
@@ -100,12 +106,7 @@ function ConvexTodos() {
 
         {/* Todos List */}
         <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-green-200/50 overflow-hidden">
-          {!todos ? (
-            <div className="p-8 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500 mx-auto mb-4"></div>
-              <p className="text-green-600">Loading todos...</p>
-            </div>
-          ) : todos.length === 0 ? (
+          {todos.length === 0 ? (
             <div className="p-12 text-center">
               <Circle size={48} className="text-green-300 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-green-800 mb-2">
