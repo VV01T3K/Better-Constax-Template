@@ -14,6 +14,7 @@ import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-qu
 import { Route as DemoTableRouteImport } from './routes/demo/table'
 import { Route as DemoDbChatApiRouteImport } from './routes/demo/db-chat-api'
 import { Route as DemoDbChatRouteImport } from './routes/demo/db-chat'
+import { Route as DemoConvexQueryRouteImport } from './routes/demo/convex-query'
 import { Route as DemoConvexRouteImport } from './routes/demo/convex'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.server-funcs'
@@ -51,6 +52,11 @@ const DemoDbChatApiRoute = DemoDbChatApiRouteImport.update({
 const DemoDbChatRoute = DemoDbChatRouteImport.update({
   id: '/demo/db-chat',
   path: '/demo/db-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoConvexQueryRoute = DemoConvexQueryRouteImport.update({
+  id: '/demo/convex-query',
+  path: '/demo/convex-query',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoConvexRoute = DemoConvexRouteImport.update({
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/demo/convex': typeof DemoConvexRoute
+  '/demo/convex-query': typeof DemoConvexQueryRoute
   '/demo/db-chat': typeof DemoDbChatRoute
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
   '/demo/table': typeof DemoTableRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/demo/convex': typeof DemoConvexRoute
+  '/demo/convex-query': typeof DemoConvexQueryRoute
   '/demo/db-chat': typeof DemoDbChatRoute
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
   '/demo/table': typeof DemoTableRoute
@@ -164,6 +172,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/demo/convex': typeof DemoConvexRoute
+  '/demo/convex-query': typeof DemoConvexQueryRoute
   '/demo/db-chat': typeof DemoDbChatRoute
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
   '/demo/table': typeof DemoTableRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/login'
     | '/demo/convex'
+    | '/demo/convex-query'
     | '/demo/db-chat'
     | '/demo/db-chat-api'
     | '/demo/table'
@@ -206,6 +216,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/login'
     | '/demo/convex'
+    | '/demo/convex-query'
     | '/demo/db-chat'
     | '/demo/db-chat-api'
     | '/demo/table'
@@ -226,6 +237,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/login'
     | '/demo/convex'
+    | '/demo/convex-query'
     | '/demo/db-chat'
     | '/demo/db-chat-api'
     | '/demo/table'
@@ -247,6 +259,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthLoginRoute: typeof AuthLoginRoute
   DemoConvexRoute: typeof DemoConvexRoute
+  DemoConvexQueryRoute: typeof DemoConvexQueryRoute
   DemoDbChatRoute: typeof DemoDbChatRoute
   DemoDbChatApiRoute: typeof DemoDbChatApiRoute
   DemoTableRoute: typeof DemoTableRoute
@@ -299,6 +312,13 @@ declare module '@tanstack/react-router' {
       path: '/demo/db-chat'
       fullPath: '/demo/db-chat'
       preLoaderRoute: typeof DemoDbChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/convex-query': {
+      id: '/demo/convex-query'
+      path: '/demo/convex-query'
+      fullPath: '/demo/convex-query'
+      preLoaderRoute: typeof DemoConvexQueryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/convex': {
@@ -399,6 +419,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthLoginRoute: AuthLoginRoute,
   DemoConvexRoute: DemoConvexRoute,
+  DemoConvexQueryRoute: DemoConvexQueryRoute,
   DemoDbChatRoute: DemoDbChatRoute,
   DemoDbChatApiRoute: DemoDbChatApiRoute,
   DemoTableRoute: DemoTableRoute,
