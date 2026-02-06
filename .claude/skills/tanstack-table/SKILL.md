@@ -24,6 +24,7 @@ npm install @tanstack/react-virtual@latest  # For virtualization
 ```
 
 **Basic Setup** (CRITICAL: memoize data/columns to prevent infinite re-renders):
+
 ```typescript
 import { useReactTable, getCoreRowModel, ColumnDef } from '@tanstack/react-table'
 import { useMemo } from 'react'
@@ -63,66 +64,72 @@ function UsersTable() {
 ## Server-Side Patterns
 
 **Cloudflare D1 API** (pagination + filtering + sorting):
+
 ```typescript
 // Workers API: functions/api/users.ts
 export async function onRequestGet({ request, env }) {
-  const url = new URL(request.url)
-  const page = Number(url.searchParams.get('page')) || 0
-  const pageSize = 20
-  const search = url.searchParams.get('search') || ''
-  const sortBy = url.searchParams.get('sortBy') || 'created_at'
-  const sortOrder = url.searchParams.get('sortOrder') || 'DESC'
+	const url = new URL(request.url);
+	const page = Number(url.searchParams.get("page")) || 0;
+	const pageSize = 20;
+	const search = url.searchParams.get("search") || "";
+	const sortBy = url.searchParams.get("sortBy") || "created_at";
+	const sortOrder = url.searchParams.get("sortOrder") || "DESC";
 
-  const { results } = await env.DB.prepare(`
+	const { results } = await env.DB.prepare(
+		`
     SELECT * FROM users
     WHERE name LIKE ? OR email LIKE ?
     ORDER BY ${sortBy} ${sortOrder}
     LIMIT ? OFFSET ?
-  `).bind(`%${search}%`, `%${search}%`, pageSize, page * pageSize).all()
+  `,
+	)
+		.bind(`%${search}%`, `%${search}%`, pageSize, page * pageSize)
+		.all();
 
-  const { total } = await env.DB.prepare('SELECT COUNT(*) as total FROM users').first()
+	const { total } = await env.DB.prepare("SELECT COUNT(*) as total FROM users").first();
 
-  return Response.json({
-    data: results,
-    pagination: { page, pageSize, total, pageCount: Math.ceil(total / pageSize) },
-  })
+	return Response.json({
+		data: results,
+		pagination: { page, pageSize, total, pageCount: Math.ceil(total / pageSize) },
+	});
 }
 ```
 
 **Client-Side** (TanStack Query + Table):
+
 ```typescript
-const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 })
-const [columnFilters, setColumnFilters] = useState([])
-const [sorting, setSorting] = useState([])
+const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
+const [columnFilters, setColumnFilters] = useState([]);
+const [sorting, setSorting] = useState([]);
 
 // CRITICAL: Include ALL state in query key
 const { data, isLoading } = useQuery({
-  queryKey: ['users', pagination, columnFilters, sorting],
-  queryFn: async () => {
-    const params = new URLSearchParams({
-      page: pagination.pageIndex,
-      search: columnFilters.find(f => f.id === 'search')?.value || '',
-      sortBy: sorting[0]?.id || 'created_at',
-      sortOrder: sorting[0]?.desc ? 'DESC' : 'ASC',
-    })
-    return fetch(`/api/users?${params}`).then(r => r.json())
-  },
-})
+	queryKey: ["users", pagination, columnFilters, sorting],
+	queryFn: async () => {
+		const params = new URLSearchParams({
+			page: pagination.pageIndex,
+			search: columnFilters.find((f) => f.id === "search")?.value || "",
+			sortBy: sorting[0]?.id || "created_at",
+			sortOrder: sorting[0]?.desc ? "DESC" : "ASC",
+		});
+		return fetch(`/api/users?${params}`).then((r) => r.json());
+	},
+});
 
 const table = useReactTable({
-  data: data?.data ?? [],
-  columns,
-  getCoreRowModel: getCoreRowModel(),
-  // CRITICAL: manual* flags tell table server handles these
-  manualPagination: true,
-  manualFiltering: true,
-  manualSorting: true,
-  pageCount: data?.pagination.pageCount ?? 0,
-  state: { pagination, columnFilters, sorting },
-  onPaginationChange: setPagination,
-  onColumnFiltersChange: setColumnFilters,
-  onSortingChange: setSorting,
-})
+	data: data?.data ?? [],
+	columns,
+	getCoreRowModel: getCoreRowModel(),
+	// CRITICAL: manual* flags tell table server handles these
+	manualPagination: true,
+	manualFiltering: true,
+	manualSorting: true,
+	pageCount: data?.pagination.pageCount ?? 0,
+	state: { pagination, columnFilters, sorting },
+	onPaginationChange: setPagination,
+	onColumnFiltersChange: setColumnFilters,
+	onSortingChange: setSorting,
+});
 ```
 
 ---
@@ -130,6 +137,7 @@ const table = useReactTable({
 ## Virtualization (1000+ Rows)
 
 Render only visible rows for performance:
+
 ```typescript
 import { useVirtualizer } from '@tanstack/react-virtual'
 
@@ -167,6 +175,7 @@ function VirtualizedTable() {
 ### Warning: Hidden Containers (Tabs/Modals)
 
 **Known Issue**: When using virtualization inside tabbed content or modals that hide inactive content with `display: none`, the virtualizer continues performing layout calculations while hidden, causing:
+
 - Infinite re-render loops (large datasets: 50k+ rows)
 - Incorrect scroll position when tab becomes visible
 - Empty table or reset scroll (small datasets)
@@ -174,6 +183,7 @@ function VirtualizedTable() {
 **Source**: [GitHub Issue #6109](https://github.com/TanStack/table/issues/6109)
 
 **Prevention**:
+
 ```typescript
 const rowVirtualizer = useVirtualizer({
   count: rows.length,
@@ -259,13 +269,14 @@ row.pin('bottom')    // Pin row to bottom
 **Source**: [GitHub Issue #5397](https://github.com/TanStack/table/issues/5397)
 
 **Prevention**:
+
 ```typescript
 // Disable pinning for grouped columns
-const isPinnable = (column) => !column.parent
+const isPinnable = (column) => !column.parent;
 
 // OR: Pin individual columns within group, not the group itself
-table.getColumn('firstName')?.pin('left')
-table.getColumn('lastName')?.pin('left')
+table.getColumn("firstName")?.pin("left");
+table.getColumn("lastName")?.pin("left");
 // Don't pin the parent group column
 ```
 
@@ -423,14 +434,15 @@ function GroupedTable() {
 **Verified**: Community testing + GitHub issue report
 
 **Prevention**:
+
 ```typescript
 // 1. Use server-side grouping for large datasets
 // 2. Implement pagination to limit rows per page
 // 3. Disable grouping for 10k+ rows
-const shouldEnableGrouping = data.length < 10000
+const shouldEnableGrouping = data.length < 10000;
 
 // 4. OR: Use React.memo on row components
-const MemoizedRow = React.memo(TableRow)
+const MemoizedRow = React.memo(TableRow);
 ```
 
 ---
@@ -438,51 +450,59 @@ const MemoizedRow = React.memo(TableRow)
 ## Known Issues & Solutions
 
 **Issue #1: Infinite Re-Renders**
+
 - **Error**: Table re-renders infinitely, browser freezes
 - **Cause**: `data` or `columns` references change on every render
 - **Fix**: Use `useMemo(() => [...], [])` or define data/columns outside component
 
 **Issue #2: Query + Table State Mismatch**
+
 - **Error**: Query refetches but pagination state not synced, stale data
 - **Cause**: Query key missing table state (pagination, filters, sorting)
 - **Fix**: Include ALL state in query key: `queryKey: ['users', pagination, columnFilters, sorting]`
 
 **Issue #3: Server-Side Features Not Working**
+
 - **Error**: Pagination/filtering/sorting doesn't trigger API calls
 - **Cause**: Missing `manual*` flags
 - **Fix**: Set `manualPagination: true`, `manualFiltering: true`, `manualSorting: true` + provide `pageCount`
 
 **Issue #4: TypeScript "Cannot Find Module"**
+
 - **Error**: Import errors for `createColumnHelper`
 - **Fix**: Import from `@tanstack/react-table` (NOT `@tanstack/table-core`)
 
 **Issue #5: Sorting Not Working Server-Side**
+
 - **Error**: Clicking sort headers doesn't update data
 - **Cause**: Sorting state not in query key/API params
 - **Fix**: Include `sorting` in query key, add sort params to API call, set `manualSorting: true` + `onSortingChange`
 
 **Issue #6: Poor Performance (1000+ Rows)**
+
 - **Error**: Table slow/laggy with large datasets
 - **Fix**: Use TanStack Virtual for client-side OR implement server-side pagination
 
 **Issue #7: React Compiler Incompatibility (React 19+)**
+
 - **Error**: `"Table doesn't re-render when data changes"` (with React Compiler enabled)
 - **Source**: [GitHub Issue #5567](https://github.com/TanStack/table/issues/5567)
 - **Why It Happens**: React Compiler's automatic memoization conflicts with table core instance, preventing re-renders when data/state changes
 - **Prevention**: Add `"use no memo"` directive at top of components using `useReactTable`:
 
 ```typescript
-"use no memo"
+"use no memo";
 
 function TableComponent() {
-  const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() })
-  // Now works correctly with React Compiler
+	const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
+	// Now works correctly with React Compiler
 }
 ```
 
 **Note**: This issue also affects column visibility and row selection. Full fix coming in v9.
 
 **Issue #8: Server-Side Pagination Row Selection Bug**
+
 - **Error**: `toggleAllRowsSelected(false)` only deselects current page, not all pages
 - **Source**: [GitHub Issue #5929](https://github.com/TanStack/table/issues/5929)
 - **Why It Happens**: Selection state persists across pages (intentional for server-side use cases), but header checkbox state is calculated incorrectly
@@ -490,15 +510,16 @@ function TableComponent() {
 
 ```typescript
 const toggleAllRows = (value: boolean) => {
-  if (!value) {
-    table.setRowSelection({}) // Clear entire selection object
-  } else {
-    table.toggleAllRowsSelected(true)
-  }
-}
+	if (!value) {
+		table.setRowSelection({}); // Clear entire selection object
+	} else {
+		table.toggleAllRowsSelected(true);
+	}
+};
 ```
 
 **Issue #9: Client-Side onPaginationChange Returns Incorrect pageIndex**
+
 - **Error**: `onPaginationChange` always returns `pageIndex: 0` instead of current page
 - **Source**: [GitHub Issue #5970](https://github.com/TanStack/table/issues/5970)
 - **Why It Happens**: Client-side pagination mode has state tracking bug (only occurs in client mode, works correctly in server/manual mode)
@@ -507,16 +528,17 @@ const toggleAllRows = (value: boolean) => {
 ```typescript
 // Instead of relying on client-side pagination
 const table = useReactTable({
-  data,
-  columns,
-  manualPagination: true, // Forces correct state tracking
-  pageCount: Math.ceil(data.length / pagination.pageSize),
-  state: { pagination },
-  onPaginationChange: setPagination,
-})
+	data,
+	columns,
+	manualPagination: true, // Forces correct state tracking
+	pageCount: Math.ceil(data.length / pagination.pageSize),
+	state: { pagination },
+	onPaginationChange: setPagination,
+});
 ```
 
 **Issue #10: Row Selection Not Cleaned Up When Data Removed**
+
 - **Error**: Selected rows that no longer exist in data remain in selection state
 - **Source**: [GitHub Issue #5850](https://github.com/TanStack/table/issues/5850)
 - **Why It Happens**: Intentional behavior to support server-side pagination (where rows disappear from current page but should stay selected)
@@ -524,28 +546,30 @@ const table = useReactTable({
 
 ```typescript
 const removeRow = (idToRemove: string) => {
-  // Remove from data
-  setData(data.filter(row => row.id !== idToRemove))
+	// Remove from data
+	setData(data.filter((row) => row.id !== idToRemove));
 
-  // Clean up selection if it was selected
-  const { rowSelection } = table.getState()
-  if (rowSelection[idToRemove]) {
-    table.setRowSelection((old) => {
-      const filtered = Object.entries(old).filter(([id]) => id !== idToRemove)
-      return Object.fromEntries(filtered)
-    })
-  }
-}
+	// Clean up selection if it was selected
+	const { rowSelection } = table.getState();
+	if (rowSelection[idToRemove]) {
+		table.setRowSelection((old) => {
+			const filtered = Object.entries(old).filter(([id]) => id !== idToRemove);
+			return Object.fromEntries(filtered);
+		});
+	}
+};
 
 // OR: Use table.resetRowSelection(true) to clear all
 ```
 
 **Issue #11: Performance Degradation with React DevTools Open**
+
 - **Error**: Table performance significantly degrades with React DevTools open (development only)
 - **Why It Happens**: DevTools inspects table instance and row models on every render, especially noticeable with 500+ rows
 - **Fix**: Close React DevTools during performance testing. This is not a production issue.
 
 **Issue #12: TypeScript getValue() Type Inference with Grouped Columns**
+
 - **Error**: `getValue()` returns `unknown` instead of accessor's actual type inside `columnHelper.group()`
 - **Source**: [GitHub Issue #5860](https://github.com/TanStack/table/issues/5860)
 - **Fix**: Manually specify type or use `renderValue()`:
@@ -553,15 +577,15 @@ const removeRow = (idToRemove: string) => {
 ```typescript
 // Option 1: Type assertion
 cell: (info) => {
-  const value = info.getValue() as string
-  return value.toUpperCase()
-}
+	const value = info.getValue() as string;
+	return value.toUpperCase();
+};
 
 // Option 2: Use renderValue() (better type inference)
 cell: (info) => {
-  const value = info.renderValue()
-  return typeof value === 'string' ? value.toUpperCase() : value
-}
+	const value = info.renderValue();
+	return typeof value === "string" ? value.toUpperCase() : value;
+};
 ```
 
 ---

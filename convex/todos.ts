@@ -1,7 +1,8 @@
-import { zCustomQuery, zCustomMutation, zid } from "convex-helpers/server/zod4";
 import { NoOp } from "convex-helpers/server/customFunctions";
+import { zCustomQuery, zCustomMutation, zid } from "convex-helpers/server/zod4";
 import { ConvexError } from "convex/values";
 import { z } from "zod";
+
 import { query, mutation } from "./_generated/server";
 
 const zQuery = zCustomQuery(query, NoOp);
@@ -10,11 +11,7 @@ const zMutation = zCustomMutation(mutation, NoOp);
 export const list = zQuery({
 	args: {},
 	handler: async (ctx) => {
-		return await ctx.db
-			.query("todos")
-			.withIndex("by_creation_time")
-			.order("desc")
-			.collect();
+		return await ctx.db.query("todos").withIndex("by_creation_time").order("desc").collect();
 	},
 });
 

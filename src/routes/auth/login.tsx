@@ -1,6 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+
 import { signInSchema, signUpSchema } from "../../../convex/schemas";
 import { authClient } from "../../lib/auth-client";
 
@@ -39,9 +40,7 @@ function LoginPage() {
 					window.location.href = "/";
 				},
 				onError: (ctx: { error: { message?: string } }) => {
-					setServerError(
-						ctx.error.message ?? `Sign ${isSignUp ? "up" : "in"} failed`,
-					);
+					setServerError(ctx.error.message ?? `Sign ${isSignUp ? "up" : "in"} failed`);
 				},
 			};
 
@@ -51,23 +50,20 @@ function LoginPage() {
 					callbacks,
 				);
 			} else {
-				await authClient.signIn.email(
-					{ email: value.email, password: value.password },
-					callbacks,
-				);
+				await authClient.signIn.email({ email: value.email, password: value.password }, callbacks);
 			}
 		},
 	});
 
 	return (
-		<div className="min-h-screen flex items-center justify-center bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 p-4">
-			<div className="w-full max-w-md bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-8">
-				<h1 className="text-3xl font-bold text-white mb-6 text-center">
+		<div className="flex min-h-screen items-center justify-center bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 p-4">
+			<div className="w-full max-w-md rounded-xl border border-slate-700 bg-slate-800/50 p-8 backdrop-blur-sm">
+				<h1 className="mb-6 text-center text-3xl font-bold text-white">
 					{isSignUp ? "Create Account" : "Sign In"}
 				</h1>
 
 				{serverError && (
-					<div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300 text-sm">
+					<div className="mb-4 rounded-lg border border-red-500/50 bg-red-500/20 p-3 text-sm text-red-300">
 						{serverError}
 					</div>
 				)}
@@ -85,8 +81,7 @@ function LoginPage() {
 							name="name"
 							validators={{
 								onBlur: ({ value }) => {
-									if (!value || value.trim().length === 0)
-										return "Name is required";
+									if (!value || value.trim().length === 0) return "Name is required";
 									return undefined;
 								},
 							}}
@@ -102,9 +97,7 @@ function LoginPage() {
 										className={inputClass}
 									/>
 									{field.state.meta.isTouched && field.state.meta.errors[0] && (
-										<p className="mt-1 text-sm text-red-400">
-											{field.state.meta.errors[0]}
-										</p>
+										<p className="mt-1 text-sm text-red-400">{field.state.meta.errors[0]}</p>
 									)}
 								</div>
 							)}
@@ -133,9 +126,7 @@ function LoginPage() {
 									className={inputClass}
 								/>
 								{field.state.meta.isTouched && field.state.meta.errors[0] && (
-									<p className="mt-1 text-sm text-red-400">
-										{field.state.meta.errors[0]}
-									</p>
+									<p className="mt-1 text-sm text-red-400">{field.state.meta.errors[0]}</p>
 								)}
 							</div>
 						)}
@@ -145,9 +136,7 @@ function LoginPage() {
 						name="password"
 						validators={{
 							onBlur: ({ value }) => {
-								const schema = isSignUp
-									? signUpSchema.shape.password
-									: signInSchema.shape.password;
+								const schema = isSignUp ? signUpSchema.shape.password : signInSchema.shape.password;
 								const result = schema.safeParse(value);
 								if (!result.success) return result.error.issues[0]?.message;
 								return undefined;
@@ -166,9 +155,7 @@ function LoginPage() {
 									className={inputClass}
 								/>
 								{field.state.meta.isTouched && field.state.meta.errors[0] && (
-									<p className="mt-1 text-sm text-red-400">
-										{field.state.meta.errors[0]}
-									</p>
+									<p className="mt-1 text-sm text-red-400">{field.state.meta.errors[0]}</p>
 								)}
 							</div>
 						)}
@@ -179,7 +166,7 @@ function LoginPage() {
 							<button
 								type="submit"
 								disabled={isSubmitting}
-								className="w-full py-3 bg-cyan-500 hover:bg-cyan-600 disabled:bg-cyan-500/50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+								className="w-full rounded-lg bg-cyan-500 py-3 font-semibold text-white transition-colors hover:bg-cyan-600 disabled:cursor-not-allowed disabled:bg-cyan-500/50"
 							>
 								{isSubmitting ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
 							</button>
@@ -187,7 +174,7 @@ function LoginPage() {
 					</form.Subscribe>
 				</form>
 
-				<p className="mt-6 text-center text-slate-400 text-sm">
+				<p className="mt-6 text-center text-sm text-slate-400">
 					{isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
 					<button
 						type="button"
@@ -196,7 +183,7 @@ function LoginPage() {
 							setServerError(null);
 							form.reset();
 						}}
-						className="text-cyan-400 hover:text-cyan-300 font-medium"
+						className="font-medium text-cyan-400 hover:text-cyan-300"
 					>
 						{isSignUp ? "Sign In" : "Sign Up"}
 					</button>

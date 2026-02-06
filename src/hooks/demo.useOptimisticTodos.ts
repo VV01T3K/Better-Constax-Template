@@ -1,9 +1,12 @@
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
+
 import { type OptimisticTodo, todosCollection } from "@/db-collections";
-import { api } from "../../convex/_generated/api";
+
 import type { Doc, Id } from "../../convex/_generated/dataModel";
+
+import { api } from "../../convex/_generated/api";
 
 function mapServerTodo(todo: Doc<"todos">): OptimisticTodo {
 	return {
@@ -49,15 +52,10 @@ function syncServerToCollection(serverTodos: Array<Doc<"todos">>) {
 }
 
 export function useOptimisticTodos() {
-	const { data: serverTodos } = useSuspenseQuery(
-		convexQuery(api.todos.list, {}),
-	);
+	const { data: serverTodos } = useSuspenseQuery(convexQuery(api.todos.list, {}));
 
 	// SSR-safe initial state from server data
-	const initialTodos = useMemo(
-		() => sortDesc(serverTodos.map(mapServerTodo)),
-		[serverTodos],
-	);
+	const initialTodos = useMemo(() => sortDesc(serverTodos.map(mapServerTodo)), [serverTodos]);
 	const [todos, setTodos] = useState<OptimisticTodo[]>(initialTodos);
 
 	useEffect(() => {

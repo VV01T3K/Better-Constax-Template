@@ -1,9 +1,6 @@
 export { type OptimisticTodo, todosCollection } from "./todos";
 
-import {
-	createCollection,
-	localOnlyCollectionOptions,
-} from "@tanstack/react-db";
+import { createCollection, localOnlyCollectionOptions } from "@tanstack/react-db";
 import { z } from "zod";
 
 const MessageSchema = z.object({

@@ -1,44 +1,40 @@
-import { betterAuth } from "better-auth/minimal";
-import {
-	createClient,
-	type AuthFunctions,
-} from "@convex-dev/better-auth";
-import { convex } from "@convex-dev/better-auth/plugins";
 import type { GenericCtx } from "@convex-dev/better-auth";
 import type { BetterAuthOptions } from "better-auth";
-import { components, internal } from "./_generated/api";
+
+import { createClient, type AuthFunctions } from "@convex-dev/better-auth";
+import { convex } from "@convex-dev/better-auth/plugins";
+import { betterAuth } from "better-auth/minimal";
+
 import type { DataModel } from "./_generated/dataModel";
+
+import { components, internal } from "./_generated/api";
 import { query } from "./_generated/server";
 import authConfig from "./auth.config";
 import schema from "./betterAuth/schema";
 
 const authFunctions: AuthFunctions = internal.auth;
 
-export const authComponent = createClient<DataModel, typeof schema>(
-	components.betterAuth,
-	{
-		authFunctions,
-		local: {
-			schema,
-		},
-		triggers: {
-			user: {
-				onCreate: async (ctx, doc) => {
-					await ctx.db.insert("profiles", {
-						authUserId: doc._id,
-						name: doc.name,
-						email: doc.email,
-						image: doc.image ?? null,
-						createdAt: Date.now(),
-					});
-				},
+export const authComponent = createClient<DataModel, typeof schema>(components.betterAuth, {
+	authFunctions,
+	local: {
+		schema,
+	},
+	triggers: {
+		user: {
+			onCreate: async (ctx, doc) => {
+				await ctx.db.insert("profiles", {
+					authUserId: doc._id,
+					name: doc.name,
+					email: doc.email,
+					image: doc.image ?? null,
+					createdAt: Date.now(),
+				});
 			},
 		},
 	},
-);
+});
 
-export const { onCreate, onUpdate, onDelete } =
-	authComponent.triggersApi();
+export const { onCreate, onUpdate, onDelete } = authComponent.triggersApi();
 
 export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
 	return {
