@@ -7,6 +7,7 @@ import { Trash2, Plus, Check, Circle } from 'lucide-react'
 
 import { api } from '../../../convex/_generated/api'
 import type { Id } from '../../../convex/_generated/dataModel'
+import { createTodoSchema } from '../../../convex/schemas'
 
 export const Route = createFileRoute('/demo/convex')({
   loader: async ({ context }) => {
@@ -24,12 +25,17 @@ function ConvexTodos() {
   const removeTodo = useMutation(api.todos.remove)
 
   const [newTodo, setNewTodo] = useState('')
+  const [validationError, setValidationError] = useState<string | null>(null)
 
   const handleAddTodo = useCallback(async () => {
-    if (newTodo.trim()) {
-      await addTodo({ text: newTodo.trim() })
-      setNewTodo('')
+    const result = createTodoSchema.safeParse({ text: newTodo.trim() })
+    if (!result.success) {
+      setValidationError(result.error.issues[0]?.message ?? 'Invalid input')
+      return
     }
+    setValidationError(null)
+    await addTodo({ text: result.data.text })
+    setNewTodo('')
   }, [addTodo, newTodo])
 
   const handleToggleTodo = useCallback(
@@ -102,6 +108,9 @@ function ConvexTodos() {
               Add
             </button>
           </div>
+          {validationError && (
+            <p className="mt-2 text-sm text-red-600">{validationError}</p>
+          )}
         </div>
 
         {/* Todos List */}
