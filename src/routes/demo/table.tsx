@@ -58,8 +58,8 @@ const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {
 	// Only sort by rank if the column has ranking information
 	if (rowA.columnFiltersMeta[columnId]) {
 		dir = compareItems(
-			rowA.columnFiltersMeta[columnId]?.itemRank!,
-			rowB.columnFiltersMeta[columnId]?.itemRank!,
+			rowA.columnFiltersMeta[columnId]?.itemRank,
+			rowB.columnFiltersMeta[columnId]?.itemRank,
 		);
 	}
 
@@ -294,7 +294,7 @@ function TableDemo() {
 	);
 }
 
-function Filter({ column }: { column: Column<any, unknown> }) {
+function Filter({ column }: { column: Column<any> }) {
 	const columnFilterValue = column.getFilterValue();
 
 	return (

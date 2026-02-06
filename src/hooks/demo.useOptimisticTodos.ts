@@ -19,7 +19,7 @@ function mapServerTodo(todo: Doc<"todos">): OptimisticTodo {
 }
 
 function sortDesc(todos: OptimisticTodo[]) {
-	return [...todos].sort((a, b) => b.createdAt - a.createdAt);
+	return [...todos].toSorted((a, b) => b.createdAt - a.createdAt);
 }
 
 function readCollectionTodos(): OptimisticTodo[] {

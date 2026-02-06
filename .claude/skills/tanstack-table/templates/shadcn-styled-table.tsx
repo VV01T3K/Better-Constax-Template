@@ -42,7 +42,7 @@ const columns: ColumnDef<User>[] = [
 		accessorKey: "status",
 		header: "Status",
 		cell: ({ row }) => {
-			const status = row.getValue("status") as string;
+			const status = row.getValue("status");
 			return (
 				<span
 					className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
