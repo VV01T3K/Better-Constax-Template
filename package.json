@@ -11,7 +11,7 @@
     "lint": "biome lint",
     "check": "biome check",
     "typecheck": "tsgo -noEmit",
-    "auth:generate": "cd convex/betterAuth && bunx @better-auth/cli generate -y"
+    "auth:generate": "cd convex/betterAuth && bunx @better-auth/cli generate --output ./generatedSchema.ts -y"
   },
   "dependencies": {
     "@convex-dev/better-auth": "0.10.10",
