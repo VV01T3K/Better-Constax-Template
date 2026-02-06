@@ -1,0 +1,24 @@
+[env]
+TURBO_TELEMETRY_DISABLED = "1"
+DO_NOT_TRACK = "1"
+
+[tools]
+bun = "latest"
+node = "latest"
+graphite = "latest"
+github-cli = "latest"
+"npm:turbo" = "latest"
+"npm:oxlint" = "latest"
+jj = "latest"
+claude = "latest"
+
+[hooks]
+postinstall = '''
+bun pm pkg set packageManager=bun@$(bun --version) && test -d node_modules || bun install
+'''
+
+[settings]
+experimental = true
+
+[settings.npm]
+package_manager = "bun"

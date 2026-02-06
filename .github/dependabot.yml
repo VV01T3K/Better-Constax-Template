@@ -5,8 +5,34 @@
 # https://containers.dev/guide/dependabot
 
 version: 2
+# Enable beta ecosystems to support bun.lock updates
+enable-beta-ecosystems: true
 updates:
- - package-ecosystem: "devcontainers"
-   directory: "/"
-   schedule:
-     interval: weekly
+  - package-ecosystem: "devcontainers"
+    directory: "/"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: weekly
+    # Ignore better-auth updates due to compatibility issues with current @convex-dev/better-auth integration
+    ignore:
+      - dependency-name: "better-auth"
+    groups:
+      dev-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+      production-dependencies:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: weekly
