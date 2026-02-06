@@ -29,8 +29,8 @@ function TanStackQueryDemo() {
 
 	const [todo, setTodo] = useState("");
 
-	const submitTodo = useCallback(async () => {
-		await addTodo(todo);
+	const submitTodo = useCallback(() => {
+		addTodo(todo);
 		setTodo("");
 	}, [addTodo, todo]);
 

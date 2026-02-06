@@ -22,12 +22,17 @@ function sortDesc(todos: OptimisticTodo[]) {
 	return [...todos].toSorted((a, b) => b.createdAt - a.createdAt);
 }
 
+type ServerTodo = OptimisticTodo & { id: Id<"todos"> };
+
+const isServerTodo = (todo: OptimisticTodo): todo is ServerTodo =>
+	todo.status === "confirmed" || todo.status === "error";
+
 function readCollectionTodos(): OptimisticTodo[] {
 	return sortDesc(todosCollection.toArray);
 }
 
 function syncServerToCollection(serverTodos: Array<Doc<"todos">>) {
-	const serverIds = new Set(serverTodos.map((t) => t._id as string));
+	const serverIds = new Set(serverTodos.map((t) => String(t._id)));
 
 	// Remove items no longer on server (skip optimistic items)
 	for (const key of Array.from(todosCollection.keys())) {
@@ -97,7 +102,7 @@ export function useAddTodoOptimistic() {
 				// Remove temp entry and insert with real ID
 				todosCollection.delete(tempId);
 				todosCollection.insert({
-					id: convexId as string,
+					id: convexId,
 					text,
 					completed: false,
 					status: "confirmed",
@@ -121,7 +126,7 @@ export function useToggleTodoOptimistic() {
 	const toggleTodo = useCallback(
 		async (id: string) => {
 			const current = todosCollection.get(id);
-			if (!current) return;
+			if (!current || !isServerTodo(current)) return;
 
 			const previousCompleted = current.completed;
 			setError(null);
@@ -132,7 +137,7 @@ export function useToggleTodoOptimistic() {
 			});
 
 			try {
-				await toggleMutation({ id: id as Id<"todos"> });
+				await toggleMutation({ id: current.id });
 				todosCollection.update(id, (draft) => {
 					draft.status = "confirmed";
 				});
@@ -163,13 +168,13 @@ export function useRemoveTodoOptimistic() {
 	const removeTodo = useCallback(
 		async (id: string) => {
 			const removedTodo = todosCollection.get(id);
-			if (!removedTodo) return;
+			if (!removedTodo || !isServerTodo(removedTodo)) return;
 
 			setError(null);
 			todosCollection.delete(id);
 
 			try {
-				await removeMutation({ id: id as Id<"todos"> });
+				await removeMutation({ id: removedTodo.id });
 			} catch {
 				// Rollback - restore the item with error state
 				todosCollection.insert({
