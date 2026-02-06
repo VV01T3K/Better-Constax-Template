@@ -6,6 +6,7 @@ import viteTsConfigPaths from 'vite-tsconfig-paths'
 import { fileURLToPath, URL } from 'url'
 
 import tailwindcss from '@tailwindcss/vite'
+import devtoolsJson from 'vite-plugin-devtools-json'
 import { nitro } from 'nitro/vite'
 
 const config = defineConfig({
@@ -19,6 +20,7 @@ const config = defineConfig({
   },
   plugins: [
     devtools(),
+    devtoolsJson(),
     nitro(),
     // this is the plugin that enables path aliases
     viteTsConfigPaths({
