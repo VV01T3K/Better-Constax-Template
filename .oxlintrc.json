@@ -10,11 +10,19 @@
 		"promise",
 		"oxc"
 	],
+	"jsPlugins": ["@tanstack/eslint-plugin-query"],
 	"categories": {
 		"correctness": "error",
 		"suspicious": "warn"
 	},
 	"rules": {
+		// TanStack Query recommended rules
+		"@tanstack/query/exhaustive-deps": "error",
+		"@tanstack/query/no-rest-destructuring": "warn",
+		"@tanstack/query/stable-query-client": "error",
+		"@tanstack/query/no-unstable-deps": "warn",
+		"@tanstack/query/infinite-query-property-order": "error",
+
 		// React 17+ JSX transform doesn't require React import
 		"react/react-in-jsx-scope": "off",
 
@@ -28,7 +36,16 @@
 		"@typescript-eslint/no-unsafe-type-assertion": "warn",
 
 		// Warn on using "new" without assignment (side-effect constructors)
-		"eslint/no-new": "warn"
+		"eslint/no-new": "warn",
+
+		// backend-specific
+		"eslint/no-console": "warn",
+
+		// ui-shadcn-specific
+		"jsx-a11y/label-has-associated-control": "off",
+
+		//temporarily disable some rules while we fix existing issues
+		"@typescript-eslint/no-floating-promises": "off"
 	},
 	"settings": {
 		"jsx-a11y": {
@@ -39,5 +56,13 @@
 			"typecheck": true
 		}
 	},
-	"ignorePatterns": ["node_modules", "dist", "**/*.gen.*", "convex/_generated"]
+	"ignorePatterns": [
+		"node_modules",
+		"dist",
+		".output",
+		"**/*.gen.*",
+		"convex/_generated",
+		".claude",
+		".turbo"
+	]
 }
