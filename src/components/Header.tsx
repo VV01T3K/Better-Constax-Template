@@ -8,6 +8,7 @@ import {
   Database,
   Globe,
   Home,
+  LogIn,
   Menu,
   Network,
   SquareFunction,
@@ -252,6 +253,21 @@ export default function Header() {
           </Link>
 
           {/* Demo Links End */}
+
+          <div className="border-t border-gray-700 mt-2 pt-2">
+            <Link
+              to="/auth/login"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
+              activeProps={{
+                className:
+                  'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
+              }}
+            >
+              <LogIn size={20} />
+              <span className="font-medium">Login / Sign Up</span>
+            </Link>
+          </div>
         </nav>
       </aside>
     </>
