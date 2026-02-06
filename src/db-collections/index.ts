@@ -1,3 +1,5 @@
+export { type OptimisticTodo, todosCollection } from "./todos";
+
 import {
 	createCollection,
 	localOnlyCollectionOptions,
