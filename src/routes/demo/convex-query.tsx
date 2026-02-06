@@ -1,8 +1,8 @@
-import { useCallback, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
-import { Trash2, Plus, Check, Circle } from "lucide-react";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { Check, Circle, Plus, Trash2 } from "lucide-react";
+import { useCallback, useState } from "react";
 
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
@@ -108,7 +108,7 @@ function ConvexQueryTodos() {
 						<button
 							onClick={handleAddTodo}
 							disabled={!newTodo.trim()}
-							className="bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl"
+							className="bg-linear-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl"
 						>
 							<Plus size={20} />
 							Add
@@ -145,7 +145,7 @@ function ConvexQueryTodos() {
 								>
 									<button
 										onClick={() => handleToggleTodo(todo._id)}
-										className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+										className={`shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
 											todo.completed
 												? "bg-indigo-500 border-indigo-500 text-white"
 												: "border-indigo-300 hover:border-indigo-400 text-transparent hover:text-indigo-400"
@@ -166,7 +166,7 @@ function ConvexQueryTodos() {
 
 									<button
 										onClick={() => handleRemoveTodo(todo._id)}
-										className="flex-shrink-0 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+										className="shrink-0 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
 									>
 										<Trash2 size={18} />
 									</button>

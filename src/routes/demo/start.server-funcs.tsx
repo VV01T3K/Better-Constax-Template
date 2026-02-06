@@ -1,7 +1,7 @@
 import fs from "node:fs";
-import { useCallback, useState } from "react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
+import { useCallback, useState } from "react";
 
 /*
 const loggingMiddleware = createMiddleware().server(
@@ -64,7 +64,7 @@ function Home() {
 
 	return (
 		<div
-			className="flex items-center justify-center min-h-screen bg-gradient-to-br from-zinc-800 to-black p-4 text-white"
+			className="flex items-center justify-center min-h-screen bg-linear-to-br from-zinc-800 to-black p-4 text-white"
 			style={{
 				backgroundImage:
 					"radial-gradient(50% 50% at 20% 60%, #23272a 0%, #18181b 50%, #000000 100%)",

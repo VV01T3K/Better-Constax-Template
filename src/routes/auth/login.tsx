@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { signInSchema, signUpSchema } from "../../../convex/schemas";
 import { authClient } from "../../lib/auth-client";
-import { signUpSchema, signInSchema } from "../../../convex/schemas";
 
 export const Route = createFileRoute("/auth/login")({
 	component: LoginPage,
@@ -60,7 +60,7 @@ function LoginPage() {
 	});
 
 	return (
-		<div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 p-4">
+		<div className="min-h-screen flex items-center justify-center bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 p-4">
 			<div className="w-full max-w-md bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-8">
 				<h1 className="text-3xl font-bold text-white mb-6 text-center">
 					{isSignUp ? "Create Account" : "Sign In"}
