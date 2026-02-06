@@ -8,13 +8,16 @@
 	"tailwind-fold.autoFold": false,
 	"css.lint.unknownAtRules": "ignore",
 	"files.watcherExclude": {
-		"**/routeTree.gen.ts": true
+		"**/routeTree.gen.ts": true,
+		".claude/": true
 	},
 	"search.exclude": {
-		"**/routeTree.gen.ts": true
+		"**/routeTree.gen.ts": true,
+		".claude/": true
 	},
 	"files.readonlyInclude": {
-		"**/routeTree.gen.ts": true
+		"**/routeTree.gen.ts": true,
+		".claude/": true
 	},
 	"editor.formatOnSave": true,
 	"[javascript]": {
