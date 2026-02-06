@@ -50,6 +50,15 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
 			enabled: true,
 			requireEmailVerification: false,
 		},
+		session: {
+			cookieCache: {
+				enabled: true,
+				maxAge: 5 * 60, // 5 minutes
+			},
+		},
+		telemetry: {
+			enabled: false,
+		},
 		plugins: [convex({ authConfig })],
 	} satisfies BetterAuthOptions;
 };
