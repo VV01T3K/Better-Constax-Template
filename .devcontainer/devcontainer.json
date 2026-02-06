@@ -1,0 +1,55 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
+{
+	"name": "Node.js & TypeScript",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	// "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm"
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": ".."
+	},
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
+		"ghcr.io/w3cj/devcontainer-features/firewall:latest": {
+			"githubIps": true,
+			"claudeCode": true
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"hverlin.mise-vscode",
+				"TypeScriptTeam.native-preview",
+				"oxc.oxc-vscode",
+				"vitest.explorer",
+				"Anthropic.claude-code",
+				"oven.bun-vscode",
+				"bradlc.vscode-tailwindcss",
+				"stivo.tailwind-fold",
+				"Graphite.gti-vscode",
+				"bierner.markdown-mermaid",
+				"yzhang.markdown-all-in-one",
+				"CodeRabbit.coderabbit-vscode",
+				"tamasfe.even-better-toml",
+				// "jjk.jjk",
+				"openai.chatgpt"
+			],
+			"settings": {
+				"eslint.enable": false
+			}
+		}
+	},
+	"remoteUser": "node",
+	"containerEnv": {
+		"VSCODE_AGENT_FOLDER": "/workspaces/.vscode-server"
+	},
+	"remoteEnv": {
+		"VSCODE_AGENT_FOLDER": "/workspaces/.vscode-server"
+	},
+	"postCreateCommand": "mkdir -p /workspaces/.vscode-server && mise trust && mise install && mise prep"
+	// Configure tool-specific properties.
+	// "customizations": {},
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}
