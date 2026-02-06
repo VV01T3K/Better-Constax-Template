@@ -2,7 +2,7 @@ import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, Circle, Plus, Trash2 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 import type { Id } from "../../../convex/_generated/dataModel";
 
@@ -32,7 +32,7 @@ function ConvexQueryTodos() {
 	const [newTodo, setNewTodo] = useState("");
 	const [validationError, setValidationError] = useState<string | null>(null);
 
-	const handleAddTodo = useCallback(() => {
+	const handleAddTodo = () => {
 		const result = createTodoSchema.safeParse({ text: newTodo.trim() });
 		if (!result.success) {
 			setValidationError(result.error.issues[0]?.message ?? "Invalid input");
@@ -41,21 +41,15 @@ function ConvexQueryTodos() {
 		setValidationError(null);
 		addTodo({ text: result.data.text });
 		setNewTodo("");
-	}, [addTodo, newTodo]);
+	};
 
-	const handleToggleTodo = useCallback(
-		(id: Id<"todos">) => {
-			toggleTodo({ id });
-		},
-		[toggleTodo],
-	);
+	const handleToggleTodo = (id: Id<"todos">) => {
+		toggleTodo({ id });
+	};
 
-	const handleRemoveTodo = useCallback(
-		(id: Id<"todos">) => {
-			removeTodo({ id });
-		},
-		[removeTodo],
-	);
+	const handleRemoveTodo = (id: Id<"todos">) => {
+		removeTodo({ id });
+	};
 
 	const completedCount = todos.filter((todo) => todo.completed).length;
 	const totalCount = todos.length;

@@ -73,36 +73,33 @@ function TableDemo() {
 	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 	const [globalFilter, setGlobalFilter] = React.useState("");
 
-	const columns = React.useMemo<ColumnDef<Person, any>[]>(
-		() => [
-			{
-				accessorKey: "id",
-				filterFn: "equalsString", //note: normal non-fuzzy filter column - exact match required
-			},
-			{
-				accessorKey: "firstName",
-				cell: (info) => info.getValue(),
-				filterFn: "includesStringSensitive", //note: normal non-fuzzy filter column - case sensitive
-			},
-			{
-				accessorFn: (row) => row.lastName,
-				id: "lastName",
-				cell: (info) => info.getValue(),
-				header: () => <span>Last Name</span>,
-				filterFn: "includesString", //note: normal non-fuzzy filter column - case insensitive
-			},
-			{
-				accessorFn: (row) => `${row.firstName} ${row.lastName}`,
-				id: "fullName",
-				header: "Full Name",
-				cell: (info) => info.getValue(),
-				filterFn: "fuzzy", //using our custom fuzzy filter function
-				// filterFn: fuzzyFilter, //or just define with the function
-				sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
-			},
-		],
-		[],
-	);
+	const columns: ColumnDef<Person, any>[] = [
+		{
+			accessorKey: "id",
+			filterFn: "equalsString", //note: normal non-fuzzy filter column - exact match required
+		},
+		{
+			accessorKey: "firstName",
+			cell: (info) => info.getValue(),
+			filterFn: "includesStringSensitive", //note: normal non-fuzzy filter column - case sensitive
+		},
+		{
+			accessorFn: (row) => row.lastName,
+			id: "lastName",
+			cell: (info) => info.getValue(),
+			header: () => <span>Last Name</span>,
+			filterFn: "includesString", //note: normal non-fuzzy filter column - case insensitive
+		},
+		{
+			accessorFn: (row) => `${row.firstName} ${row.lastName}`,
+			id: "fullName",
+			header: "Full Name",
+			cell: (info) => info.getValue(),
+			filterFn: "fuzzy", //using our custom fuzzy filter function
+			// filterFn: fuzzyFilter, //or just define with the function
+			sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
+		},
+	];
 
 	const [data, setData] = React.useState<Person[]>(() => makeData(5_000));
 	const refreshData = () => setData((_old) => makeData(50_000)); //stress test

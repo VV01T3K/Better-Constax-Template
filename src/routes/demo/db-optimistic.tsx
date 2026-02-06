@@ -1,7 +1,7 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, Circle, Plus, Trash2, Zap } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 import { api } from "../../../convex/_generated/api";
 import { createTodoSchema } from "../../../convex/schemas";
@@ -30,7 +30,7 @@ function DbOptimisticTodos() {
 	const [newTodo, setNewTodo] = useState("");
 	const [validationError, setValidationError] = useState<string | null>(null);
 
-	const handleAddTodo = useCallback(() => {
+	const handleAddTodo = () => {
 		const result = createTodoSchema.safeParse({ text: newTodo.trim() });
 		if (!result.success) {
 			setValidationError(result.error.issues[0]?.message ?? "Invalid input");
@@ -39,7 +39,7 @@ function DbOptimisticTodos() {
 		setValidationError(null);
 		addTodo(result.data.text);
 		setNewTodo("");
-	}, [addTodo, newTodo]);
+	};
 
 	const completedCount = todos.filter((t) => t.completed).length;
 	const pendingCount = todos.filter((t) => t.status === "optimistic").length;
