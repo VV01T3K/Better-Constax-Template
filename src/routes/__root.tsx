@@ -5,13 +5,13 @@ import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { convexQuery } from "@convex-dev/react-query";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { formDevtoolsPlugin } from "@tanstack/react-form-devtools";
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 
 import { api } from "../../convex/_generated/api";
 import Header from "../components/Header";
-import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import { authClient } from "../lib/auth-client";
 import { getToken } from "../lib/auth-server";
 import appCss from "../styles.css?url";
@@ -108,7 +108,10 @@ function RootComponent() {
 						name: "Tanstack Router",
 						render: <TanStackRouterDevtoolsPanel />,
 					},
-					TanStackQueryDevtools,
+					{
+						name: "Tanstack Query",
+						render: <ReactQueryDevtoolsPanel />,
+					},
 					formDevtoolsPlugin(),
 				]}
 			/>
