@@ -21,11 +21,6 @@ app.use(
 	}),
 );
 
-// Suppress Chrome DevTools warning
-app.get("/.well-known/appspecific/com.chrome.devtools.json", (c) => {
-	return c.json({ workspace: { root: "", uuid: "" } }, 404);
-});
-
 // Redirect root well-known to auth well-known endpoint
 app.get("/.well-known/openid-configuration", async (c) => {
 	return c.redirect("/api/auth/convex/.well-known/openid-configuration");
