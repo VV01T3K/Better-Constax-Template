@@ -1,6 +1,6 @@
-import { Link } from "@tanstack/react-router";
 import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import {
 	ChevronDown,
 	ChevronRight,
@@ -21,8 +21,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-import { authClient } from "../lib/auth-client";
 import { api } from "../../convex/_generated/api";
+import { authClient } from "../lib/auth-client";
 
 export default function Header() {
 	const { data: currentUser } = useSuspenseQuery(convexQuery(api.auth.getCurrentUser, {}));

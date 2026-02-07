@@ -9,12 +9,12 @@ import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanst
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 
+import { api } from "../../convex/_generated/api";
 import Header from "../components/Header";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import { authClient } from "../lib/auth-client";
 import { getToken } from "../lib/auth-server";
 import appCss from "../styles.css?url";
-import { api } from "../../convex/_generated/api";
 
 const getAuth = createServerFn({ method: "GET" }).handler(async () => {
 	return await getToken();
