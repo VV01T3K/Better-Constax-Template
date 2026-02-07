@@ -62,6 +62,13 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
 			enabled: false,
 		},
 		plugins: [convex({ authConfig })],
+		advanced: {
+			defaultCookieAttributes: {
+				sameSite: "none",
+				secure: true,
+				partitioned: true,
+			},
+		},
 	} satisfies BetterAuthOptions;
 };
 
