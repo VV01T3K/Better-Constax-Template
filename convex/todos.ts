@@ -20,7 +20,10 @@ export const add = zMutation({
 	handler: async (ctx, { text }) => {
 		const identity = await ctx.auth.getUserIdentity();
 		if (!identity) {
-			throw new ConvexError({ code: "UNAUTHORIZED", message: "You must be logged in to add a todo" });
+			throw new ConvexError({
+				code: "UNAUTHORIZED",
+				message: "You must be logged in to add a todo",
+			});
 		}
 		return await ctx.db.insert("todos", {
 			text,
