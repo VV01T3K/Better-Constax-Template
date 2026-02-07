@@ -12,6 +12,7 @@
 		".output",
 		"**/*.gen.*",
 		"convex/_generated",
+		"convex/betterAuth/_generated",
 		".claude",
 		".turbo"
 	]
