@@ -19,6 +19,8 @@
 	"search.exclude": {
 		"**/routeTree.gen.ts": true,
 		"**/bun.lock": true,
+		"**/_generated/**": true,
+		"**/betterAuth/generatedSchema.ts": true,
 		".claude/**": true,
 		".agents/**": true,
 		".cursor/**": true

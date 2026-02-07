@@ -1,10 +1,9 @@
+import { todoSchema } from "@convex/schemas";
 import { createCollection, localOnlyCollectionOptions } from "@tanstack/react-db";
 import { z } from "zod";
 
-const OptimisticTodoSchema = z.object({
+const OptimisticTodoSchema = todoSchema.extend({
 	id: z.string(),
-	text: z.string(),
-	completed: z.boolean(),
 	status: z.enum(["optimistic", "confirmed", "error"]),
 	createdAt: z.number(),
 });

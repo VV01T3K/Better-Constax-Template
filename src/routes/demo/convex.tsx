@@ -1,14 +1,13 @@
+import type { Id } from "@convex/_generated/dataModel";
+
 import { convexQuery } from "@convex-dev/react-query";
+import { api } from "@convex/_generated/api";
+import { createTodoSchema } from "@convex/schemas";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
 import { Check, Circle, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-
-import type { Id } from "../../../convex/_generated/dataModel";
-
-import { api } from "../../../convex/_generated/api";
-import { createTodoSchema } from "../../../convex/schemas";
 
 export const Route = createFileRoute("/demo/convex")({
 	loader: async ({ context }) => {

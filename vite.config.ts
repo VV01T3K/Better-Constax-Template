@@ -12,6 +12,7 @@ const config = defineConfig({
 	resolve: {
 		alias: {
 			"@": import.meta.dirname + "/src",
+			"@convex": import.meta.dirname + "/convex",
 		},
 	},
 	ssr: {
