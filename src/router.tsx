@@ -6,6 +6,13 @@ import { ConvexProvider } from "convex/react";
 
 import { routeTree } from "./routeTree.gen";
 
+// TanStack Query DevTools global type
+declare global {
+	interface Window {
+		__TANSTACK_QUERY_CLIENT__?: import("@tanstack/query-core").QueryClient;
+	}
+}
+
 const convexUrl = import.meta.env.VITE_CONVEX_URL!;
 
 export const getRouter = () => {
@@ -21,6 +28,11 @@ export const getRouter = () => {
 			},
 		},
 	});
+
+	// Connect TanStack Query DevTools (dev only)
+	if (typeof window !== "undefined" && import.meta.env.DEV) {
+		window.__TANSTACK_QUERY_CLIENT__ = queryClient;
+	}
 
 	convexQueryClient.connect(queryClient);
 
