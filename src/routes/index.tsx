@@ -1,13 +1,7 @@
-import { convexQuery } from "@convex-dev/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Route as RouteIcon, Server, Shield, Sparkles, Waves, Zap } from "lucide-react";
 
-import { api } from "../../convex/_generated/api";
-
 export const Route = createFileRoute("/")({
-	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(convexQuery(api.auth.getCurrentUser, {}));
-	},
 	component: App,
 });
 

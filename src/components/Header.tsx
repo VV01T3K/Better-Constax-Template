@@ -1,4 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import { convexQuery } from "@convex-dev/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import {
 	ChevronDown,
 	ChevronRight,
@@ -20,15 +22,21 @@ import {
 import { useState } from "react";
 
 import { authClient } from "../lib/auth-client";
+import { api } from "../../convex/_generated/api";
 
 export default function Header() {
-	const { data: session } = authClient.useSession();
+	const { data: currentUser } = useSuspenseQuery(convexQuery(api.auth.getCurrentUser, {}));
 	const [isOpen, setIsOpen] = useState(false);
 	const [groupedExpanded, setGroupedExpanded] = useState<Record<string, boolean>>({});
 
 	const handleSignOut = async () => {
-		await authClient.signOut();
-		window.location.href = "/";
+		await authClient.signOut({
+			fetchOptions: {
+				onSuccess: () => {
+					window.location.reload();
+				},
+			},
+		});
 	};
 
 	return (
@@ -50,11 +58,11 @@ export default function Header() {
 				</div>
 
 				<div className="flex items-center gap-3">
-					{session ? (
+					{currentUser ? (
 						<>
 							<span className="flex items-center gap-2 text-sm text-gray-300">
 								<User size={16} />
-								{session.user.name || session.user.email}
+								{currentUser.name || currentUser.email || currentUser.subject}
 							</span>
 							<button
 								onClick={handleSignOut}
@@ -313,7 +321,7 @@ export default function Header() {
 					{/* Demo Links End */}
 
 					<div className="mt-2 border-t border-gray-700 pt-2">
-						{session ? (
+						{currentUser ? (
 							<button
 								onClick={() => {
 									setIsOpen(false);
