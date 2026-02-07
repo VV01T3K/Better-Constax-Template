@@ -64,7 +64,6 @@
 		"oxlint": "^1.43.0",
 		"oxlint-tsgolint": "^0.11.4",
 		"vite": "catalog:",
-		"vite-plugin-devtools-json": "^1.0.0",
 		"vitest": "^4.0.18",
 		"web-vitals": "^5.1.0"
 	},
