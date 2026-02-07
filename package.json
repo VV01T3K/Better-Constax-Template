@@ -6,9 +6,9 @@
 	],
 	"type": "module",
 	"scripts": {
-		"dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 bun --bun vite dev --port 3000 --host",
+		"dev": "bun --bun vite dev --port 3000 --host",
 		"build": "bun --bun vite build",
-		"preview": "bun --bun vite preview",
+		"preview": "bun --bun run .output/server/index.mjs ",
 		"test": "bun --bun vitest run",
 		"lint": "oxlint --type-aware --type-check --fix",
 		"format": "oxfmt",
@@ -73,5 +73,8 @@
 		"vite": "npm:rolldown-vite@7.3.1",
 		"nitro": "npm:nitro-nightly@latest",
 		"better-auth": "1.4.9"
+	},
+	"patchedDependencies": {
+		"@convex-dev/better-auth@0.10.10": "patches/@convex-dev%2Fbetter-auth@0.10.10.patch"
 	}
 }
