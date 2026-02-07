@@ -9,7 +9,9 @@
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {
-			"moby": false
+			"moby": false,
+			"azureDnsAutoDetection": false,
+			"installDockerBuildx": false
 		}
 	},
 	"customizations": {
@@ -33,6 +35,7 @@
 			]
 		}
 	},
-	"postCreateCommand": "mise trust && mise install"
+	"postCreateCommand": "mise trust && mise install",
+	"mounts": ["source=debian-mise-cache,target=/home/vscode/.local/share/mise,type=volume"]
 	// "customizations": {},
 }
