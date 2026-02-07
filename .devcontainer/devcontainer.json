@@ -28,8 +28,8 @@
 				"yzhang.markdown-all-in-one",
 				"CodeRabbit.coderabbit-vscode",
 				"tamasfe.even-better-toml",
-				// "jjk.jjk",
-				"openai.chatgpt"
+				"openai.chatgpt",
+				"sst-dev.opencode"
 			]
 		}
 	},
