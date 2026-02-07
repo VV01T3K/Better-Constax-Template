@@ -18,6 +18,10 @@ export const list = zQuery({
 export const add = zMutation({
 	args: { text: z.string().min(1, "Text is required") },
 	handler: async (ctx, { text }) => {
+		const identity = await ctx.auth.getUserIdentity();
+		if (!identity) {
+			throw new ConvexError({ code: "UNAUTHORIZED", message: "You must be logged in to add a todo" });
+		}
 		return await ctx.db.insert("todos", {
 			text,
 			completed: false,
