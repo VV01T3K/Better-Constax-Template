@@ -61,9 +61,13 @@
 		"dist",
 		".output",
 		"**/*.gen.*",
-		"convex/_generated",
-		"convex/betterAuth/_generated",
-		".claude",
-		".turbo"
+		".claude/**",
+		".agents/**",
+		".cursor/**",
+		".turbo",
+		"**/routeTree.gen.ts",
+		"**/bun.lock",
+		"**/_generated/**",
+		"**/betterAuth/generatedSchema.ts"
 	]
 }
