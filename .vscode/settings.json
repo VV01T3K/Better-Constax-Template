@@ -4,7 +4,9 @@
 		"**/.turbo/": true,
 		"**/.tanstack/": true,
 		"node_modules/": true,
-		"AGENTS.md": true
+		"AGENTS.md": true,
+		".agents/": true,
+		".cursor/": true
 	},
 	"tailwind-fold.autoFold": false,
 	"css.lint.unknownAtRules": "ignore",
