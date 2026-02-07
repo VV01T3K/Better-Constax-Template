@@ -25,7 +25,7 @@ import { api } from "../../convex/_generated/api";
 import { authClient } from "../lib/auth-client";
 
 export default function Header() {
-	const { data: currentUser, isPending } = useSuspenseQuery({
+	const { data: currentUser } = useSuspenseQuery({
 		...convexQuery(api.auth.getCurrentUser, {}),
 	});
 	const [isOpen, setIsOpen] = useState(false);
@@ -54,12 +54,7 @@ export default function Header() {
 				</div>
 
 				<div className="flex items-center gap-3">
-					{isPending ? (
-						<span className="flex items-center gap-2 rounded-lg bg-gray-700 px-3 py-1.5 text-sm text-gray-300">
-							<User size={16} />
-							Loading...
-						</span>
-					) : currentUser ? (
+					{currentUser ? (
 						<>
 							<span className="flex items-center gap-2 text-sm text-gray-300">
 								<User size={16} />
