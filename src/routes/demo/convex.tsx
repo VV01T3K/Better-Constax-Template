@@ -58,7 +58,7 @@ function ConvexTodos() {
 		>
 			<div className="w-full max-w-2xl">
 				{/* Header Card */}
-				<div className="mb-6 rounded-2xl border border-green-200/50 bg-white/95 p-8 shadow-2xl backdrop-blur-sm">
+				<div className="mb-6 rounded-2xl border border-green-200/50 bg-white p-8 shadow-2xl">
 					<div className="text-center">
 						<h1 className="mb-2 text-4xl font-bold text-green-800">Convex Todos</h1>
 						<p className="text-lg text-green-600">Powered by real-time sync</p>
@@ -72,7 +72,7 @@ function ConvexTodos() {
 				</div>
 
 				{/* Add Todo Card */}
-				<div className="mb-6 rounded-2xl border border-green-200/50 bg-white/95 p-6 shadow-xl backdrop-blur-sm">
+				<div className="mb-6 rounded-2xl border border-green-200/50 bg-white p-6 shadow-xl">
 					<div className="flex gap-3">
 						<input
 							type="text"
@@ -99,7 +99,7 @@ function ConvexTodos() {
 				</div>
 
 				{/* Todos List */}
-				<div className="overflow-hidden rounded-2xl border border-green-200/50 bg-white/95 shadow-xl backdrop-blur-sm">
+				<div className="overflow-hidden rounded-2xl border border-green-200/50 bg-white shadow-xl">
 					{todos.length === 0 ? (
 						<div className="p-12 text-center">
 							<Circle size={48} className="mx-auto mb-4 text-green-300" />

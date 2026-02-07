@@ -37,7 +37,7 @@ function SimpleForm() {
 					"radial-gradient(50% 50% at 5% 40%, #add8e6 0%, #0000ff 70%, #00008b 100%)",
 			}}
 		>
-			<div className="w-full max-w-2xl rounded-xl border-8 border-black/10 bg-black/50 p-8 shadow-xl backdrop-blur-md">
+			<div className="w-full max-w-2xl rounded-xl border-8 border-black/10 bg-black/80 p-8 shadow-xl">
 				<form
 					onSubmit={(e) => {
 						e.preventDefault();

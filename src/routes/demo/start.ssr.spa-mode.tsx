@@ -25,13 +25,13 @@ function RouteComponent() {
 					"radial-gradient(50% 50% at 20% 60%, #1a1a1a 0%, #0a0a0a 50%, #000000 100%)",
 			}}
 		>
-			<div className="w-full max-w-2xl rounded-xl border-8 border-black/10 bg-black/50 p-8 shadow-xl backdrop-blur-md">
+			<div className="w-full max-w-2xl rounded-xl border-8 border-black/10 bg-black/80 p-8 shadow-xl">
 				<h1 className="mb-6 text-3xl font-bold text-green-400">SPA Mode - Punk Songs</h1>
 				<ul className="space-y-3">
 					{punkSongs.map((song) => (
 						<li
 							key={song.id}
-							className="rounded-lg border border-white/20 bg-white/10 p-4 shadow-md backdrop-blur-sm"
+							className="rounded-lg border border-white/20 bg-white/20 p-4 shadow-md"
 						>
 							<span className="text-lg font-medium text-white">{song.name}</span>
 							<span className="text-white/60"> - {song.artist}</span>

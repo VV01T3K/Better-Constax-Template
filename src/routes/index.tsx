@@ -94,7 +94,7 @@ function App() {
 					{features.map((feature, index) => (
 						<div
 							key={index}
-							className="rounded-xl border border-slate-700 bg-slate-800/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-cyan-500/50 hover:shadow-lg hover:shadow-cyan-500/10"
+							className="rounded-xl border border-slate-700 bg-slate-800 p-6 transition-all duration-300 hover:border-cyan-500/50 hover:shadow-lg hover:shadow-cyan-500/10"
 						>
 							<div className="mb-4">{feature.icon}</div>
 							<h3 className="mb-3 text-xl font-semibold text-white">{feature.title}</h3>
