@@ -46,7 +46,6 @@
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.3.14",
 		"@hono/zod-validator": "^0.7.6",
 		"@tanstack/devtools-vite": "^0.5.0",
 		"@tanstack/eslint-plugin-query": "^5.91.4",
