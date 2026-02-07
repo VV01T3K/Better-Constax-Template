@@ -36,6 +36,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 				content: "width=device-width, initial-scale=1",
 			},
 			{
+				name: "theme-color",
+				content: "#000000",
+			},
+			{
 				title: "TanStack Start Starter",
 			},
 		],
@@ -43,6 +47,14 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 			{
 				rel: "stylesheet",
 				href: appCss,
+			},
+			{
+				rel: "manifest",
+				href: "/manifest.json",
+			},
+			{
+				rel: "apple-touch-icon",
+				href: "/logo192.png",
 			},
 		],
 	}),
