@@ -30,13 +30,7 @@ export default function Header() {
 	const [groupedExpanded, setGroupedExpanded] = useState<Record<string, boolean>>({});
 
 	const handleSignOut = async () => {
-		await authClient.signOut({
-			fetchOptions: {
-				onSuccess: () => {
-					window.location.reload();
-				},
-			},
-		});
+		await authClient.signOut();
 	};
 
 	return (
