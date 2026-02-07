@@ -1,3 +1,5 @@
+import type { NitroConfig } from "nitro/types";
+
 import tailwindcss from "@tailwindcss/vite";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
@@ -16,7 +18,11 @@ const config = defineConfig({
 	},
 	plugins: [
 		devtools(),
-		nitro({ preset: "bun" }),
+		nitro({
+			preset: process.env.NITRO_PRESET
+				? (process.env.NITRO_PRESET as NitroConfig["preset"])
+				: "bun",
+		}),
 		tailwindcss(),
 		tanstackStart(),
 		viteReact({
