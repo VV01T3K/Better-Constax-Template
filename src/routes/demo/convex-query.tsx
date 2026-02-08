@@ -4,8 +4,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Check, Circle, Plus, Trash2 } from "lucide-react";
 import { useCallback, useState } from "react";
 
-import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+
+import { api } from "../../../convex/_generated/api";
 import { createTodoSchema } from "../../../convex/schemas";
 
 export const Route = createFileRoute("/demo/convex-query")({
@@ -61,7 +62,7 @@ function ConvexQueryTodos() {
 
 	return (
 		<div
-			className="min-h-screen flex items-center justify-center p-4"
+			className="flex min-h-screen items-center justify-center p-4"
 			style={{
 				background:
 					"linear-gradient(135deg, #4a3f8a 0%, #6366f1 25%, #818cf8 50%, #a5b4fc 75%, #eef2ff 100%)",
@@ -69,29 +70,21 @@ function ConvexQueryTodos() {
 		>
 			<div className="w-full max-w-2xl">
 				{/* Header Card */}
-				<div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-indigo-200/50 p-8 mb-6">
+				<div className="mb-6 rounded-2xl border border-indigo-200/50 bg-white/95 p-8 shadow-2xl backdrop-blur-sm">
 					<div className="text-center">
-						<h1 className="text-4xl font-bold text-indigo-800 mb-2">
-							Convex + TanStack Query
-						</h1>
-						<p className="text-indigo-600 text-lg">
-							Mutations via @tanstack/react-query
-						</p>
+						<h1 className="mb-2 text-4xl font-bold text-indigo-800">Convex + TanStack Query</h1>
+						<p className="text-lg text-indigo-600">Mutations via @tanstack/react-query</p>
 						{totalCount > 0 && (
 							<div className="mt-4 flex justify-center space-x-6 text-sm">
-								<span className="text-indigo-700 font-medium">
-									{completedCount} completed
-								</span>
-								<span className="text-gray-600">
-									{totalCount - completedCount} remaining
-								</span>
+								<span className="font-medium text-indigo-700">{completedCount} completed</span>
+								<span className="text-gray-600">{totalCount - completedCount} remaining</span>
 							</div>
 						)}
 					</div>
 				</div>
 
 				{/* Add Todo Card */}
-				<div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-indigo-200/50 p-6 mb-6">
+				<div className="mb-6 rounded-2xl border border-indigo-200/50 bg-white/95 p-6 shadow-xl backdrop-blur-sm">
 					<div className="flex gap-3">
 						<input
 							type="text"
@@ -103,40 +96,34 @@ function ConvexQueryTodos() {
 								}
 							}}
 							placeholder="What needs to be done?"
-							className="flex-1 px-4 py-3 rounded-xl border-2 border-indigo-200 focus:border-indigo-400 focus:outline-none text-gray-800 placeholder-gray-500 bg-white/80 transition-colors"
+							className="flex-1 rounded-xl border-2 border-indigo-200 bg-white/80 px-4 py-3 text-gray-800 placeholder-gray-500 transition-colors focus:border-indigo-400 focus:outline-none"
 						/>
 						<button
 							onClick={handleAddTodo}
 							disabled={!newTodo.trim()}
-							className="bg-linear-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl"
+							className="flex items-center gap-2 rounded-xl bg-linear-to-r from-indigo-500 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:from-indigo-600 hover:to-indigo-700 hover:shadow-xl disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400"
 						>
 							<Plus size={20} />
 							Add
 						</button>
 					</div>
-					{validationError && (
-						<p className="mt-2 text-sm text-red-600">{validationError}</p>
-					)}
+					{validationError && <p className="mt-2 text-sm text-red-600">{validationError}</p>}
 				</div>
 
 				{/* Todos List */}
-				<div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-indigo-200/50 overflow-hidden">
+				<div className="overflow-hidden rounded-2xl border border-indigo-200/50 bg-white/95 shadow-xl backdrop-blur-sm">
 					{todos.length === 0 ? (
 						<div className="p-12 text-center">
-							<Circle size={48} className="text-indigo-300 mx-auto mb-4" />
-							<h3 className="text-xl font-semibold text-indigo-800 mb-2">
-								No todos yet
-							</h3>
-							<p className="text-indigo-600">
-								Add your first todo above to get started!
-							</p>
+							<Circle size={48} className="mx-auto mb-4 text-indigo-300" />
+							<h3 className="mb-2 text-xl font-semibold text-indigo-800">No todos yet</h3>
+							<p className="text-indigo-600">Add your first todo above to get started!</p>
 						</div>
 					) : (
 						<div className="divide-y divide-indigo-100">
 							{todos.map((todo, index) => (
 								<div
 									key={todo._id}
-									className={`p-4 flex items-center gap-4 hover:bg-indigo-50/50 transition-colors ${
+									className={`flex items-center gap-4 p-4 transition-colors hover:bg-indigo-50/50 ${
 										todo.completed ? "opacity-75" : ""
 									}`}
 									style={{
@@ -145,10 +132,10 @@ function ConvexQueryTodos() {
 								>
 									<button
 										onClick={() => handleToggleTodo(todo._id)}
-										className={`shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+										className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 ${
 											todo.completed
-												? "bg-indigo-500 border-indigo-500 text-white"
-												: "border-indigo-300 hover:border-indigo-400 text-transparent hover:text-indigo-400"
+												? "border-indigo-500 bg-indigo-500 text-white"
+												: "border-indigo-300 text-transparent hover:border-indigo-400 hover:text-indigo-400"
 										}`}
 									>
 										<Check size={14} />
@@ -156,9 +143,7 @@ function ConvexQueryTodos() {
 
 									<span
 										className={`flex-1 text-lg transition-all duration-200 ${
-											todo.completed
-												? "line-through text-gray-500"
-												: "text-gray-800"
+											todo.completed ? "text-gray-500 line-through" : "text-gray-800"
 										}`}
 									>
 										{todo.text}
@@ -166,7 +151,7 @@ function ConvexQueryTodos() {
 
 									<button
 										onClick={() => handleRemoveTodo(todo._id)}
-										className="shrink-0 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+										className="shrink-0 rounded-lg p-2 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
 									>
 										<Trash2 size={18} />
 									</button>
@@ -177,10 +162,9 @@ function ConvexQueryTodos() {
 				</div>
 
 				{/* Footer */}
-				<div className="text-center mt-6">
-					<p className="text-indigo-700/80 text-sm">
-						Built with Convex + TanStack Query &bull; useConvexMutation +
-						useMutation
+				<div className="mt-6 text-center">
+					<p className="text-sm text-indigo-700/80">
+						Built with Convex + TanStack Query &bull; useConvexMutation + useMutation
 					</p>
 				</div>
 			</div>

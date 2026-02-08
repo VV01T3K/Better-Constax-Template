@@ -9,12 +9,13 @@ All 6+ documented TanStack Table errors with solutions and sources.
 **Cause:** Unstable `data` or `columns` references change every render.
 
 **Solution:**
+
 ```typescript
 // ❌ BAD
-const data = [{ id: 1 }] // New array every render!
+const data = [{ id: 1 }]; // New array every render!
 
 // ✅ GOOD
-const data = useMemo(() => [{ id: 1 }], [])
+const data = useMemo(() => [{ id: 1 }], []);
 // OR define outside component
 ```
 
@@ -29,12 +30,13 @@ const data = useMemo(() => [{ id: 1 }], [])
 **Cause:** Query key doesn't include table state.
 
 **Solution:**
+
 ```typescript
 // ❌ BAD
-queryKey: ['users'] // Static!
+queryKey: ["users"]; // Static!
 
 // ✅ GOOD
-queryKey: ['users', pagination, sorting, filters] // Include ALL state
+queryKey: ["users", pagination, sorting, filters]; // Include ALL state
 ```
 
 **Source:** TanStack Query docs, GitHub discussions
@@ -48,17 +50,18 @@ queryKey: ['users', pagination, sorting, filters] // Include ALL state
 **Cause:** Missing `manual*` flags.
 
 **Solution:**
+
 ```typescript
 const table = useReactTable({
-  data,
-  columns,
-  getCoreRowModel: getCoreRowModel(),
-  // CRITICAL: Tell table these are server-side
-  manualPagination: true,
-  manualFiltering: true,
-  manualSorting: true,
-  pageCount: serverPageCount, // Required for manualPagination
-})
+	data,
+	columns,
+	getCoreRowModel: getCoreRowModel(),
+	// CRITICAL: Tell table these are server-side
+	manualPagination: true,
+	manualFiltering: true,
+	manualSorting: true,
+	pageCount: serverPageCount, // Required for manualPagination
+});
 ```
 
 **Source:** Official docs, common mistake
@@ -70,12 +73,13 @@ const table = useReactTable({
 **Symptom:** Import error for `createColumnHelper`.
 
 **Solution:**
+
 ```typescript
 // ❌ BAD
-import { createColumnHelper } from '@tanstack/table-core'
+import { createColumnHelper } from "@tanstack/table-core";
 
 // ✅ GOOD
-import { createColumnHelper } from '@tanstack/react-table'
+import { createColumnHelper } from "@tanstack/react-table";
 ```
 
 **Source:** TypeScript import paths
@@ -89,26 +93,27 @@ import { createColumnHelper } from '@tanstack/react-table'
 **Cause:** Sorting state not included in query key.
 
 **Solution:**
+
 ```typescript
-const [sorting, setSorting] = useState<SortingState>([])
+const [sorting, setSorting] = useState<SortingState>([]);
 
 const { data } = useQuery({
-  queryKey: ['users', pagination, sorting], // Include sorting!
-  queryFn: () => {
-    const sortBy = sorting[0]?.id || 'created_at'
-    const sortOrder = sorting[0]?.desc ? 'desc' : 'asc'
-    return fetch(`/api/users?sortBy=${sortBy}&sortOrder=${sortOrder}`).then(r => r.json())
-  }
-})
+	queryKey: ["users", pagination, sorting], // Include sorting!
+	queryFn: () => {
+		const sortBy = sorting[0]?.id || "created_at";
+		const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+		return fetch(`/api/users?sortBy=${sortBy}&sortOrder=${sortOrder}`).then((r) => r.json());
+	},
+});
 
 const table = useReactTable({
-  data: data?.data ?? [],
-  columns,
-  getCoreRowModel: getCoreRowModel(),
-  manualSorting: true,
-  state: { sorting },
-  onSortingChange: setSorting,
-})
+	data: data?.data ?? [],
+	columns,
+	getCoreRowModel: getCoreRowModel(),
+	manualSorting: true,
+	state: { sorting },
+	onSortingChange: setSorting,
+});
 ```
 
 **Source:** Common pattern mistake
@@ -122,13 +127,13 @@ const table = useReactTable({
 **Solution:** Use virtualization or server-side pagination.
 
 ```typescript
-import { useVirtualizer } from '@tanstack/react-virtual'
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 const rowVirtualizer = useVirtualizer({
-  count: rows.length,
-  getScrollElement: () => containerRef.current,
-  estimateSize: () => 50,
-})
+	count: rows.length,
+	getScrollElement: () => containerRef.current,
+	estimateSize: () => 50,
+});
 ```
 
 **Source:** Performance best practices

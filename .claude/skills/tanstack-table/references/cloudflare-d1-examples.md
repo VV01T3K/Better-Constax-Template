@@ -24,16 +24,16 @@ CREATE INDEX idx_users_created_at ON users(created_at);
 
 ```jsonc
 {
-  "name": "table-d1-example",
-  "compatibility_date": "2025-11-07",
-  "pages_build_output_dir": "dist",
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "users-db",
-      "database_id": "your-database-id"
-    }
-  ]
+	"name": "table-d1-example",
+	"compatibility_date": "2025-11-07",
+	"pages_build_output_dir": "dist",
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "users-db",
+			"database_id": "your-database-id",
+		},
+	],
 }
 ```
 
@@ -41,15 +41,15 @@ CREATE INDEX idx_users_created_at ON users(created_at);
 
 ```typescript
 interface Env {
-  DB: D1Database
+	DB: D1Database;
 }
 
 interface User {
-  id: string
-  name: string
-  email: string
-  role: string
-  created_at: string
+	id: string;
+	name: string;
+	email: string;
+	role: string;
+	created_at: string;
 }
 ```
 
@@ -58,59 +58,63 @@ interface User {
 ```typescript
 // functions/api/users.ts
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
-  const url = new URL(request.url)
-  const page = Number(url.searchParams.get('page')) || 0
-  const pageSize = Number(url.searchParams.get('pageSize')) || 20
-  const sortBy = url.searchParams.get('sortBy') || 'created_at'
-  const sortOrder = url.searchParams.get('sortOrder') || 'desc'
-  const search = url.searchParams.get('search') || ''
+	const url = new URL(request.url);
+	const page = Number(url.searchParams.get("page")) || 0;
+	const pageSize = Number(url.searchParams.get("pageSize")) || 20;
+	const sortBy = url.searchParams.get("sortBy") || "created_at";
+	const sortOrder = url.searchParams.get("sortOrder") || "desc";
+	const search = url.searchParams.get("search") || "";
 
-  const offset = page * pageSize
+	const offset = page * pageSize;
 
-  try {
-    // Build query with filters
-    let query = 'SELECT id, name, email, role, created_at FROM users'
-    let countQuery = 'SELECT COUNT(*) as total FROM users'
-    const params: (string | number)[] = []
-    const countParams: string[] = []
+	try {
+		// Build query with filters
+		let query = "SELECT id, name, email, role, created_at FROM users";
+		let countQuery = "SELECT COUNT(*) as total FROM users";
+		const params: (string | number)[] = [];
+		const countParams: string[] = [];
 
-    // Add search filter
-    if (search) {
-      const whereClause = ' WHERE name LIKE ? OR email LIKE ?'
-      query += whereClause
-      countQuery += whereClause
-      params.push(`%${search}%`, `%${search}%`)
-      countParams.push(`%${search}%`, `%${search}%`)
-    }
+		// Add search filter
+		if (search) {
+			const whereClause = " WHERE name LIKE ? OR email LIKE ?";
+			query += whereClause;
+			countQuery += whereClause;
+			params.push(`%${search}%`, `%${search}%`);
+			countParams.push(`%${search}%`, `%${search}%`);
+		}
 
-    // Add sorting (validate!)
-    const allowedColumns = ['id', 'name', 'email', 'role', 'created_at']
-    if (allowedColumns.includes(sortBy)) {
-      query += ` ORDER BY ${sortBy} ${sortOrder.toUpperCase()}`
-    }
+		// Add sorting (validate!)
+		const allowedColumns = ["id", "name", "email", "role", "created_at"];
+		if (allowedColumns.includes(sortBy)) {
+			query += ` ORDER BY ${sortBy} ${sortOrder.toUpperCase()}`;
+		}
 
-    // Add pagination
-    query += ' LIMIT ? OFFSET ?'
-    params.push(pageSize, offset)
+		// Add pagination
+		query += " LIMIT ? OFFSET ?";
+		params.push(pageSize, offset);
 
-    // Execute queries
-    const { results } = await env.DB.prepare(query).bind(...params).all()
-    const countResult = await env.DB.prepare(countQuery).bind(...countParams).first<{ total: number }>()
+		// Execute queries
+		const { results } = await env.DB.prepare(query)
+			.bind(...params)
+			.all();
+		const countResult = await env.DB.prepare(countQuery)
+			.bind(...countParams)
+			.first<{ total: number }>();
 
-    return Response.json({
-      data: results,
-      pagination: {
-        page,
-        pageSize,
-        total: countResult?.total || 0,
-        pageCount: Math.ceil((countResult?.total || 0) / pageSize),
-      },
-    })
-  } catch (error) {
-    console.error('D1 error:', error)
-    return Response.json({ error: 'Database query failed' }, { status: 500 })
-  }
-}
+		return Response.json({
+			data: results,
+			pagination: {
+				page,
+				pageSize,
+				total: countResult?.total || 0,
+				pageCount: Math.ceil((countResult?.total || 0) / pageSize),
+			},
+		});
+	} catch (error) {
+		console.error("D1 error:", error);
+		return Response.json({ error: "Database query failed" }, { status: 500 });
+	}
+};
 ```
 
 ## Client-Side Integration

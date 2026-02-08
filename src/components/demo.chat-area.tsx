@@ -27,36 +27,36 @@ export default function ChatArea() {
 
 	return (
 		<>
-			<div className="px-4 py-6 space-y-4">
+			<div className="space-y-4 px-4 py-6">
 				<Messages messages={messages} user={user} />
 			</div>
 
-			<div className="bg-white border-t border-gray-200 px-4 py-4">
+			<div className="border-t border-gray-200 bg-white px-4 py-4">
 				<div className="flex items-center space-x-3">
 					<select
 						value={user}
 						onChange={(e) => setUser(e.target.value)}
-						className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+						className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
 					>
 						<option value="Alice">Alice</option>
 						<option value="Bob">Bob</option>
 					</select>
 
-					<div className="flex-1 relative">
+					<div className="relative flex-1">
 						<input
 							type="text"
 							value={message}
 							onChange={(e) => setMessage(e.target.value)}
 							onKeyDown={handleKeyPress}
 							placeholder="Type a message..."
-							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+							className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
 						/>
 					</div>
 
 					<button
 						onClick={postMessage}
 						disabled={message.trim() === ""}
-						className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+						className="rounded-lg bg-blue-500 px-6 py-2 text-white transition-colors hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						Send
 					</button>

@@ -11,17 +11,14 @@ Claude's training may have limited TanStack Router knowledge. This project uses 
 ```typescript
 /* ❌ Manual route definitions (verbose) */
 const router = createRouter({
-  routeTree: rootRoute.addChildren([
-    indexRoute,
-    aboutRoute,
-  ]),
-})
+	routeTree: rootRoute.addChildren([indexRoute, aboutRoute]),
+});
 
 /* ✅ File-based routing with routeTree.gen.ts */
 // routes/__root.tsx, routes/index.tsx, routes/about.tsx
 // Then import generated tree:
-import { routeTree } from './routeTree.gen'
-const router = createRouter({ routeTree })
+import { routeTree } from "./routeTree.gen";
+const router = createRouter({ routeTree });
 ```
 
 ## Route File Structure
@@ -79,18 +76,18 @@ function PostPage() {
 
 ```typescript
 /* ❌ Manual URLSearchParams */
-const params = new URLSearchParams(window.location.search)
+const params = new URLSearchParams(window.location.search);
 
 /* ✅ Type-safe search params */
-export const Route = createFileRoute('/search')({
-  validateSearch: (search) => ({
-    q: search.q as string || '',
-    page: Number(search.page) || 1,
-  }),
-})
+export const Route = createFileRoute("/search")({
+	validateSearch: (search) => ({
+		q: (search.q as string) || "",
+		page: Number(search.page) || 1,
+	}),
+});
 
 function SearchPage() {
-  const { q, page } = Route.useSearch()
+	const { q, page } = Route.useSearch();
 }
 ```
 
@@ -115,11 +112,11 @@ navigate({ to: '/about' })
 
 ## Quick Fixes
 
-| If Claude suggests... | Use instead... |
-|----------------------|----------------|
-| `createRoute` in file-based | `createFileRoute` |
-| `routes/About.tsx` | `routes/about.tsx` (lowercase) |
-| `loader({ params })` export | `loader` inside `createFileRoute` |
-| `useParams()` | `Route.useParams()` |
-| `useSearchParams()` | `Route.useSearch()` with `validateSearch` |
-| `navigate('/path')` | `navigate({ to: '/path' })` |
+| If Claude suggests...       | Use instead...                            |
+| --------------------------- | ----------------------------------------- |
+| `createRoute` in file-based | `createFileRoute`                         |
+| `routes/About.tsx`          | `routes/about.tsx` (lowercase)            |
+| `loader({ params })` export | `loader` inside `createFileRoute`         |
+| `useParams()`               | `Route.useParams()`                       |
+| `useSearchParams()`         | `Route.useSearch()` with `validateSearch` |
+| `navigate('/path')`         | `navigate({ to: '/path' })`               |

@@ -1,7 +1,4 @@
-import {
-	createCollection,
-	localOnlyCollectionOptions,
-} from "@tanstack/react-db";
+import { createCollection, localOnlyCollectionOptions } from "@tanstack/react-db";
 import { z } from "zod";
 
 const OptimisticTodoSchema = z.object({

@@ -1,0 +1,18 @@
+{
+	"useTabs": true,
+	"insertFinalNewline": true,
+	"experimentalSortImports": {},
+	"experimentalSortPackageJson": true,
+	"experimentalTailwindcss": {
+		"functions": ["clsx", "cn", "cva", "tw"]
+	},
+	"ignorePatterns": [
+		"node_modules",
+		"dist",
+		".output",
+		"**/*.gen.*",
+		"convex/_generated",
+		".claude",
+		".turbo"
+	]
+}

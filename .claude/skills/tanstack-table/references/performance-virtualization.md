@@ -61,9 +61,9 @@ const data = useMemo(() => [...], [])
 
 ```typescript
 const columns = [
-  { accessorKey: 'id', header: 'ID', size: 80 }, // Fixed width
-  { accessorKey: 'name', header: 'Name' }, // Flexible
-]
+	{ accessorKey: "id", header: "ID", size: 80 }, // Fixed width
+	{ accessorKey: "name", header: "Name" }, // Flexible
+];
 ```
 
 ### 3. Avoid Heavy Cell Renderers

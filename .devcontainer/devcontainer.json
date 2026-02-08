@@ -11,15 +11,6 @@
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {
 			"moby": false
 		}
-		// ,
-		// "ghcr.io/w3cj/devcontainer-features/firewall:latest": {
-		// 	// https://github.com/w3cj/devcontainer-features/tree/main/src/firewall
-		// 	"githubIps": true,
-		// 	"claudeCode": true,
-		// 	"codex": true,
-		// 	"googleCloud": true,
-		// 	"hosts": "api.convex.dev,dashboard.convex.dev,convex.cloud,convex.dev"
-		// }
 	},
 	"customizations": {
 		"vscode": {
@@ -39,19 +30,9 @@
 				"tamasfe.even-better-toml",
 				// "jjk.jjk",
 				"openai.chatgpt"
-			],
-			"settings": {
-				"eslint.enable": false
-			}
+			]
 		}
 	},
-	"remoteUser": "vscode",
-	"containerEnv": {
-		"VSCODE_AGENT_FOLDER": "/workspaces/.vscode-server"
-	},
-	"remoteEnv": {
-		"VSCODE_AGENT_FOLDER": "/workspaces/.vscode-server"
-	},
-	"postCreateCommand": "mkdir -p /workspaces/.vscode-server && mise trust && mise install"
+	"postCreateCommand": "mise trust && mise install"
 	// "customizations": {},
 }

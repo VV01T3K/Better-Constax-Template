@@ -1,9 +1,8 @@
+import { type HonoWithConvex, HttpRouterWithHono } from "convex-helpers/server/hono";
 import { Hono } from "hono";
-import {
-	type HonoWithConvex,
-	HttpRouterWithHono,
-} from "convex-helpers/server/hono";
+
 import type { ActionCtx } from "./_generated/server";
+
 import { createAuth } from "./auth";
 
 const app: HonoWithConvex<ActionCtx> = new Hono();

@@ -5,6 +5,7 @@
 **Symptom:** Build error: Cannot find module '@tanstack/router-devtools-core'
 
 **Solution:**
+
 ```bash
 npm install @tanstack/router-devtools
 ```
@@ -14,12 +15,13 @@ npm install @tanstack/router-devtools
 **Symptom:** `routeTree.gen.ts` not created, type errors
 
 **Solution:** Vite plugin MUST come before react():
+
 ```typescript
 // vite.config.ts
 plugins: [
-  TanStackRouterVite(), // First!
-  react(),
-]
+	TanStackRouterVite(), // First!
+	react(),
+];
 ```
 
 ## Error 3: Link `to` Not Typed
@@ -27,9 +29,10 @@ plugins: [
 **Symptom:** No autocomplete for routes
 
 **Solution:** Import and use the generated routeTree:
+
 ```typescript
-import { routeTree } from './routeTree.gen'
-const router = createRouter({ routeTree })
+import { routeTree } from "./routeTree.gen";
+const router = createRouter({ routeTree });
 ```
 
 ## Error 4: Loader Not Running
@@ -37,10 +40,13 @@ const router = createRouter({ routeTree })
 **Symptom:** Data not loaded on navigation
 
 **Solution:** Ensure route exports `Route`:
+
 ```typescript
-export const Route = createFileRoute('/path')({
-  loader: async () => { /* ... */ }
-})
+export const Route = createFileRoute("/path")({
+	loader: async () => {
+		/* ... */
+	},
+});
 ```
 
 ## Error 5: Memory Leak with TanStack Form

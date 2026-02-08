@@ -20,28 +20,28 @@ npm install @tanstack/react-table
 
 ```typescript
 /* ❌ v7 useTable hook */
-import { useTable, useSortBy, usePagination } from 'react-table'
+import { useTable, useSortBy, usePagination } from "react-table";
 const { getTableProps, getTableBodyProps, rows } = useTable(
-  { columns, data },
-  useSortBy,
-  usePagination
-)
+	{ columns, data },
+	useSortBy,
+	usePagination,
+);
 
 /* ✅ v8 useReactTable */
 import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getPaginationRowModel,
-} from '@tanstack/react-table'
+	useReactTable,
+	getCoreRowModel,
+	getSortedRowModel,
+	getPaginationRowModel,
+} from "@tanstack/react-table";
 
 const table = useReactTable({
-  data,
-  columns,
-  getCoreRowModel: getCoreRowModel(),
-  getSortedRowModel: getSortedRowModel(),
-  getPaginationRowModel: getPaginationRowModel(),
-})
+	data,
+	columns,
+	getCoreRowModel: getCoreRowModel(),
+	getSortedRowModel: getSortedRowModel(),
+	getPaginationRowModel: getPaginationRowModel(),
+});
 ```
 
 ## Column Definitions
@@ -49,23 +49,23 @@ const table = useReactTable({
 ```typescript
 /* ❌ v7 columns */
 const columns = [
-  { Header: 'Name', accessor: 'name' },
-  { Header: 'Age', accessor: 'age' },
-]
+	{ Header: "Name", accessor: "name" },
+	{ Header: "Age", accessor: "age" },
+];
 
 /* ✅ v8 columns with columnHelper */
-import { createColumnHelper } from '@tanstack/react-table'
+import { createColumnHelper } from "@tanstack/react-table";
 
-const columnHelper = createColumnHelper<Person>()
+const columnHelper = createColumnHelper<Person>();
 const columns = [
-  columnHelper.accessor('name', {
-    header: 'Name',
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.accessor('age', {
-    header: 'Age',
-  }),
-]
+	columnHelper.accessor("name", {
+		header: "Name",
+		cell: (info) => info.getValue(),
+	}),
+	columnHelper.accessor("age", {
+		header: "Age",
+	}),
+];
 ```
 
 ## Rendering Table
@@ -140,12 +140,12 @@ table.previousPage()
 
 ## Quick Fixes
 
-| If Claude suggests... | Use instead... |
-|----------------------|----------------|
-| `npm install react-table` | `npm install @tanstack/react-table` |
-| `useTable` | `useReactTable` |
-| `Header: 'Name'` | `header: 'Name'` (lowercase) |
-| `accessor: 'name'` | `columnHelper.accessor('name', {...})` |
-| `getTableProps()` | Direct JSX (no spread props needed) |
-| `row.cells` | `row.getVisibleCells()` |
-| `cell.render('Cell')` | `flexRender(cell.column.columnDef.cell, cell.getContext())` |
+| If Claude suggests...     | Use instead...                                              |
+| ------------------------- | ----------------------------------------------------------- |
+| `npm install react-table` | `npm install @tanstack/react-table`                         |
+| `useTable`                | `useReactTable`                                             |
+| `Header: 'Name'`          | `header: 'Name'` (lowercase)                                |
+| `accessor: 'name'`        | `columnHelper.accessor('name', {...})`                      |
+| `getTableProps()`         | Direct JSX (no spread props needed)                         |
+| `row.cells`               | `row.getVisibleCells()`                                     |
+| `cell.render('Cell')`     | `flexRender(cell.column.columnDef.cell, cell.getContext())` |
