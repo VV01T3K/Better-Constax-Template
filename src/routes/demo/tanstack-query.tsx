@@ -42,14 +42,11 @@ function TanStackQueryDemo() {
 					"radial-gradient(50% 50% at 80% 20%, #3B021F 0%, #7B1028 60%, #1A000A 100%)",
 			}}
 		>
-			<div className="w-full max-w-2xl rounded-xl border-8 border-black/10 bg-black/50 p-8 shadow-xl backdrop-blur-md">
+			<div className="w-full max-w-2xl rounded-xl border-8 border-black/10 bg-black/80 p-8 shadow-xl">
 				<h1 className="mb-4 text-2xl">TanStack Query Todos list</h1>
 				<ul className="mb-4 space-y-2">
 					{data?.map((t) => (
-						<li
-							key={t.id}
-							className="rounded-lg border border-white/20 bg-white/10 p-3 shadow-md backdrop-blur-sm"
-						>
+						<li key={t.id} className="rounded-lg border border-white/20 bg-white/20 p-3 shadow-md">
 							<span className="text-lg text-white">{t.name}</span>
 						</li>
 					))}
@@ -65,7 +62,7 @@ function TanStackQueryDemo() {
 							}
 						}}
 						placeholder="Enter a new todo..."
-						className="w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/60 backdrop-blur-sm focus:border-transparent focus:ring-2 focus:ring-blue-400 focus:outline-none"
+						className="w-full rounded-lg border border-white/20 bg-white/20 px-4 py-3 text-white placeholder-white/60 focus:border-transparent focus:ring-2 focus:ring-blue-400 focus:outline-none"
 					/>
 					<button
 						disabled={todo.trim().length === 0}

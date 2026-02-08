@@ -55,7 +55,7 @@ function DbOptimisticTodos() {
 		>
 			<div className="w-full max-w-2xl">
 				{/* Header Card */}
-				<div className="mb-6 rounded-2xl border border-amber-200/50 bg-white/95 p-8 shadow-2xl backdrop-blur-sm">
+				<div className="mb-6 rounded-2xl border border-amber-200/50 bg-white p-8 shadow-2xl">
 					<div className="text-center">
 						<h1 className="mb-2 text-4xl font-bold text-amber-800">
 							TanStack DB - Optimistic Todos
@@ -76,7 +76,7 @@ function DbOptimisticTodos() {
 				</div>
 
 				{/* Performance Callout */}
-				<div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-300/60 bg-amber-50/90 p-4 backdrop-blur-sm">
+				<div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-300/60 bg-amber-50 p-4">
 					<Zap size={20} className="mt-0.5 shrink-0 text-amber-600" />
 					<div className="text-sm">
 						<p className="font-semibold text-amber-800">Optimistic updates enabled</p>
@@ -88,7 +88,7 @@ function DbOptimisticTodos() {
 				</div>
 
 				{/* Add Todo Card */}
-				<div className="mb-6 rounded-2xl border border-amber-200/50 bg-white/95 p-6 shadow-xl backdrop-blur-sm">
+				<div className="mb-6 rounded-2xl border border-amber-200/50 bg-white p-6 shadow-xl">
 					<div className="flex gap-3">
 						<input
 							type="text"
@@ -116,7 +116,7 @@ function DbOptimisticTodos() {
 				</div>
 
 				{/* Todos List */}
-				<div className="overflow-hidden rounded-2xl border border-amber-200/50 bg-white/95 shadow-xl backdrop-blur-sm">
+				<div className="overflow-hidden rounded-2xl border border-amber-200/50 bg-white shadow-xl">
 					{todos.length === 0 ? (
 						<div className="p-12 text-center">
 							<Circle size={48} className="mx-auto mb-4 text-amber-300" />

@@ -57,7 +57,7 @@ function LoginPage() {
 
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 p-4">
-			<div className="w-full max-w-md rounded-xl border border-slate-700 bg-slate-800/50 p-8 backdrop-blur-sm">
+			<div className="w-full max-w-md rounded-xl border border-slate-700 bg-slate-800 p-8">
 				<h1 className="mb-6 text-center text-3xl font-bold text-white">
 					{isSignUp ? "Create Account" : "Sign In"}
 				</h1>

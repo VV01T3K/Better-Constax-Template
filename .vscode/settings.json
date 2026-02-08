@@ -14,11 +14,13 @@
 	},
 	"search.exclude": {
 		"**/routeTree.gen.ts": true,
-		".claude/": true
+		".claude/": true,
+		"bun.lock": true
 	},
 	"files.readonlyInclude": {
 		"**/routeTree.gen.ts": true,
-		".claude/": true
+		".claude/": true,
+		"bun.lock": true
 	},
 	"editor.formatOnSave": true,
 	"[javascript]": {
@@ -49,6 +51,12 @@
 		"editor.defaultFormatter": "oxc.oxc-vscode"
 	},
 	"[css]": {
+		"editor.defaultFormatter": "oxc.oxc-vscode"
+	},
+	"[markdown]": {
+		"editor.defaultFormatter": "oxc.oxc-vscode"
+	},
+	"[toml]": {
 		"editor.defaultFormatter": "oxc.oxc-vscode"
 	},
 	"files.associations": {

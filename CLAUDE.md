@@ -6,13 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 bun install                          # Install dependencies
-bun --bun run dev                    # Dev server on port 3000 (with TLS bypass)
-bun --bun run build                  # Production build
-bun --bun run test                   # Run all tests (Vitest)
+bun run dev                    # Dev server on port 3000 (with TLS bypass)
+bun run build                  # Production build
+bun run test                   # Run all tests (Vitest)
 bun --bun vitest run src/path.test.ts  # Run a single test file
-bun --bun run lint                   # Lint with oxlint (type-aware, auto-fix)
-bun --bun run format                 # Format with oxfmt
-bun --bun run check                  # Format + lint + type-check (oxfmt, oxlint, tsgo)
+bun run lint                   # Lint with oxlint (type-aware, auto-fix)
+bun run format                 # Format with oxfmt
+bun run check                  # Format + lint + type-check (oxfmt, oxlint, tsgo)
 npx convex dev                       # Start Convex backend dev server
 bun run auth:generate                # Regenerate Better Auth schema for Convex
 ```

@@ -25,18 +25,14 @@ import { api } from "../../convex/_generated/api";
 import { authClient } from "../lib/auth-client";
 
 export default function Header() {
-	const { data: currentUser } = useSuspenseQuery(convexQuery(api.auth.getCurrentUser, {}));
+	const { data: currentUser } = useSuspenseQuery({
+		...convexQuery(api.auth.getCurrentUser, {}),
+	});
 	const [isOpen, setIsOpen] = useState(false);
 	const [groupedExpanded, setGroupedExpanded] = useState<Record<string, boolean>>({});
 
 	const handleSignOut = async () => {
-		await authClient.signOut({
-			fetchOptions: {
-				onSuccess: () => {
-					window.location.reload();
-				},
-			},
-		});
+		await authClient.signOut();
 	};
 
 	return (
