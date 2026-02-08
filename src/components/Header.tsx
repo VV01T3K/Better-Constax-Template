@@ -314,6 +314,19 @@ export default function Header() {
 						<span className="font-medium">DB Optimistic</span>
 					</Link>
 
+					<Link
+						to="/demo/tanstack-optimistic"
+						onClick={() => setIsOpen(false)}
+						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
+						activeProps={{
+							className:
+								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
+						}}
+					>
+						<Zap size={20} />
+						<span className="font-medium">TQ Optimistic</span>
+					</Link>
+
 					{/* Demo Links End */}
 
 					<div className="mt-2 border-t border-gray-700 pt-2">

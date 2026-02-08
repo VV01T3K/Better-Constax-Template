@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
+import { Route as DemoTanstackOptimisticRouteImport } from './routes/demo/tanstack-optimistic'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
 import { Route as DemoDbOptimisticRouteImport } from './routes/demo/db-optimistic'
 import { Route as DemoDbChatApiRouteImport } from './routes/demo/db-chat-api'
@@ -37,6 +38,11 @@ const IndexRoute = IndexRouteImport.update({
 const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
   id: '/demo/tanstack-query',
   path: '/demo/tanstack-query',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoTanstackOptimisticRoute = DemoTanstackOptimisticRouteImport.update({
+  id: '/demo/tanstack-optimistic',
+  path: '/demo/tanstack-optimistic',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoTableRoute = DemoTableRouteImport.update({
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
   '/demo/db-optimistic': typeof DemoDbOptimisticRoute
   '/demo/table': typeof DemoTableRoute
+  '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
@@ -155,6 +162,7 @@ export interface FileRoutesByTo {
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
   '/demo/db-optimistic': typeof DemoDbOptimisticRoute
   '/demo/table': typeof DemoTableRoute
+  '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
@@ -177,6 +185,7 @@ export interface FileRoutesById {
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
   '/demo/db-optimistic': typeof DemoDbOptimisticRoute
   '/demo/table': typeof DemoTableRoute
+  '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
@@ -200,6 +209,7 @@ export interface FileRouteTypes {
     | '/demo/db-chat-api'
     | '/demo/db-optimistic'
     | '/demo/table'
+    | '/demo/tanstack-optimistic'
     | '/demo/tanstack-query'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
@@ -221,6 +231,7 @@ export interface FileRouteTypes {
     | '/demo/db-chat-api'
     | '/demo/db-optimistic'
     | '/demo/table'
+    | '/demo/tanstack-optimistic'
     | '/demo/tanstack-query'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
@@ -242,6 +253,7 @@ export interface FileRouteTypes {
     | '/demo/db-chat-api'
     | '/demo/db-optimistic'
     | '/demo/table'
+    | '/demo/tanstack-optimistic'
     | '/demo/tanstack-query'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
@@ -264,6 +276,7 @@ export interface RootRouteChildren {
   DemoDbChatApiRoute: typeof DemoDbChatApiRoute
   DemoDbOptimisticRoute: typeof DemoDbOptimisticRoute
   DemoTableRoute: typeof DemoTableRoute
+  DemoTanstackOptimisticRoute: typeof DemoTanstackOptimisticRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
   DemoApiTqTodosRoute: typeof DemoApiTqTodosRoute
@@ -291,6 +304,13 @@ declare module '@tanstack/react-router' {
       path: '/demo/tanstack-query'
       fullPath: '/demo/tanstack-query'
       preLoaderRoute: typeof DemoTanstackQueryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/tanstack-optimistic': {
+      id: '/demo/tanstack-optimistic'
+      path: '/demo/tanstack-optimistic'
+      fullPath: '/demo/tanstack-optimistic'
+      preLoaderRoute: typeof DemoTanstackOptimisticRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/table': {
@@ -424,6 +444,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoDbChatApiRoute: DemoDbChatApiRoute,
   DemoDbOptimisticRoute: DemoDbOptimisticRoute,
   DemoTableRoute: DemoTableRoute,
+  DemoTanstackOptimisticRoute: DemoTanstackOptimisticRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,
   DemoApiTqTodosRoute: DemoApiTqTodosRoute,
