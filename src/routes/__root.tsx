@@ -57,6 +57,11 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 				href: "/logo192.png",
 			},
 		],
+		scripts: [
+			{
+				src: "/registerSW.js",
+			},
+		],
 	}),
 
 	beforeLoad: async (ctx) => {
