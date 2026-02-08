@@ -1,12 +1,11 @@
+import type { Doc, Id } from "@convex/_generated/dataModel";
+
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
+import { api } from "@convex/_generated/api";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 import { type OptimisticTodo, todosCollection } from "@/db-collections";
-
-import type { Doc, Id } from "../../convex/_generated/dataModel";
-
-import { api } from "../../convex/_generated/api";
 
 function mapServerTodo(todo: Doc<"todos">): OptimisticTodo {
 	return {

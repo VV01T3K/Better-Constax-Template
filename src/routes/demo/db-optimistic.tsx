@@ -1,17 +1,17 @@
 import { convexQuery } from "@convex-dev/react-query";
+import { api } from "@convex/_generated/api";
+import { createTodoSchema } from "@convex/schemas";
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, Circle, Plus, Trash2, Zap } from "lucide-react";
 import { useState } from "react";
 
-import { api } from "../../../convex/_generated/api";
-import { createTodoSchema } from "../../../convex/schemas";
-import { StatusBadge } from "../../components/demo.status-badge";
+import { StatusBadge } from "@/components/demo.status-badge";
 import {
 	useAddTodoOptimistic,
 	useOptimisticTodos,
 	useRemoveTodoOptimistic,
 	useToggleTodoOptimistic,
-} from "../../hooks/demo.useOptimisticTodos";
+} from "@/hooks/demo.useOptimisticTodos";
 
 export const Route = createFileRoute("/demo/db-optimistic")({
 	loader: async ({ context }) => {

@@ -1,5 +1,6 @@
 import { type HonoWithConvex, HttpRouterWithHono } from "convex-helpers/server/hono";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 
 import type { ActionCtx } from "./_generated/server";
 
@@ -7,10 +8,23 @@ import { createAuth } from "./auth";
 
 const app: HonoWithConvex<ActionCtx> = new Hono();
 
-// Suppress Chrome DevTools warning
-app.get("/.well-known/appspecific/com.chrome.devtools.json", (c) => {
-	return c.json({ workspace: { root: "", uuid: "" } }, 404);
-});
+const SITE_URL = process.env.SITE_URL;
+if (!SITE_URL && process.env.NODE_ENV === "production") {
+	throw new Error("SITE_URL environment variable is required in production");
+}
+
+// CORS for direct client-to-Convex auth calls
+app.use(
+	"/api/auth/*",
+	cors({
+		origin: SITE_URL ?? "http://localhost:3000",
+		allowHeaders: ["Content-Type", "Authorization", "Better-Auth-Cookie"],
+		allowMethods: ["GET", "POST", "OPTIONS"],
+		exposeHeaders: ["Content-Length", "Set-Better-Auth-Cookie"],
+		maxAge: 600,
+		credentials: true,
+	}),
+);
 
 // Redirect root well-known to auth well-known endpoint
 app.get("/.well-known/openid-configuration", async (c) => {

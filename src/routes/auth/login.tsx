@@ -1,9 +1,9 @@
+import { signInSchema, signUpSchema } from "@convex/schemas";
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { signInSchema, signUpSchema } from "../../../convex/schemas";
-import { authClient } from "../../lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/auth/login")({
 	component: LoginPage,
