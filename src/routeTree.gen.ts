@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
+import { Route as DemoDbOptimisticRouteImport } from './routes/demo/db-optimistic'
 import { Route as DemoDbChatApiRouteImport } from './routes/demo/db-chat-api'
 import { Route as DemoDbChatRouteImport } from './routes/demo/db-chat'
 import { Route as DemoConvexQueryRouteImport } from './routes/demo/convex-query'
@@ -42,6 +43,11 @@ const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
 const DemoTableRoute = DemoTableRouteImport.update({
   id: '/demo/table',
   path: '/demo/table',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoDbOptimisticRoute = DemoDbOptimisticRouteImport.update({
+  id: '/demo/db-optimistic',
+  path: '/demo/db-optimistic',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoDbChatApiRoute = DemoDbChatApiRouteImport.update({
@@ -132,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/demo/convex-query': typeof DemoConvexQueryRoute
   '/demo/db-chat': typeof DemoDbChatRoute
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
+  '/demo/db-optimistic': typeof DemoDbOptimisticRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -153,6 +160,7 @@ export interface FileRoutesByTo {
   '/demo/convex-query': typeof DemoConvexQueryRoute
   '/demo/db-chat': typeof DemoDbChatRoute
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
+  '/demo/db-optimistic': typeof DemoDbOptimisticRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -175,6 +183,7 @@ export interface FileRoutesById {
   '/demo/convex-query': typeof DemoConvexQueryRoute
   '/demo/db-chat': typeof DemoDbChatRoute
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
+  '/demo/db-optimistic': typeof DemoDbOptimisticRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -198,6 +207,7 @@ export interface FileRouteTypes {
     | '/demo/convex-query'
     | '/demo/db-chat'
     | '/demo/db-chat-api'
+    | '/demo/db-optimistic'
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/api/auth/$'
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/demo/convex-query'
     | '/demo/db-chat'
     | '/demo/db-chat-api'
+    | '/demo/db-optimistic'
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/api/auth/$'
@@ -240,6 +251,7 @@ export interface FileRouteTypes {
     | '/demo/convex-query'
     | '/demo/db-chat'
     | '/demo/db-chat-api'
+    | '/demo/db-optimistic'
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/api/auth/$'
@@ -262,6 +274,7 @@ export interface RootRouteChildren {
   DemoConvexQueryRoute: typeof DemoConvexQueryRoute
   DemoDbChatRoute: typeof DemoDbChatRoute
   DemoDbChatApiRoute: typeof DemoDbChatApiRoute
+  DemoDbOptimisticRoute: typeof DemoDbOptimisticRoute
   DemoTableRoute: typeof DemoTableRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -298,6 +311,13 @@ declare module '@tanstack/react-router' {
       path: '/demo/table'
       fullPath: '/demo/table'
       preLoaderRoute: typeof DemoTableRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/db-optimistic': {
+      id: '/demo/db-optimistic'
+      path: '/demo/db-optimistic'
+      fullPath: '/demo/db-optimistic'
+      preLoaderRoute: typeof DemoDbOptimisticRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/db-chat-api': {
@@ -422,6 +442,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoConvexQueryRoute: DemoConvexQueryRoute,
   DemoDbChatRoute: DemoDbChatRoute,
   DemoDbChatApiRoute: DemoDbChatApiRoute,
+  DemoDbOptimisticRoute: DemoDbOptimisticRoute,
   DemoTableRoute: DemoTableRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

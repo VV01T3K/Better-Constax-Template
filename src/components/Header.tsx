@@ -1,6 +1,4 @@
 import { Link } from "@tanstack/react-router";
-
-import { useState } from "react";
 import {
 	ChevronDown,
 	ChevronRight,
@@ -17,7 +15,9 @@ import {
 	Table,
 	User,
 	X,
+	Zap,
 } from "lucide-react";
+import { useState } from "react";
 import { authClient } from "../lib/auth-client";
 
 export default function Header() {
@@ -300,6 +300,19 @@ export default function Header() {
 					>
 						<Database size={20} />
 						<span className="font-medium">DB Chat</span>
+					</Link>
+
+					<Link
+						to="/demo/db-optimistic"
+						onClick={() => setIsOpen(false)}
+						className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
+						activeProps={{
+							className:
+								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
+						}}
+					>
+						<Zap size={20} />
+						<span className="font-medium">DB Optimistic</span>
 					</Link>
 
 					{/* Demo Links End */}
