@@ -1,8 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-function getNames() {
-	return fetch("/demo/api/names").then((res) => res.json() as Promise<string[]>);
+async function getNames(): Promise<string[]> {
+	const res = await fetch("/demo/api/names");
+	const data: unknown = await res.json();
+
+	if (Array.isArray(data) && data.every((item) => typeof item === "string")) {
+		return data;
+	}
+
+	return [];
 }
 
 export const Route = createFileRoute("/demo/start/api-request")({

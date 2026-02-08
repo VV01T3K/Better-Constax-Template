@@ -6,7 +6,7 @@ import { ConvexProvider } from "convex/react";
 
 import { routeTree } from "./routeTree.gen";
 
-const convexUrl = (import.meta as any).env.VITE_CONVEX_URL!;
+const convexUrl = import.meta.env.VITE_CONVEX_URL!;
 
 export const getRouter = () => {
 	const convexQueryClient = new ConvexQueryClient(convexUrl, {

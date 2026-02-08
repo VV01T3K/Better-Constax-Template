@@ -73,36 +73,33 @@ function TableDemo() {
 	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 	const [globalFilter, setGlobalFilter] = React.useState("");
 
-	const columns = React.useMemo<ColumnDef<Person, any>[]>(
-		() => [
-			{
-				accessorKey: "id",
-				filterFn: "equalsString", //note: normal non-fuzzy filter column - exact match required
-			},
-			{
-				accessorKey: "firstName",
-				cell: (info) => info.getValue(),
-				filterFn: "includesStringSensitive", //note: normal non-fuzzy filter column - case sensitive
-			},
-			{
-				accessorFn: (row) => row.lastName,
-				id: "lastName",
-				cell: (info) => info.getValue(),
-				header: () => <span>Last Name</span>,
-				filterFn: "includesString", //note: normal non-fuzzy filter column - case insensitive
-			},
-			{
-				accessorFn: (row) => `${row.firstName} ${row.lastName}`,
-				id: "fullName",
-				header: "Full Name",
-				cell: (info) => info.getValue(),
-				filterFn: "fuzzy", //using our custom fuzzy filter function
-				// filterFn: fuzzyFilter, //or just define with the function
-				sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
-			},
-		],
-		[],
-	);
+	const columns: ColumnDef<Person, any>[] = [
+		{
+			accessorKey: "id",
+			filterFn: "equalsString", //note: normal non-fuzzy filter column - exact match required
+		},
+		{
+			accessorKey: "firstName",
+			cell: (info) => info.getValue(),
+			filterFn: "includesStringSensitive", //note: normal non-fuzzy filter column - case sensitive
+		},
+		{
+			accessorFn: (row) => row.lastName,
+			id: "lastName",
+			cell: (info) => info.getValue(),
+			header: () => <span>Last Name</span>,
+			filterFn: "includesString", //note: normal non-fuzzy filter column - case insensitive
+		},
+		{
+			accessorFn: (row) => `${row.firstName} ${row.lastName}`,
+			id: "fullName",
+			header: "Full Name",
+			cell: (info) => info.getValue(),
+			filterFn: "fuzzy", //using our custom fuzzy filter function
+			// filterFn: fuzzyFilter, //or just define with the function
+			sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
+		},
+	];
 
 	const [data, setData] = React.useState<Person[]>(() => makeData(5_000));
 	const refreshData = () => setData((_old) => makeData(50_000)); //stress test
@@ -129,14 +126,16 @@ function TableDemo() {
 		debugColumns: false,
 	});
 
+	const firstColumnFilterId = table.getState().columnFilters[0]?.id;
+
 	//apply the fuzzy sort if the fullName column is being filtered
 	React.useEffect(() => {
-		if (table.getState().columnFilters[0]?.id === "fullName") {
+		if (firstColumnFilterId === "fullName") {
 			if (table.getState().sorting[0]?.id !== "fullName") {
 				table.setSorting([{ id: "fullName", desc: false }]);
 			}
 		}
-	}, [table.getState().columnFilters[0]?.id]);
+	}, [firstColumnFilterId, table]);
 
 	return (
 		<div className="min-h-screen bg-gray-900 p-6">
@@ -168,10 +167,11 @@ function TableDemo() {
 														}}
 													>
 														{flexRender(header.column.columnDef.header, header.getContext())}
-														{{
-															asc: " 🔼",
-															desc: " 🔽",
-														}[header.column.getIsSorted() as string] ?? null}
+														{header.column.getIsSorted() === "asc"
+															? " 🔼"
+															: header.column.getIsSorted() === "desc"
+																? " 🔽"
+																: null}
 													</div>
 													{header.column.getCanFilter() ? (
 														<div className="mt-2">
@@ -296,12 +296,18 @@ function TableDemo() {
 
 function Filter({ column }: { column: Column<any> }) {
 	const columnFilterValue = column.getFilterValue();
+	const safeFilterValue =
+		typeof columnFilterValue === "string"
+			? columnFilterValue
+			: typeof columnFilterValue === "number"
+				? String(columnFilterValue)
+				: "";
 
 	return (
 		<DebouncedInput
 			type="text"
-			value={(columnFilterValue ?? "") as string}
-			onChange={(value) => column.setFilterValue(value)}
+			value={safeFilterValue}
+			onChange={(value) => column.setFilterValue(String(value))}
 			placeholder={`Search...`}
 			className="w-full rounded-md border border-gray-600 bg-gray-700 px-2 py-1 text-white outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
 		/>
@@ -331,7 +337,7 @@ function DebouncedInput({
 		}, debounce);
 
 		return () => clearTimeout(timeout);
-	}, [value]);
+	}, [debounce, onChange, value]);
 
 	return <input {...props} value={value} onChange={(e) => setValue(e.target.value)} />;
 }

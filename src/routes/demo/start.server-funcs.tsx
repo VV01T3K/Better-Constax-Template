@@ -1,7 +1,7 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import fs from "node:fs";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 /*
 const loggingMiddleware = createMiddleware().server(
@@ -52,15 +52,15 @@ export const Route = createFileRoute("/demo/start/server-funcs")({
 
 function Home() {
 	const router = useRouter();
-	let todos = Route.useLoaderData();
+	const todos = Route.useLoaderData();
 
 	const [todo, setTodo] = useState("");
 
-	const submitTodo = useCallback(async () => {
-		todos = await addTodo({ data: todo });
+	const submitTodo = async () => {
+		await addTodo({ data: todo });
 		setTodo("");
 		router.invalidate();
-	}, [todo]);
+	};
 
 	return (
 		<div

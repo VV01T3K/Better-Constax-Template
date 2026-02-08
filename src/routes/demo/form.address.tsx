@@ -34,6 +34,7 @@ function AddressForm() {
 			},
 		},
 		onSubmit: ({ value }) => {
+			// oxlint-disable-next-line no-console
 			console.log(value);
 			// Show success message
 			alert("Form submitted successfully!");
