@@ -2,16 +2,17 @@ import type { Doc, Id } from "@convex/_generated/dataModel";
 
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
+import { todoSchema } from "@convex/schemas";
 import { useMutation, useMutationState, useSuspenseQuery } from "@tanstack/react-query";
-type TodoStatus = "pending" | "confirmed";
+import { z } from "zod";
 
-interface OptimisticTodo {
-	id: string;
-	text: string;
-	completed: boolean;
-	status: TodoStatus;
-	createdAt: number;
-}
+const OptimisticTodoSchema = todoSchema.extend({
+	id: z.string(),
+	status: z.enum(["pending", "confirmed"]),
+	createdAt: z.number(),
+});
+
+type OptimisticTodo = z.infer<typeof OptimisticTodoSchema>;
 
 export function useTodosOptimisticTQ() {
 	const { data: serverTodos } = useSuspenseQuery(convexQuery(api.todos.list, {}));
