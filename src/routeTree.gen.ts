@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoTanstackOptimisticRouteImport } from './routes/demo/tanstack-optimistic'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
+import { Route as DemoFileUploadRouteImport } from './routes/demo/file-upload'
 import { Route as DemoDbOptimisticRouteImport } from './routes/demo/db-optimistic'
 import { Route as DemoDbChatApiRouteImport } from './routes/demo/db-chat-api'
 import { Route as DemoDbChatRouteImport } from './routes/demo/db-chat'
@@ -48,6 +49,11 @@ const DemoTanstackOptimisticRoute = DemoTanstackOptimisticRouteImport.update({
 const DemoTableRoute = DemoTableRouteImport.update({
   id: '/demo/table',
   path: '/demo/table',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoFileUploadRoute = DemoFileUploadRouteImport.update({
+  id: '/demo/file-upload',
+  path: '/demo/file-upload',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoDbOptimisticRoute = DemoDbOptimisticRouteImport.update({
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/demo/db-chat': typeof DemoDbChatRoute
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
   '/demo/db-optimistic': typeof DemoDbOptimisticRoute
+  '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByTo {
   '/demo/db-chat': typeof DemoDbChatRoute
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
   '/demo/db-optimistic': typeof DemoDbOptimisticRoute
+  '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -184,6 +192,7 @@ export interface FileRoutesById {
   '/demo/db-chat': typeof DemoDbChatRoute
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
   '/demo/db-optimistic': typeof DemoDbOptimisticRoute
+  '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -208,6 +217,7 @@ export interface FileRouteTypes {
     | '/demo/db-chat'
     | '/demo/db-chat-api'
     | '/demo/db-optimistic'
+    | '/demo/file-upload'
     | '/demo/table'
     | '/demo/tanstack-optimistic'
     | '/demo/tanstack-query'
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/demo/db-chat'
     | '/demo/db-chat-api'
     | '/demo/db-optimistic'
+    | '/demo/file-upload'
     | '/demo/table'
     | '/demo/tanstack-optimistic'
     | '/demo/tanstack-query'
@@ -252,6 +263,7 @@ export interface FileRouteTypes {
     | '/demo/db-chat'
     | '/demo/db-chat-api'
     | '/demo/db-optimistic'
+    | '/demo/file-upload'
     | '/demo/table'
     | '/demo/tanstack-optimistic'
     | '/demo/tanstack-query'
@@ -275,6 +287,7 @@ export interface RootRouteChildren {
   DemoDbChatRoute: typeof DemoDbChatRoute
   DemoDbChatApiRoute: typeof DemoDbChatApiRoute
   DemoDbOptimisticRoute: typeof DemoDbOptimisticRoute
+  DemoFileUploadRoute: typeof DemoFileUploadRoute
   DemoTableRoute: typeof DemoTableRoute
   DemoTanstackOptimisticRoute: typeof DemoTanstackOptimisticRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
@@ -318,6 +331,13 @@ declare module '@tanstack/react-router' {
       path: '/demo/table'
       fullPath: '/demo/table'
       preLoaderRoute: typeof DemoTableRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/file-upload': {
+      id: '/demo/file-upload'
+      path: '/demo/file-upload'
+      fullPath: '/demo/file-upload'
+      preLoaderRoute: typeof DemoFileUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/db-optimistic': {
@@ -443,6 +463,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoDbChatRoute: DemoDbChatRoute,
   DemoDbChatApiRoute: DemoDbChatApiRoute,
   DemoDbOptimisticRoute: DemoDbOptimisticRoute,
+  DemoFileUploadRoute: DemoFileUploadRoute,
   DemoTableRoute: DemoTableRoute,
   DemoTanstackOptimisticRoute: DemoTanstackOptimisticRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,

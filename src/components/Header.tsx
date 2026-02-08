@@ -16,6 +16,7 @@ import {
 	SquareFunction,
 	StickyNote,
 	Table,
+	Upload,
 	User,
 	X,
 	Zap,
@@ -286,6 +287,19 @@ export default function Header() {
 					>
 						<Globe size={20} />
 						<span className="font-medium">Convex + TQ</span>
+					</Link>
+
+					<Link
+						to="/demo/file-upload"
+						onClick={() => setIsOpen(false)}
+						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
+						activeProps={{
+							className:
+								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
+						}}
+					>
+						<Upload size={20} />
+						<span className="font-medium">File Upload</span>
 					</Link>
 
 					<Link
