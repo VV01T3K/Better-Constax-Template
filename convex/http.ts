@@ -8,11 +8,16 @@ import { createAuth } from "./auth";
 
 const app: HonoWithConvex<ActionCtx> = new Hono();
 
+const SITE_URL = process.env.SITE_URL;
+if (!SITE_URL && process.env.NODE_ENV === "production") {
+	throw new Error("SITE_URL environment variable is required in production");
+}
+
 // CORS for direct client-to-Convex auth calls
 app.use(
 	"/api/auth/*",
 	cors({
-		origin: process.env.SITE_URL ?? "http://localhost:3000",
+		origin: SITE_URL ?? "http://localhost:3000",
 		allowHeaders: ["Content-Type", "Authorization", "Better-Auth-Cookie"],
 		allowMethods: ["GET", "POST", "OPTIONS"],
 		exposeHeaders: ["Content-Length", "Set-Better-Auth-Cookie"],
