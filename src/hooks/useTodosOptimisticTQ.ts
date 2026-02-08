@@ -3,8 +3,6 @@ import type { Doc, Id } from "@convex/_generated/dataModel";
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import { useMutation, useMutationState, useSuspenseQuery } from "@tanstack/react-query";
-import { useCallback } from "react";
-
 type TodoStatus = "pending" | "confirmed";
 
 interface OptimisticTodo {
@@ -15,20 +13,15 @@ interface OptimisticTodo {
 	createdAt: number;
 }
 
-const generateTempId = () => `temp-${crypto.randomUUID()}`;
-
 export function useTodosOptimisticTQ() {
 	const { data: serverTodos } = useSuspenseQuery(convexQuery(api.todos.list, {}));
 
 	const pendingAddTodos = useMutationState({
 		filters: { mutationKey: ["addTodo"], status: "pending" },
 		select: (mutation) => ({
-			tempId: generateTempId(),
+			submittedAt: mutation.state.submittedAt,
 			// oxlint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
 			text: (mutation.state.variables as { text: string }).text,
-			completed: false,
-			status: "pending" as const,
-			createdAt: Date.now(),
 		}),
 	});
 
@@ -57,22 +50,16 @@ export function useTodosOptimisticTQ() {
 	}));
 
 	const pendingAddItems: OptimisticTodo[] = pendingAddTodos.map((variables) => ({
-		id: generateTempId(),
+		id: `temp-${String(variables.submittedAt)}`,
 		text: variables.text,
 		completed: false,
-		status: "pending",
-		createdAt: Date.now(),
+		status: "pending" as const,
+		createdAt: variables.submittedAt,
 	}));
 
-	const isTogglePending = useCallback(
-		(id: string) => pendingToggleTodos.some((t) => t.id === id),
-		[pendingToggleTodos],
-	);
+	const isTogglePending = (id: string) => pendingToggleTodos.some((t) => t.id === id);
 
-	const isRemovePending = useCallback(
-		(id: string) => pendingRemoveTodos.some((t) => t.id === id),
-		[pendingRemoveTodos],
-	);
+	const isRemovePending = (id: string) => pendingRemoveTodos.some((t) => t.id === id);
 
 	const todosWithOptimisticToggles = confirmedTodos.map((todo) => {
 		if (isTogglePending(todo.id)) {
