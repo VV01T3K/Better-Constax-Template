@@ -32,7 +32,13 @@ const config = defineConfig({
 			},
 		}),
 		VitePWA({
-			injectRegister: false,
+			registerType: "autoUpdate",
+			workbox: {
+				globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+				navigateFallback: null,
+				swDest: ".output/public/sw.js",
+				globDirectory: ".output/public",
+			},
 			manifest: {
 				short_name: "TanStack App",
 				name: "TanStack Start Starter",
