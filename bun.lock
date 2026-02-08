@@ -58,6 +58,9 @@
       },
     },
   },
+  "patchedDependencies": {
+    "@convex-dev/better-auth@0.10.10": "patches/@convex-dev%2Fbetter-auth@0.10.10.patch",
+  },
   "catalog": {
     "@typescript/native-preview": "^7.0.0-dev.20260206.1",
     "better-auth": "1.4.9",

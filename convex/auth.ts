@@ -40,6 +40,12 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
 	return {
 		appName: "My TanStack App",
 		baseURL: process.env.SITE_URL,
+		trustedOrigins: [
+			process.env.SITE_URL,
+			...(process.env.NODE_ENV !== "production"
+				? ["http://localhost:3000", "http://127.0.0.1:3000"]
+				: []),
+		].filter((value): value is string => Boolean(value)),
 		secret: process.env.BETTER_AUTH_SECRET,
 		database: authComponent.adapter(ctx),
 		emailAndPassword: {
