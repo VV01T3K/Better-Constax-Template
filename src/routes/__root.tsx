@@ -50,7 +50,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 			},
 			{
 				rel: "manifest",
-				href: "/manifest.json",
+				href: "/manifest.webmanifest",
 			},
 			{
 				rel: "apple-touch-icon",
