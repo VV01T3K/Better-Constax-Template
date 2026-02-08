@@ -7,6 +7,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
 import {
 	Archive,
+	Download,
 	File,
 	FileAudio,
 	FileCode,
@@ -33,6 +34,23 @@ function formatFileSize(bytes: number) {
 	if (bytes < 1024) return `${bytes} B`;
 	if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
 	return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+async function handleDownload(url: string, fileName: string) {
+	try {
+		const response = await fetch(url);
+		const blob = await response.blob();
+		const blobUrl = URL.createObjectURL(blob);
+		const link = document.createElement("a");
+		link.href = blobUrl;
+		link.download = fileName;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		URL.revokeObjectURL(blobUrl);
+	} catch {
+		// Download failed silently
+	}
 }
 
 function FileIcon({ fileType }: { fileType: string }) {
@@ -85,6 +103,7 @@ function FileUploadDemo() {
 	const removeFile = useMutation(api.files.remove);
 
 	const [uploading, setUploading] = useState(false);
+	const [uploadProgress, setUploadProgress] = useState(0);
 	const [error, setError] = useState<string | null>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -99,21 +118,44 @@ function FileUploadDemo() {
 
 		setError(null);
 		setUploading(true);
+		setUploadProgress(0);
 		try {
 			const detected = await detectFileType(file);
 
 			const uploadUrl = await generateUploadUrl();
-			const result = await fetch(uploadUrl, {
-				method: "POST",
-				headers: { "Content-Type": detected.mime },
-				body: file,
+
+			// Use XMLHttpRequest for progress tracking
+			const storageId = await new Promise<string>((resolve, reject) => {
+				const xhr = new XMLHttpRequest();
+
+				xhr.upload.addEventListener("progress", (e) => {
+					if (e.lengthComputable) {
+						const progress = Math.round((e.loaded / e.total) * 100);
+						setUploadProgress(progress);
+					}
+				});
+
+				xhr.addEventListener("load", () => {
+					if (xhr.status >= 200 && xhr.status < 300) {
+						try {
+							const response = JSON.parse(xhr.responseText);
+							resolve(response.storageId);
+						} catch {
+							reject(new Error("Invalid response"));
+						}
+					} else {
+						reject(new Error("Upload failed"));
+					}
+				});
+
+				xhr.addEventListener("error", () => reject(new Error("Upload failed")));
+				xhr.addEventListener("abort", () => reject(new Error("Upload cancelled")));
+
+				xhr.open("POST", uploadUrl);
+				xhr.setRequestHeader("Content-Type", detected.mime);
+				xhr.send(file);
 			});
 
-			if (!result.ok) {
-				throw new Error("Upload failed");
-			}
-
-			const { storageId } = await result.json();
 			await saveFile({
 				storageId,
 				fileName: file.name,
@@ -126,6 +168,7 @@ function FileUploadDemo() {
 			setError(err instanceof Error ? err.message : "Upload failed");
 		} finally {
 			setUploading(false);
+			setUploadProgress(0);
 			if (inputRef.current) {
 				inputRef.current.value = "";
 			}
@@ -182,6 +225,20 @@ function FileUploadDemo() {
 						<UploadCloud size={24} />
 						{uploading ? "Uploading..." : "Click to upload a file"}
 					</button>
+					{uploading && uploadProgress > 0 && (
+						<div className="mt-4">
+							<div className="mb-1 flex justify-between text-sm">
+								<span className="text-purple-700">Uploading...</span>
+								<span className="font-medium text-purple-700">{uploadProgress}%</span>
+							</div>
+							<div className="h-2 w-full overflow-hidden rounded-full bg-purple-100">
+								<div
+									className="h-full rounded-full bg-linear-to-r from-purple-500 to-purple-600 transition-all duration-300"
+									style={{ width: `${uploadProgress}%` }}
+								/>
+							</div>
+						</div>
+					)}
 					{error && <p className="mt-2 text-sm text-red-600">{error}</p>}
 				</div>
 
@@ -224,15 +281,24 @@ function FileUploadDemo() {
 									{/* Actions */}
 									<div className="flex shrink-0 items-center gap-2">
 										{file.url && (
-											<a
-												href={file.url}
-												target="_blank"
-												rel="noopener noreferrer"
-												className="rounded-lg p-2 text-purple-500 transition-colors hover:bg-purple-50 hover:text-purple-700"
-												title="Open file"
-											>
-												<Upload size={18} />
-											</a>
+											<>
+												<a
+													href={file.url}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="rounded-lg p-2 text-purple-500 transition-colors hover:bg-purple-50 hover:text-purple-700"
+													title="Open file"
+												>
+													<Upload size={18} />
+												</a>
+												<button
+													onClick={() => file.url && handleDownload(file.url, file.fileName)}
+													className="rounded-lg p-2 text-blue-500 transition-colors hover:bg-blue-50 hover:text-blue-700"
+													title="Download file"
+												>
+													<Download size={18} />
+												</button>
+											</>
 										)}
 										<button
 											onClick={() => handleRemove(file._id)}
@@ -251,7 +317,8 @@ function FileUploadDemo() {
 				{/* Footer */}
 				<div className="mt-6 text-center">
 					<p className="text-sm text-purple-700/80">
-						Built with Convex File Storage &bull; Upload &bull; Preview &bull; Delete
+						Built with Convex File Storage &bull; Upload &bull; Preview &bull; Download &bull;
+						Delete
 					</p>
 				</div>
 			</div>
