@@ -24,10 +24,12 @@ export const generateUploadUrl = zMutation({
 
 export const saveFile = zMutation({
 	args: {
-		storageId: z.string(),
+		storageId: zid("_storage"),
 		fileName: z.string().min(1),
 		fileType: z.string(),
 		fileSize: z.number(),
+		detectedFileType: z.optional(z.string()),
+		typeSource: z.optional(z.enum(["magic-bytes", "extension", "content-sniff"])),
 	},
 	handler: async (ctx, args) => {
 		const identity = await ctx.auth.getUserIdentity();
@@ -42,6 +44,8 @@ export const saveFile = zMutation({
 			fileName: args.fileName,
 			fileType: args.fileType,
 			fileSize: args.fileSize,
+			detectedFileType: args.detectedFileType,
+			typeSource: args.typeSource,
 		});
 	},
 });

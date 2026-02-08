@@ -5,8 +5,22 @@ import { api } from "@convex/_generated/api";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
-import { File, FileImage, FileText, Trash2, Upload, UploadCloud } from "lucide-react";
+import {
+	Archive,
+	File,
+	FileAudio,
+	FileCode,
+	FileImage,
+	FileSpreadsheet,
+	FileText,
+	FileVideo,
+	Trash2,
+	Upload,
+	UploadCloud,
+} from "lucide-react";
 import { useRef, useState } from "react";
+
+import { detectFileType } from "@/lib/file-type";
 
 export const Route = createFileRoute("/demo/file-upload")({
 	loader: async ({ context }) => {
@@ -23,7 +37,44 @@ function formatFileSize(bytes: number) {
 
 function FileIcon({ fileType }: { fileType: string }) {
 	if (fileType.startsWith("image/")) return <FileImage size={20} />;
+	if (fileType.startsWith("video/")) return <FileVideo size={20} />;
+	if (fileType.startsWith("audio/")) return <FileAudio size={20} />;
+
 	if (fileType === "application/pdf") return <FileText size={20} />;
+	if (
+		fileType === "application/msword" ||
+		fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+	)
+		return <FileText size={20} />;
+
+	if (
+		fileType === "application/vnd.ms-excel" ||
+		fileType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+		fileType === "text/csv"
+	)
+		return <FileSpreadsheet size={20} />;
+
+	if (
+		fileType === "application/zip" ||
+		fileType === "application/gzip" ||
+		fileType === "application/x-tar" ||
+		fileType === "application/x-7z-compressed" ||
+		fileType === "application/x-rar-compressed"
+	)
+		return <Archive size={20} />;
+
+	if (
+		fileType === "application/json" ||
+		fileType === "application/xml" ||
+		fileType === "text/javascript" ||
+		fileType === "text/typescript" ||
+		fileType === "text/html" ||
+		fileType === "text/css"
+	)
+		return <FileCode size={20} />;
+
+	if (fileType.startsWith("text/")) return <FileText size={20} />;
+
 	return <File size={20} />;
 }
 
@@ -49,10 +100,12 @@ function FileUploadDemo() {
 		setError(null);
 		setUploading(true);
 		try {
+			const detected = await detectFileType(file);
+
 			const uploadUrl = await generateUploadUrl();
 			const result = await fetch(uploadUrl, {
 				method: "POST",
-				headers: { "Content-Type": file.type },
+				headers: { "Content-Type": detected.mime },
 				body: file,
 			});
 
@@ -64,8 +117,10 @@ function FileUploadDemo() {
 			await saveFile({
 				storageId,
 				fileName: file.name,
-				fileType: file.type,
+				fileType: detected.mime,
 				fileSize: file.size,
+				detectedFileType: detected.detectedExt ?? undefined,
+				typeSource: detected.source,
 			});
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Upload failed");
