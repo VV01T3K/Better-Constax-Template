@@ -4,23 +4,33 @@
 		"**/.turbo/": true,
 		"**/.tanstack/": true,
 		"node_modules/": true,
-		"AGENTS.md": true
+		"AGENTS.md": true,
+		".agents/": true,
+		".cursor/": true
 	},
 	"tailwind-fold.autoFold": false,
 	"css.lint.unknownAtRules": "ignore",
 	"files.watcherExclude": {
 		"**/routeTree.gen.ts": true,
-		".claude/": true
+		".claude/**": true,
+		".agents/**": true,
+		".cursor/**": true
 	},
 	"search.exclude": {
 		"**/routeTree.gen.ts": true,
-		".claude/": true,
-		"bun.lock": true
+		"**/bun.lock": true,
+		".claude/**": true,
+		".agents/**": true,
+		".cursor/**": true
 	},
 	"files.readonlyInclude": {
 		"**/routeTree.gen.ts": true,
-		".claude/": true,
-		"bun.lock": true
+		"**/bun.lock": true,
+		"**/_generated/**": true,
+		"**/betterAuth/generatedSchema.ts": true,
+		".claude/**": true,
+		".agents/**": true,
+		".cursor/**": true
 	},
 	"editor.formatOnSave": true,
 	"[javascript]": {
