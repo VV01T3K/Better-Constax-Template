@@ -2,11 +2,14 @@ import type { ConvexQueryClient } from "@convex-dev/react-query";
 import type { QueryClient } from "@tanstack/react-query";
 
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
+import { convexQuery } from "@convex-dev/react-query";
 import { TanStackDevtools } from "@tanstack/react-devtools";
+import { formDevtoolsPlugin } from "@tanstack/react-form-devtools";
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 
+import { api } from "../../convex/_generated/api";
 import Header from "../components/Header";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import { authClient } from "../lib/auth-client";
@@ -59,8 +62,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 		return { token };
 	},
+	loader: async ({ context }) => {
+		await context.queryClient.ensureQueryData(convexQuery(api.auth.getCurrentUser, {}));
+	},
 
 	component: RootComponent,
+	notFoundComponent: NotFoundComponent,
 	shellComponent: RootDocument,
 });
 
@@ -85,6 +92,7 @@ function RootComponent() {
 						render: <TanStackRouterDevtoolsPanel />,
 					},
 					TanStackQueryDevtools,
+					formDevtoolsPlugin(),
 				]}
 			/>
 		</ConvexBetterAuthProvider>
@@ -102,5 +110,14 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<Scripts />
 			</body>
 		</html>
+	);
+}
+
+function NotFoundComponent() {
+	return (
+		<main className="mx-auto flex min-h-[60vh] max-w-3xl flex-col items-center justify-center gap-3 px-6 text-center">
+			<h1 className="text-3xl font-semibold">Page not found</h1>
+			<p className="text-sm text-neutral-600">The route you tried to reach does not exist.</p>
+		</main>
 	);
 }
