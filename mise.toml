@@ -19,6 +19,10 @@ postinstall = '''
   bun pm pkg set packageManager=bun@$(bun --version) && test -d node_modules || bun install
 '''
 
+[tasks.docker]
+description = "Build and start the Docker container"
+run = "cd docker && docker compose --env-file ../.env.local -f compose.dev.yaml up -d --build"
+
 [settings]
 experimental = true
 

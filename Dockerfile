@@ -3,6 +3,9 @@
 FROM dhi.io/bun:1-alpine3.22-dev AS builder
 WORKDIR /build
 
+ARG VITE_CONVEX_URL
+ARG VITE_CONVEX_SITE_URL
+
 COPY package.json bun.lock* ./
 COPY patches ./patches
 
