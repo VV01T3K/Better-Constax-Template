@@ -8,6 +8,9 @@ import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
+// Simple env validation for vite config - only checks NITRO_PRESET
+const nitroPreset = process.env.NITRO_PRESET as NitroConfig["preset"] | undefined;
+
 const config = defineConfig({
 	resolve: {
 		alias: {
@@ -21,9 +24,7 @@ const config = defineConfig({
 	plugins: [
 		devtools(),
 		nitro({
-			preset: process.env.NITRO_PRESET
-				? (process.env.NITRO_PRESET as NitroConfig["preset"])
-				: "bun",
+			preset: nitroPreset ?? "bun",
 		}),
 		tailwindcss(),
 		tanstackStart(),
