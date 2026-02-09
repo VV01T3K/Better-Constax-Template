@@ -19,6 +19,7 @@ import {
 	Upload,
 	UploadCloud,
 } from "lucide-react";
+import { err, ok, type Result } from "neverthrow";
 import { useRef, useState } from "react";
 
 import { detectFileType } from "@/lib/file-type";
@@ -36,7 +37,7 @@ function formatFileSize(bytes: number) {
 	return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-async function handleDownload(url: string, fileName: string) {
+async function downloadFile(url: string, fileName: string): Promise<Result<void, string>> {
 	try {
 		const response = await fetch(url);
 		const blob = await response.blob();
@@ -48,8 +49,17 @@ async function handleDownload(url: string, fileName: string) {
 		link.click();
 		document.body.removeChild(link);
 		URL.revokeObjectURL(blobUrl);
-	} catch {
-		// Download failed silently
+		return ok(undefined);
+	} catch (cause) {
+		return err(`Download failed: ${cause instanceof Error ? cause.message : String(cause)}`);
+	}
+}
+
+async function handleDownload(url: string, fileName: string) {
+	const result = await downloadFile(url, fileName);
+	if (result.isErr()) {
+		// oxlint-disable-next-line no-console
+		console.error(result.error);
 	}
 }
 
@@ -119,9 +129,18 @@ function FileUploadDemo() {
 		setError(null);
 		setUploading(true);
 		setUploadProgress(0);
-		try {
-			const detected = await detectFileType(file);
+		const detectResult = await detectFileType(file);
+		if (detectResult.isErr()) {
+			setError(detectResult.error.message);
+			setUploading(false);
+			if (inputRef.current) {
+				inputRef.current.value = "";
+			}
+			return;
+		}
+		const detected = detectResult.value;
 
+		try {
 			const uploadUrl = await generateUploadUrl();
 
 			// Use XMLHttpRequest for progress tracking
