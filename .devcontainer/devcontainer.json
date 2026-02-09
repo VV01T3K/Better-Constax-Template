@@ -10,8 +10,7 @@
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {
 			"moby": false,
-			"azureDnsAutoDetection": false,
-			"installDockerBuildx": false
+			"azureDnsAutoDetection": false
 		}
 	},
 	"customizations": {
@@ -31,11 +30,13 @@
 				"CodeRabbit.coderabbit-vscode",
 				"tamasfe.even-better-toml",
 				"openai.chatgpt",
-				"sst-dev.opencode"
+				"sst-dev.opencode",
+				"docker.docker"
 			]
 		}
 	},
 	"postCreateCommand": "mise trust && mise install",
-	"mounts": ["source=debian-mise-cache,target=/home/vscode/.local/share/mise,type=volume"]
+	"mounts": ["source=debian-mise-cache,target=/home/vscode/.local/share/mise,type=volume"],
+	"forwardPorts": [3001]
 	// "customizations": {},
 }
