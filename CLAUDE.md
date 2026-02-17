@@ -84,6 +84,7 @@ We want to keep code clean, straightforward and readable, so don't overuse never
 import { err, ok, type Result } from "neverthrow";
 
 // Define specific error types
+export class FileTypeError extends Error {
 	constructor(
 		message: string,
 		public readonly cause?: unknown,
@@ -91,6 +92,7 @@ import { err, ok, type Result } from "neverthrow";
 		super(message, { cause });
 		this.name = "FileTypeError";
 	}
+}
 
 // Return Result<T, ErrorType> from async functions
 export async function detectFileType(file: File): Promise<Result<DetectedFileType, FileTypeError>> {

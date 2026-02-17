@@ -57,18 +57,7 @@ async function downloadFile(url: string, fileName: string): Promise<Result<void,
 		return err(cause instanceof Error ? cause : new Error(String(cause)));
 	}
 }
-		const link = document.createElement("a");
-		link.href = blobUrl;
-		link.download = fileName;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-		URL.revokeObjectURL(blobUrl);
-		return ok(undefined);
-	} catch (cause) {
-		return err(`Download failed: ${cause instanceof Error ? cause.message : String(cause)}`);
-	}
-}
+
 
 async function handleDownload(url: string, fileName: string) {
 	const result = await downloadFile(url, fileName);
