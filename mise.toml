@@ -3,21 +3,20 @@ TURBO_TELEMETRY_DISABLED = "1"
 DO_NOT_TRACK = "1"
 
 [tools]
+node = "latest"
 bun = "latest"
 github-cli = "latest"
 "npm:turbo" = "latest"
 
 [hooks]
-preinstall = '''
-  command -v node &> /dev/null || echo "Node.js is not installed. Please install Node.js to continue." && exit 1
-'''
 postinstall = '''
   bun pm pkg set packageManager=bun@$(bun --version) && test -d node_modules || bun install
 '''
 
 [tasks.docker]
 description = "Build and start the Docker container"
-run = "cd docker && docker compose --env-file ../.env.local -f compose.dev.yaml up -d --build"
+dir = "docker"
+run = "docker compose --env-file ../.env.local -f compose.dev.yaml up -d --build"
 
 [settings]
 experimental = true

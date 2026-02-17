@@ -74,6 +74,5 @@
 		"package.json": "jsonc"
 	},
 	"oxc.typeAware": true,
-	"oxc.fixKind": "safe_fix_or_suggestion",
-	"graphite.commandPath": "/usr/local/bin/gt"
+	"oxc.fixKind": "safe_fix_or_suggestion"
 }

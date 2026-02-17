@@ -11,8 +11,7 @@
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {
 			"moby": false,
 			"azureDnsAutoDetection": false
-		},
-		"ghcr.io/devcontainers-extra/features/graphite-cli:1": {}
+		}
 	},
 	"customizations": {
 		"vscode": {
@@ -25,7 +24,6 @@
 				"oven.bun-vscode",
 				"bradlc.vscode-tailwindcss",
 				"stivo.tailwind-fold",
-				"Graphite.gti-vscode",
 				"bierner.markdown-mermaid",
 				"yzhang.markdown-all-in-one",
 				"CodeRabbit.coderabbit-vscode",
