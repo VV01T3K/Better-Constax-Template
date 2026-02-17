@@ -40,6 +40,9 @@ function formatFileSize(bytes: number) {
 async function downloadFile(url: string, fileName: string): Promise<Result<void, string>> {
 	try {
 		const response = await fetch(url);
+		if (!response.ok) {
+			return err(`Download failed: HTTP ${response.status} ${response.statusText}`);
+		}
 		const blob = await response.blob();
 		const blobUrl = URL.createObjectURL(blob);
 		const link = document.createElement("a");
