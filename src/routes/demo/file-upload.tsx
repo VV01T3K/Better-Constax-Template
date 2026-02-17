@@ -37,9 +37,12 @@ function formatFileSize(bytes: number) {
 	return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-async function downloadFile(url: string, fileName: string): Promise<Result<void, string>> {
+async function downloadFile(url: string, fileName: string): Promise<Result<void, Error>> {
 	try {
 		const response = await fetch(url);
+		if (!response.ok) {
+			return err(new Error(`Download failed: HTTP ${response.status} ${response.statusText}`));
+		}
 		const blob = await response.blob();
 		const blobUrl = URL.createObjectURL(blob);
 		const link = document.createElement("a");
@@ -51,9 +54,10 @@ async function downloadFile(url: string, fileName: string): Promise<Result<void,
 		URL.revokeObjectURL(blobUrl);
 		return ok(undefined);
 	} catch (cause) {
-		return err(`Download failed: ${cause instanceof Error ? cause.message : String(cause)}`);
+		return err(cause instanceof Error ? cause : new Error(String(cause)));
 	}
 }
+
 
 async function handleDownload(url: string, fileName: string) {
 	const result = await downloadFile(url, fileName);
