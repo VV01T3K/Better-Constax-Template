@@ -58,6 +58,80 @@ Use `createServerFn()` from `@tanstack/react-start` for type-safe server functio
 - **Linting**: oxlint with plugins: react, react-perf, typescript, import, unicorn, jsx-a11y, vitest, promise, oxc. TanStack Query lint rules are also enabled
 - Files prefixed with `demo` are demo/example code and can be safely removed
 
+## Error Handling with neverthrow
+
+Use [neverthrow](https://github.com/supermacro/neverthrow) for explicit error handling in **custom business logic** — validation, transformations, and utilities where you control the failure modes.
+We want to keep code clean, straightforward and readable, so don't overuse neverthrow, apply it where it adds value without unnecessary complexity.
+
+### When to use neverthrow
+
+✅ **Use for:**
+
+- Custom validation functions (file type detection, data parsing)
+- Business logic utilities that can fail
+- Data transformation with potential errors
+- Functions you own where failure is expected
+
+❌ **Don't use for:**
+
+- TanStack Query mutations/queries (already has error handling)
+- Convex mutations/queries (already typed and handled)
+- Third-party libraries that already return errors
+
+### Pattern
+
+```typescript
+import { err, ok, type Result } from "neverthrow";
+
+// Define specific error types
+export class FileTypeError extends Error {
+	constructor(
+		message: string,
+		public readonly cause?: unknown,
+	) {
+		super(message, { cause });
+		this.name = "FileTypeError";
+	}
+}
+
+// Return Result<T, ErrorType> from async functions
+export async function detectFileType(file: File): Promise<Result<DetectedFileType, FileTypeError>> {
+	try {
+		const detected = await fileTypeFromBlob(file);
+		if (detected) {
+			return ok({ mime: detected.mime, detectedExt: detected.ext, source: "magic-bytes" });
+		}
+		// ... fallback logic
+		return ok({
+			/* ... */
+		});
+	} catch (cause) {
+		return err(new FileTypeError("Failed to detect file type", cause));
+	}
+}
+
+// Usage in components
+const result = await detectFileType(file);
+
+// Option 1: match() for exhaustive handling
+result.match(
+	(detected) => console.log("Type:", detected.mime),
+	(error) => console.error("Failed:", error.message),
+);
+
+// Option 2: isOk() / isErr() guards
+if (result.isOk()) {
+	console.log("Type:", result.value.mime);
+} else {
+	console.error("Failed:", result.error.message);
+}
+
+// Option 3: map() / mapErr() for chaining
+const validated = result
+	.map((detected) => validateMimeType(detected))
+	.mapErr((error) => ({ message: error.message, code: "FILE_TYPE_ERROR" }));
+```
+
 ## Environment
 
 Requires `VITE_CONVEX_URL` and `CONVEX_DEPLOYMENT` in `.env.local` for Convex connectivity.

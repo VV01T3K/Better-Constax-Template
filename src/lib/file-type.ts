@@ -1,4 +1,5 @@
 import { fileTypeFromBlob } from "file-type";
+import { err, ok, type Result } from "neverthrow";
 
 export interface DetectedFileType {
 	/** The MIME type to use (detected or fallback) */
@@ -7,6 +8,27 @@ export interface DetectedFileType {
 	detectedExt: string | null;
 	/** How the MIME type was determined */
 	source: "magic-bytes" | "extension" | "content-sniff";
+}
+
+export class FileTypeError extends Error {
+	constructor(
+		message: string,
+		public readonly cause?: unknown,
+	) {
+		super(message, { cause });
+		this.name = "FileTypeError";
+	}
+}
+
+export class FileValidationError extends Error {
+	constructor(
+		message: string,
+		public readonly code: "EMPTY_FILE" | "FILE_TOO_SMALL" | "FILE_TOO_LARGE" | "UNKNOWN_TYPE",
+		public readonly maxSize?: number,
+	) {
+		super(message);
+		this.name = "FileValidationError";
+	}
 }
 
 /** Text-based MIME types that inherently have no magic bytes */
@@ -74,40 +96,46 @@ const TEXT_EXTENSION_MAP: Record<string, string> = {
  * Falls back to browser-reported type for text-based files,
  * then to extension-based mapping as a last resort.
  */
-export async function detectFileType(file: File): Promise<DetectedFileType> {
+export async function detectFileType(file: File): Promise<Result<DetectedFileType, FileTypeError>> {
 	// 1. Try magic bytes detection first
-	const detected = await fileTypeFromBlob(file);
+	let detected: Awaited<ReturnType<typeof fileTypeFromBlob>>;
+	try {
+		detected = await fileTypeFromBlob(file);
+	} catch (cause) {
+		return err(new FileTypeError("Failed to detect file type from magic bytes", cause));
+	}
+
 	if (detected) {
-		return {
+		return ok({
 			mime: detected.mime,
 			detectedExt: detected.ext,
 			source: "magic-bytes",
-		};
+		});
 	}
 
 	// 2. If browser reports a known text type, trust it
 	if (file.type && TEXT_MIME_TYPES.has(file.type)) {
-		return {
+		return ok({
 			mime: file.type,
 			detectedExt: null,
 			source: "extension",
-		};
+		});
 	}
 
 	// 3. Try extension-based mapping for known text formats
 	const ext = file.name.split(".").pop()?.toLowerCase();
 	if (ext && ext in TEXT_EXTENSION_MAP) {
-		return {
+		return ok({
 			mime: TEXT_EXTENSION_MAP[ext],
 			detectedExt: null,
 			source: "content-sniff",
-		};
+		});
 	}
 
 	// 4. Fall back to browser type, or application/octet-stream
-	return {
+	return ok({
 		mime: file.type || "application/octet-stream",
 		detectedExt: null,
 		source: "extension",
-	};
+	});
 }
