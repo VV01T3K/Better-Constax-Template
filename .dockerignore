@@ -1,0 +1,62 @@
+# Dependencies
+node_modules
+
+# Build output
+.output
+dist
+build
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE & editors
+.idea
+.vscode
+.cursor
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage
+
+# Git
+.git
+.gitignore
+
+# Docker (self)
+Dockerfile*
+docker
+.dockerignore
+
+# CI & tooling config
+.github
+.devcontainer
+.agents
+.claude
+.editorconfig
+.eslintrc*
+.prettierrc*
+.oxlintrc*
+.oxfmt*
+mise.toml
+.cta.json
+
+# Convex — exclude all, then allow only what the Vite build imports
+convex
+!convex/_generated
+!convex/schemas
+
+# Docs
+README.md
+CLAUDE.md
+AGENTS.md
+CHANGELOG.md
+LICENSE
