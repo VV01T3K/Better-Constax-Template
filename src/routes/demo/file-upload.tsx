@@ -37,14 +37,26 @@ function formatFileSize(bytes: number) {
 	return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-async function downloadFile(url: string, fileName: string): Promise<Result<void, string>> {
+async function downloadFile(url: string, fileName: string): Promise<Result<void, Error>> {
 	try {
 		const response = await fetch(url);
 		if (!response.ok) {
-			return err(`Download failed: HTTP ${response.status} ${response.statusText}`);
+			return err(new Error(`Download failed: HTTP ${response.status} ${response.statusText}`));
 		}
 		const blob = await response.blob();
 		const blobUrl = URL.createObjectURL(blob);
+		const link = document.createElement("a");
+		link.href = blobUrl;
+		link.download = fileName;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		URL.revokeObjectURL(blobUrl);
+		return ok(undefined);
+	} catch (cause) {
+		return err(cause instanceof Error ? cause : new Error(String(cause)));
+	}
+}
 		const link = document.createElement("a");
 		link.href = blobUrl;
 		link.download = fileName;
