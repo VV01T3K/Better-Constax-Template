@@ -4,11 +4,8 @@ DO_NOT_TRACK = "1"
 
 [tools]
 bun = "latest"
-graphite = "latest"
 github-cli = "latest"
 "npm:turbo" = "latest"
-"npm:oxlint" = "latest"
-"npm:oxfmt" = "latest"
 
 [hooks]
 preinstall = '''
