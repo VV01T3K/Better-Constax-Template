@@ -46,7 +46,6 @@ docker
 .prettierrc*
 .oxlintrc*
 .oxfmt*
-mise.toml
 .cta.json
 
 # Convex — exclude all, then allow only what the Vite build imports

@@ -1,7 +1,5 @@
 FROM mcr.microsoft.com/devcontainers/base:trixie
 
-RUN rm -f /etc/apt/sources.list.d/yarn.list
-
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs 
 
 USER vscode
