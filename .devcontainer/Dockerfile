@@ -1,8 +1,7 @@
 FROM mcr.microsoft.com/devcontainers/base:trixie
 
-RUN apt-get update && apt-get install -y --no-install-recommends npm
-
 USER vscode
+RUN apt-get update && apt-get install -y --no-install-recommends npm
 
 RUN curl https://mise.run/zsh | sh
 ENV PATH="/home/vscode/.local/bin:${PATH}"
