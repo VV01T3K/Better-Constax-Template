@@ -58,7 +58,6 @@ async function downloadFile(url: string, fileName: string): Promise<Result<void,
 	}
 }
 
-
 async function handleDownload(url: string, fileName: string) {
 	const result = await downloadFile(url, fileName);
 	if (result.isErr()) {

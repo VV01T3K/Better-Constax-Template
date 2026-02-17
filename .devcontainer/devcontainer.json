@@ -24,7 +24,6 @@
 				"oven.bun-vscode",
 				"bradlc.vscode-tailwindcss",
 				"stivo.tailwind-fold",
-				"Graphite.gti-vscode",
 				"bierner.markdown-mermaid",
 				"yzhang.markdown-all-in-one",
 				"CodeRabbit.coderabbit-vscode",
@@ -35,7 +34,7 @@
 			]
 		}
 	},
-	"postCreateCommand": "mise trust && mise install",
+	"onCreateCommand": "mise trust && mise install",
 	"mounts": ["source=debian-mise-cache,target=/home/vscode/.local/share/mise,type=volume"],
 	"forwardPorts": [3000, 3001]
 	// "customizations": {},
