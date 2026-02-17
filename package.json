@@ -40,7 +40,7 @@
 		"convex-helpers": "^0.1.111",
 		"file-type": "^21.3.0",
 		"hono": "^4.11.9",
-		"lucide-react": "^0.563.0",
+		"lucide-react": "^0.574.0",
 		"neverthrow": "^8.2.0",
 		"nitro": "catalog:",
 		"react": "^19.2.4",
