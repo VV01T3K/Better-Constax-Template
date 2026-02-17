@@ -4,7 +4,6 @@ DO_NOT_TRACK = "1"
 
 [tools]
 bun = "latest"
-node = "latest"
 graphite = "latest"
 github-cli = "latest"
 "npm:turbo" = "latest"
