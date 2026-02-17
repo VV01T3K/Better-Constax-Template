@@ -17,6 +17,9 @@ COPY . .
 RUN bun run build
 
 FROM dhi.io/bun:1-alpine3.22 AS runner
+WORKDIR /app
+
+COPY --from=builder /build/.output ./.output
 WORKDIR /build
 
 COPY --from=builder /build/.output ./.output
