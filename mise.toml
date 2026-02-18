@@ -20,6 +20,7 @@ run = "docker compose --env-file ../.env.local -f compose.dev.yaml up -d --build
 
 [settings]
 experimental = true
+lockfile = true
 
 [settings.npm]
 package_manager = "bun"
