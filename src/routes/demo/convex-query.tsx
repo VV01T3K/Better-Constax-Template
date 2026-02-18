@@ -1,10 +1,10 @@
-import type { Id } from "@convex/_generated/dataModel";
-
-import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { createTodoSchema } from "@convex/schemas";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { convexQuery } from "better-convex/crpc";
+import { useConvexMutationOptions } from "better-convex/react";
 import { Check, Circle, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
@@ -18,15 +18,9 @@ export const Route = createFileRoute("/demo/convex-query")({
 function ConvexQueryTodos() {
 	const { data: todos } = useSuspenseQuery(convexQuery(api.todos.list, {}));
 
-	const { mutate: addTodo } = useMutation({
-		mutationFn: useConvexMutation(api.todos.add),
-	});
-	const { mutate: toggleTodo } = useMutation({
-		mutationFn: useConvexMutation(api.todos.toggle),
-	});
-	const { mutate: removeTodo } = useMutation({
-		mutationFn: useConvexMutation(api.todos.remove),
-	});
+	const { mutate: addTodo } = useMutation(useConvexMutationOptions(api.todos.add));
+	const { mutate: toggleTodo } = useMutation(useConvexMutationOptions(api.todos.toggle));
+	const { mutate: removeTodo } = useMutation(useConvexMutationOptions(api.todos.remove));
 
 	const [newTodo, setNewTodo] = useState("");
 	const [validationError, setValidationError] = useState<string | null>(null);

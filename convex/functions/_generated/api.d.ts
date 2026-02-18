@@ -8,22 +8,23 @@
  * @module
  */
 
-import type * as adapter from "../adapter.js";
 import type * as auth from "../auth.js";
-import type * as generatedSchema from "../generatedSchema.js";
+import type * as files from "../files.js";
+import type * as http from "../http.js";
+import type * as todos from "../todos.js";
 
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
 } from "convex/server";
-import { anyApi, componentsGeneric } from "convex/server";
 
-const fullApi: ApiFromModules<{
-  adapter: typeof adapter;
+declare const fullApi: ApiFromModules<{
   auth: typeof auth;
-  generatedSchema: typeof generatedSchema;
-}> = anyApi as any;
+  files: typeof files;
+  http: typeof http;
+  todos: typeof todos;
+}>;
 
 /**
  * A utility for referencing Convex functions in your app's public API.
@@ -33,10 +34,10 @@ const fullApi: ApiFromModules<{
  * const myFunctionReference = api.myModule.myFunction;
  * ```
  */
-export const api: FilterApi<
+export declare const api: FilterApi<
   typeof fullApi,
   FunctionReference<any, "public">
-> = anyApi as any;
+>;
 
 /**
  * A utility for referencing Convex functions in your app's internal API.
@@ -46,9 +47,9 @@ export const api: FilterApi<
  * const myFunctionReference = internal.myModule.myFunction;
  * ```
  */
-export const internal: FilterApi<
+export declare const internal: FilterApi<
   typeof fullApi,
   FunctionReference<any, "internal">
-> = anyApi as any;
+>;
 
-export const components = componentsGeneric() as unknown as {};
+export declare const components: {};

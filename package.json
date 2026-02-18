@@ -13,12 +13,11 @@
 		"lint": "oxlint --type-aware --type-check --fix",
 		"format": "oxfmt",
 		"check": "oxfmt && oxlint --type-aware --type-check --fix && tsgo --noEmit",
-		"auth:generate": "cd convex/betterAuth && bunx @better-auth/cli generate --output ./generatedSchema.ts -y",
+		"dev:convex": "npx better-convex dev",
 		"convex:env": "convex env set BETTER_AUTH_SECRET=$(openssl rand -base64 32) && convex env set SITE_URL http://localhost:3000"
 	},
 	"dependencies": {
 		"@convex-dev/better-auth": "0.10.10",
-		"@convex-dev/react-query": "0.1.0",
 		"@faker-js/faker": "^10.3.0",
 		"@t3-oss/env-core": "^0.13.10",
 		"@tailwindcss/vite": "^4.1.18",
@@ -37,8 +36,8 @@
 		"@tanstack/react-table": "^8.21.3",
 		"@tanstack/router-plugin": "^1.160.2",
 		"better-auth": "catalog:",
+		"better-convex": "^0.6.1",
 		"convex": "^1.31.7",
-		"convex-helpers": "^0.1.112",
 		"file-type": "^21.3.0",
 		"hono": "^4.11.9",
 		"lucide-react": "^0.574.0",

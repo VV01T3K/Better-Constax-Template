@@ -1,8 +1,8 @@
-import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import { createTodoSchema } from "@convex/schemas";
 import { useMutationState } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { convexQuery } from "better-convex/crpc";
 import { Check, Circle, Loader2, Plus, Trash2, Zap } from "lucide-react";
 import { useState } from "react";
 

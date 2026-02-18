@@ -1,4 +1,6 @@
 import type { RankingInfo } from "@tanstack/match-sorter-utils";
+import { compareItems, rankItem } from "@tanstack/match-sorter-utils";
+import { createFileRoute } from "@tanstack/react-router";
 import type {
 	Column,
 	ColumnDef,
@@ -6,9 +8,6 @@ import type {
 	FilterFn,
 	SortingFn,
 } from "@tanstack/react-table";
-
-import { compareItems, rankItem } from "@tanstack/match-sorter-utils";
-import { createFileRoute } from "@tanstack/react-router";
 import {
 	flexRender,
 	getCoreRowModel,
@@ -21,7 +20,6 @@ import {
 import React from "react";
 
 import type { Person } from "@/data/demo-table-data";
-
 import { makeData } from "@/data/demo-table-data";
 
 export const Route = createFileRoute("/demo/table")({

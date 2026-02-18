@@ -1,12 +1,14 @@
-import { NoOp } from "convex-helpers/server/customFunctions";
-import { zCustomQuery, zCustomMutation, zid } from "convex-helpers/server/zod4";
+import { zCustomMutation, zCustomQuery, zid } from "better-convex/server";
 import { ConvexError } from "convex/values";
 import { z } from "zod";
 
-import { query, mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
-const zQuery = zCustomQuery(query, NoOp);
-const zMutation = zCustomMutation(mutation, NoOp);
+const zQuery = zCustomQuery(query, { args: {}, input: async () => ({ ctx: {}, args: {} }) });
+const zMutation = zCustomMutation(mutation, {
+	args: {},
+	input: async () => ({ ctx: {}, args: {} }),
+});
 
 export const list = zQuery({
 	args: {},

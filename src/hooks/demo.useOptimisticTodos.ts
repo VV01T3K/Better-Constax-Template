@@ -1,8 +1,8 @@
-import type { Doc, Id } from "@convex/_generated/dataModel";
-
-import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import type { Doc, Id } from "@convex/_generated/dataModel";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { convexQuery } from "better-convex/crpc";
+import { useConvexMutationOptions } from "better-convex/react";
 import { useEffect, useState } from "react";
 
 import { type OptimisticTodo, todosCollection } from "@/db-collections";
@@ -80,7 +80,7 @@ export function useOptimisticTodos() {
 }
 
 export function useAddTodoOptimistic() {
-	const addTodoMutation = useConvexMutation(api.todos.add);
+	const { mutateAsync: addTodoMutation } = useMutation(useConvexMutationOptions(api.todos.add));
 	const [error, setError] = useState<string | null>(null);
 
 	const addTodo = async (text: string) => {
@@ -117,7 +117,7 @@ export function useAddTodoOptimistic() {
 }
 
 export function useToggleTodoOptimistic() {
-	const toggleMutation = useConvexMutation(api.todos.toggle);
+	const { mutateAsync: toggleMutation } = useMutation(useConvexMutationOptions(api.todos.toggle));
 	const [error, setError] = useState<string | null>(null);
 
 	const toggleTodo = async (id: string) => {
@@ -156,7 +156,7 @@ export function useToggleTodoOptimistic() {
 }
 
 export function useRemoveTodoOptimistic() {
-	const removeMutation = useConvexMutation(api.todos.remove);
+	const { mutateAsync: removeMutation } = useMutation(useConvexMutationOptions(api.todos.remove));
 	const [error, setError] = useState<string | null>(null);
 
 	const removeTodo = async (id: string) => {

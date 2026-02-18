@@ -1,4 +1,4 @@
-import { zid } from "convex-helpers/server/zod4";
+import { zid } from "better-convex/server";
 import { z } from "zod";
 
 export const fileSchema = z.object({

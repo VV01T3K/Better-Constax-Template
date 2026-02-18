@@ -1,15 +1,14 @@
-import type { ConvexQueryClient } from "@convex-dev/react-query";
-import type { QueryClient } from "@tanstack/react-query";
-
-import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
-import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { formDevtoolsPlugin } from "@tanstack/react-form-devtools";
+import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
+import { ConvexAuthProvider } from "better-convex/auth-client";
+import { convexQuery } from "better-convex/crpc";
+import type { ConvexQueryClient } from "better-convex/react";
 
 import Header from "@/components/Header";
 import { authClient } from "@/lib/auth-client";
@@ -67,7 +66,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 	beforeLoad: async (ctx) => {
 		// Only fetch token during SSR — on client navigations the
-		// ConvexBetterAuthProvider already manages auth state.
+		// ConvexAuthProvider already manages auth state.
 		if (typeof window !== "undefined") {
 			return { token: undefined };
 		}
@@ -93,7 +92,7 @@ function RootComponent() {
 	const { convexQueryClient, token } = Route.useRouteContext();
 
 	return (
-		<ConvexBetterAuthProvider
+		<ConvexAuthProvider
 			client={convexQueryClient.convexClient}
 			authClient={authClient}
 			initialToken={token}
@@ -116,7 +115,7 @@ function RootComponent() {
 					formDevtoolsPlugin(),
 				]}
 			/>
-		</ConvexBetterAuthProvider>
+		</ConvexAuthProvider>
 	);
 }
 

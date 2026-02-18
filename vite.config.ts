@@ -1,9 +1,8 @@
-import type { NitroConfig } from "nitro/types";
-
 import tailwindcss from "@tailwindcss/vite";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
+import type { NitroConfig } from "nitro/types";
 import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
@@ -14,12 +13,13 @@ const nitroPreset = process.env.NITRO_PRESET as NitroConfig["preset"] | undefine
 const config = defineConfig({
 	resolve: {
 		alias: {
+			"@convex/_generated": import.meta.dirname + "/convex/functions/_generated",
+			"@convex": import.meta.dirname + "/convex/shared",
 			"@": import.meta.dirname + "/src",
-			"@convex": import.meta.dirname + "/convex",
 		},
 	},
 	ssr: {
-		noExternal: ["@convex-dev/better-auth"],
+		noExternal: ["@convex-dev/better-auth", "better-convex"],
 	},
 	plugins: [
 		devtools(),

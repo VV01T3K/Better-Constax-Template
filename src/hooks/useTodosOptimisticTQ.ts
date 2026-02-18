@@ -1,9 +1,9 @@
-import type { Doc, Id } from "@convex/_generated/dataModel";
-
-import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { todoSchema } from "@convex/schemas";
 import { useMutation, useMutationState, useSuspenseQuery } from "@tanstack/react-query";
+import { convexQuery } from "better-convex/crpc";
+import { useConvexMutationOptions } from "better-convex/react";
 import { z } from "zod";
 
 const OptimisticTodoSchema = todoSchema.extend({
@@ -80,17 +80,17 @@ export function useTodosOptimisticTQ() {
 
 	const { mutate: addTodo } = useMutation({
 		mutationKey: ["addTodo"],
-		mutationFn: useConvexMutation(api.todos.add),
+		...useConvexMutationOptions(api.todos.add),
 	});
 
 	const { mutate: toggleTodo } = useMutation({
 		mutationKey: ["toggleTodo"],
-		mutationFn: useConvexMutation(api.todos.toggle),
+		...useConvexMutationOptions(api.todos.toggle),
 	});
 
 	const { mutate: removeTodo } = useMutation({
 		mutationKey: ["removeTodo"],
-		mutationFn: useConvexMutation(api.todos.remove),
+		...useConvexMutationOptions(api.todos.remove),
 	});
 
 	const totalPendingCount =

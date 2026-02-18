@@ -1,24 +1,20 @@
-import type { GenericCtx } from "@convex-dev/better-auth";
+import "../lib/http-polyfills";
 import type { BetterAuthOptions } from "better-auth";
-
-import { createClient, type AuthFunctions } from "@convex-dev/better-auth";
-import { convex } from "@convex-dev/better-auth/plugins";
 import { betterAuth } from "better-auth/minimal";
+import { type AuthFunctions, convex, createApi, createClient } from "better-convex/auth";
+import type { GenericCtx } from "better-convex/server";
 
+import { internal } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
-
-import { components, internal } from "./_generated/api";
 import { query } from "./_generated/server";
 import authConfig from "./auth.config";
-import schema from "./betterAuth/schema";
+import schema from "./schema";
 
 const authFunctions: AuthFunctions = internal.auth;
 
-export const authComponent = createClient<DataModel, typeof schema>(components.betterAuth, {
+export const authClient = createClient<DataModel, typeof schema>({
 	authFunctions,
-	local: {
-		schema,
-	},
+	schema,
 	triggers: {
 		user: {
 			onCreate: async (ctx, doc) => {
@@ -34,9 +30,7 @@ export const authComponent = createClient<DataModel, typeof schema>(components.b
 	},
 });
 
-export const { onCreate, onUpdate, onDelete } = authComponent.triggersApi();
-
-export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
+const getAuthOptions = (ctx: GenericCtx<DataModel>) => {
 	return {
 		appName: "My TanStack App",
 		baseURL: process.env.SITE_URL,
@@ -47,7 +41,7 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
 				: []),
 		].filter((value): value is string => Boolean(value)),
 		secret: process.env.BETTER_AUTH_SECRET,
-		database: authComponent.adapter(ctx),
+		database: authClient.adapter(ctx, getAuthOptions),
 		emailAndPassword: {
 			enabled: true,
 			requireEmailVerification: false,
@@ -61,7 +55,12 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
 		telemetry: {
 			enabled: false,
 		},
-		plugins: [convex({ authConfig })],
+		plugins: [
+			convex({
+				authConfig,
+				jwks: process.env.JWKS,
+			}),
+		],
 		advanced: {
 			defaultCookieAttributes: {
 				sameSite: "none",
@@ -72,9 +71,19 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
 	} satisfies BetterAuthOptions;
 };
 
-export const createAuth = (ctx: GenericCtx<DataModel>) => {
-	return betterAuth(createAuthOptions(ctx));
+export const getAuth = (ctx: GenericCtx<DataModel>) => {
+	return betterAuth(getAuthOptions(ctx));
 };
+
+// Export CRUD functions for Better Auth adapter
+export const { create, deleteMany, deleteOne, findMany, findOne, updateMany, updateOne } =
+	createApi(schema, getAuth, {
+		skipValidation: true,
+	});
+
+// Export trigger handlers
+export const { beforeCreate, beforeDelete, beforeUpdate, onCreate, onDelete, onUpdate } =
+	authClient.triggersApi();
 
 export const getCurrentUser = query({
 	args: {},
@@ -82,3 +91,8 @@ export const getCurrentUser = query({
 		return await ctx.auth.getUserIdentity();
 	},
 });
+
+// Required for Better Auth CLI schema generation
+// biome-ignore lint/suspicious/noExplicitAny: Required for CLI
+// oxlint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+export const auth = betterAuth(getAuthOptions({} as any));

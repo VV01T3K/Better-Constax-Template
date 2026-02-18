@@ -13,8 +13,8 @@ bun --bun vitest run src/path.test.ts  # Run a single test file
 bun run lint                   # Lint with oxlint (type-aware, auto-fix)
 bun run format                 # Format with oxfmt
 bun run check                  # Format + lint + type-check (oxfmt, oxlint, tsgo)
-npx convex dev                       # Start Convex backend dev server
-bun run auth:generate                # Regenerate Better Auth schema for Convex
+bunx better-convex dev                # Start Convex backend dev server (wraps convex dev + codegen)
+bunx better-convex codegen            # Regenerate better-convex metadata
 ```
 
 ## Architecture
@@ -25,23 +25,24 @@ bun run auth:generate                # Regenerate Better Auth schema for Convex
 
 - **Framework**: TanStack Start (SSR/streaming via Nitro with `bun` preset)
 - **Routing**: TanStack Router — file-based routing in `src/routes/`. Route tree auto-generated in `src/routeTree.gen.ts` (read-only, do not edit)
-- **Data layer**: Convex (real-time backend) + TanStack Query (client caching) bridged via `@convex-dev/react-query`
+- **Data layer**: Convex (real-time backend) + TanStack Query (client caching) bridged via `better-convex/react` and `better-convex/crpc`
 - **Optimistic updates**: TanStack React DB (`src/db-collections/`) provides local collections that sync with Convex and track status (`optimistic` | `confirmed` | `error`)
-- **Auth**: Better Auth with Convex adapter — server auth in `src/lib/auth-server.ts`, client auth in `src/lib/auth-client.ts`, Convex HTTP handler in `convex/http.ts` (Hono)
-- **Validation**: Zod schemas in `convex/schemas/` shared between client and server; Convex schema derived via `zodToConvexFields`
+- **Auth**: Better Auth with Convex adapter via `better-convex/auth` — server auth in `src/lib/auth-server.ts`, client auth in `src/lib/auth-client.ts`, Convex HTTP handler in `convex/functions/http.ts` (Hono). SSR token handling via `@convex-dev/better-auth/react-start`
+- **Validation**: Zod schemas in `convex/shared/schemas/` shared between client and server; Convex schema derived via `zodToConvexFields` from `better-convex/server`
 - **Styling**: Tailwind CSS 4 via Vite plugin
 - **React Compiler**: Enabled via Babel plugin (`babel-plugin-react-compiler`)
 
 ### Key directories
 
-- `src/routes/` — File-based routes. `__root.tsx` is the root layout wrapping everything in `ConvexBetterAuthProvider`
+- `src/routes/` — File-based routes. `__root.tsx` is the root layout wrapping everything in `ConvexAuthProvider`
 - `src/components/` — Shared React components
 - `src/hooks/` — Custom hooks (prefixed `demo.` files are demo code, safe to delete)
 - `src/db-collections/` — TanStack React DB collection definitions for optimistic patterns
 - `src/lib/` — Auth client/server setup, middleware
-- `convex/` — Convex backend: mutations, queries, schema, HTTP routes, auth config
-- `convex/_generated/` — Auto-generated Convex types (do not edit)
-- `convex/betterAuth/` — Better Auth adapter and generated schema for Convex
+- `convex/functions/` — Convex backend: mutations, queries, schema, HTTP routes, auth config (deployed to Convex)
+- `convex/functions/_generated/` — Auto-generated Convex types (do not edit)
+- `convex/lib/` — Shared backend utilities (cRPC builder, ORM setup, polyfills — not deployed)
+- `convex/shared/` — Client-importable types and schemas (aliased as `@convex/*`)
 
 ### Server functions
 
@@ -49,7 +50,7 @@ Use `createServerFn()` from `@tanstack/react-start` for type-safe server functio
 
 ### Path alias
 
-`@/*` resolves to `./src/*` (configured in both `tsconfig.json` and `vite.config.ts`).
+`@/*` resolves to `./src/*`, `@convex/*` resolves to `./convex/shared/*`, `@convex/_generated/*` resolves to `./convex/functions/_generated/*` (configured in both `tsconfig.json` and `vite.config.ts`).
 
 ## Code style
 
