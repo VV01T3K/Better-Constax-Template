@@ -5,8 +5,8 @@ DO_NOT_TRACK = "1"
 [tools]
 node = "latest"
 bun = "latest"
-github-cli = "latest"
 "npm:turbo" = "latest"
+act = "latest"
 
 [hooks]
 postinstall = '''
