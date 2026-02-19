@@ -1,9 +1,9 @@
 import { NoOp } from "convex-helpers/server/customFunctions";
 import { zCustomQuery, zCustomMutation, zid } from "convex-helpers/server/zod4";
 import { ConvexError } from "convex/values";
-import { z } from "zod";
 
 import { query, mutation } from "./_generated/server";
+import { createTodoSchema, todoSchema } from "./schemas";
 
 const zQuery = zCustomQuery(query, NoOp);
 const zMutation = zCustomMutation(mutation, NoOp);
@@ -11,12 +11,12 @@ const zMutation = zCustomMutation(mutation, NoOp);
 export const list = zQuery({
 	args: {},
 	handler: async (ctx) => {
-		return await ctx.db.query("todos").withIndex("by_creation_time").order("desc").collect();
+		return await ctx.db.query("todos").order("desc").collect();
 	},
 });
 
 export const add = zMutation({
-	args: { text: z.string().min(1, "Text is required") },
+	args: { text: createTodoSchema.shape.text },
 	handler: async (ctx, { text }) => {
 		const identity = await ctx.auth.getUserIdentity();
 		if (!identity) {
@@ -32,9 +32,12 @@ export const add = zMutation({
 	},
 });
 
-export const toggle = zMutation({
-	args: { id: zid("todos") },
-	handler: async (ctx, { id }) => {
+export const setCompleted = zMutation({
+	args: {
+		id: zid("todos"),
+		completed: todoSchema.shape.completed,
+	},
+	handler: async (ctx, { id, completed }) => {
 		const todo = await ctx.db.get(id);
 		if (!todo) {
 			throw new ConvexError({
@@ -43,7 +46,7 @@ export const toggle = zMutation({
 			});
 		}
 		return await ctx.db.patch(id, {
-			completed: !todo.completed,
+			completed,
 		});
 	},
 });

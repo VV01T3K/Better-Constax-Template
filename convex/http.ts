@@ -3,7 +3,6 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 
 import type { ActionCtx } from "./_generated/server";
-
 import { createAuth } from "./auth";
 
 const app: HonoWithConvex<ActionCtx> = new Hono();

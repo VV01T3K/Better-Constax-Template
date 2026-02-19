@@ -1,32 +1,24 @@
-import type { ConvexQueryClient } from "@convex-dev/react-query";
-import type { QueryClient } from "@tanstack/react-query";
-
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
-import { convexQuery } from "@convex-dev/react-query";
-import { api } from "@convex/_generated/api";
+import type { ConvexQueryClient } from "@convex-dev/react-query";
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import { formDevtoolsPlugin } from "@tanstack/react-form-devtools";
+import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { createServerFn } from "@tanstack/react-start";
 
 import Header from "@/components/Header";
+import { getCurrentUser } from "@/functions/getCurrentUser";
+import { getSessionToken } from "@/functions/getSessionToken";
 import { authClient } from "@/lib/auth-client";
-import { getToken } from "@/lib/auth-server";
 
 import appCss from "../styles.css?url";
 
-const getAuth = createServerFn({ method: "GET" }).handler(async () => {
-	return await getToken();
-});
-
-interface MyRouterContext {
+interface RootRouterContext {
 	queryClient: QueryClient;
 	convexQueryClient: ConvexQueryClient;
 }
 
-export const Route = createRootRouteWithContext<MyRouterContext>()({
+export const Route = createRootRouteWithContext<RootRouterContext>()({
 	head: () => ({
 		meta: [
 			{
@@ -64,26 +56,19 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 			},
 		],
 	}),
-
 	beforeLoad: async (ctx) => {
-		// Only fetch token during SSR — on client navigations the
-		// ConvexBetterAuthProvider already manages auth state.
-		if (typeof window !== "undefined") {
-			return { token: undefined };
-		}
-
-		const token = await getAuth();
-
+		const token = await getSessionToken();
 		if (token) {
 			ctx.context.convexQueryClient.serverHttpClient?.setAuth(token);
 		}
 
-		return { token };
+		const currentUser = token ? await getCurrentUser() : null;
+		return {
+			token,
+			currentUser,
+			isAuthenticated: Boolean(token && currentUser),
+		};
 	},
-	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(convexQuery(api.auth.getCurrentUser, {}));
-	},
-
 	component: RootComponent,
 	notFoundComponent: NotFoundComponent,
 	shellComponent: RootDocument,
@@ -99,7 +84,9 @@ function RootComponent() {
 			initialToken={token}
 		>
 			<Header />
-			<Outlet />
+			<main className="min-h-[calc(100vh-72px)]">
+				<Outlet />
+			</main>
 			<TanStackDevtools
 				config={{
 					position: "bottom-right",
@@ -113,7 +100,6 @@ function RootComponent() {
 						name: "Tanstack Query",
 						render: <ReactQueryDevtoolsPanel />,
 					},
-					formDevtoolsPlugin(),
 				]}
 			/>
 		</ConvexBetterAuthProvider>

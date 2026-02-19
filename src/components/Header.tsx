@@ -1,377 +1,76 @@
-import { convexQuery } from "@convex-dev/react-query";
-import { api } from "@convex/_generated/api";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
-import {
-	ChevronDown,
-	ChevronRight,
-	ClipboardType,
-	Database,
-	Globe,
-	Home,
-	LogIn,
-	LogOut,
-	Menu,
-	Network,
-	SquareFunction,
-	StickyNote,
-	Table,
-	Upload,
-	User,
-	X,
-	Zap,
-} from "lucide-react";
-import { useState } from "react";
+import { Link, useRouteContext, useRouter } from "@tanstack/react-router";
+import { LogIn, LogOut, User } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
 
 export default function Header() {
-	const { data: currentUser } = useSuspenseQuery({
-		...convexQuery(api.auth.getCurrentUser, {}),
-	});
-	const [isOpen, setIsOpen] = useState(false);
-	const [groupedExpanded, setGroupedExpanded] = useState<Record<string, boolean>>({});
-
-	const handleSignOut = async () => {
-		await authClient.signOut();
-	};
+	const router = useRouter();
+	const { isAuthenticated, currentUser } = useRouteContext({ from: "__root__" });
 
 	return (
-		<>
-			<header className="flex items-center justify-between bg-gray-800 p-4 text-white shadow-lg">
-				<div className="flex items-center">
-					<button
-						onClick={() => setIsOpen(true)}
-						className="rounded-lg p-2 transition-colors hover:bg-gray-700"
-						aria-label="Open menu"
-					>
-						<Menu size={24} />
-					</button>
-					<h1 className="ml-4 text-xl font-semibold">
-						<Link to="/">
-							<img src="/tanstack-word-logo-white.svg" alt="TanStack Logo" className="h-10" />
-						</Link>
-					</h1>
+		<header className="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/90 backdrop-blur">
+			<div className="mx-auto flex h-[72px] w-full max-w-7xl items-center justify-between px-4">
+				<div className="flex items-center gap-3">
+					<Link to="/" className="text-lg font-semibold text-white">
+						Better Constax
+					</Link>
+					<nav className="ml-4 hidden items-center gap-2 md:flex">
+						<NavLink to="/app">App</NavLink>
+						<NavLink to="/events">Events</NavLink>
+						<NavLink to="/demo/db-optimistic">TanStack DB Demo</NavLink>
+					</nav>
 				</div>
 
 				<div className="flex items-center gap-3">
-					{currentUser ? (
+					{isAuthenticated && currentUser ? (
 						<>
-							<span className="flex items-center gap-2 text-sm text-gray-300">
+							<span className="hidden items-center gap-2 text-sm text-slate-300 sm:flex">
 								<User size={16} />
 								{currentUser.name || currentUser.email || currentUser.subject}
 							</span>
 							<button
-								onClick={handleSignOut}
-								className="flex items-center gap-2 rounded-lg bg-gray-700 px-3 py-1.5 text-sm transition-colors hover:bg-gray-600"
+								type="button"
+								onClick={async () => {
+									await authClient.signOut();
+									await router.invalidate();
+								}}
+								className="inline-flex items-center gap-2 rounded-md bg-slate-800 px-3 py-1.5 text-sm text-slate-100 hover:bg-slate-700"
 							>
 								<LogOut size={16} />
-								Sign Out
+								Sign out
 							</button>
 						</>
 					) : (
 						<Link
-							to="/auth/login"
-							className="flex items-center gap-2 rounded-lg bg-cyan-600 px-3 py-1.5 text-sm transition-colors hover:bg-cyan-700"
+							to="/app"
+							className="inline-flex items-center gap-2 rounded-md bg-cyan-600 px-3 py-1.5 text-sm text-white hover:bg-cyan-500"
 						>
 							<LogIn size={16} />
-							Sign In
+							Sign in
 						</Link>
 					)}
 				</div>
-			</header>
+			</div>
+		</header>
+	);
+}
 
-			<aside
-				className={`fixed top-0 left-0 z-50 flex h-full w-80 transform flex-col bg-gray-900 text-white shadow-2xl transition-transform duration-300 ease-in-out ${
-					isOpen ? "translate-x-0" : "-translate-x-full"
-				}`}
-			>
-				<div className="flex items-center justify-between border-b border-gray-700 p-4">
-					<h2 className="text-xl font-bold">Navigation</h2>
-					<button
-						onClick={() => setIsOpen(false)}
-						className="rounded-lg p-2 transition-colors hover:bg-gray-800"
-						aria-label="Close menu"
-					>
-						<X size={24} />
-					</button>
-				</div>
-
-				<nav className="flex-1 overflow-y-auto p-4">
-					<Link
-						to="/"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Home size={20} />
-						<span className="font-medium">Home</span>
-					</Link>
-
-					{/* Demo Links Start */}
-
-					<Link
-						to="/demo/start/server-funcs"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<SquareFunction size={20} />
-						<span className="font-medium">Start - Server Functions</span>
-					</Link>
-
-					<Link
-						to="/demo/start/api-request"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Network size={20} />
-						<span className="font-medium">Start - API Request</span>
-					</Link>
-
-					<div className="flex flex-row justify-between">
-						<Link
-							to="/demo/start/ssr"
-							onClick={() => setIsOpen(false)}
-							className="mb-2 flex flex-1 items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-							activeProps={{
-								className:
-									"flex-1 flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-							}}
-						>
-							<StickyNote size={20} />
-							<span className="font-medium">Start - SSR Demos</span>
-						</Link>
-						<button
-							className="rounded-lg p-2 transition-colors hover:bg-gray-800"
-							onClick={() =>
-								setGroupedExpanded((prev) => ({
-									...prev,
-									StartSSRDemo: !prev.StartSSRDemo,
-								}))
-							}
-						>
-							{groupedExpanded.StartSSRDemo ? (
-								<ChevronDown size={20} />
-							) : (
-								<ChevronRight size={20} />
-							)}
-						</button>
-					</div>
-					{groupedExpanded.StartSSRDemo && (
-						<div className="ml-4 flex flex-col">
-							<Link
-								to="/demo/start/ssr/spa-mode"
-								onClick={() => setIsOpen(false)}
-								className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-								activeProps={{
-									className:
-										"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-								}}
-							>
-								<StickyNote size={20} />
-								<span className="font-medium">SPA Mode</span>
-							</Link>
-
-							<Link
-								to="/demo/start/ssr/full-ssr"
-								onClick={() => setIsOpen(false)}
-								className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-								activeProps={{
-									className:
-										"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-								}}
-							>
-								<StickyNote size={20} />
-								<span className="font-medium">Full SSR</span>
-							</Link>
-
-							<Link
-								to="/demo/start/ssr/data-only"
-								onClick={() => setIsOpen(false)}
-								className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-								activeProps={{
-									className:
-										"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-								}}
-							>
-								<StickyNote size={20} />
-								<span className="font-medium">Data Only</span>
-							</Link>
-						</div>
-					)}
-
-					<Link
-						to="/demo/tanstack-query"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Network size={20} />
-						<span className="font-medium">TanStack Query</span>
-					</Link>
-
-					<Link
-						to="/demo/table"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Table size={20} />
-						<span className="font-medium">TanStack Table</span>
-					</Link>
-
-					<Link
-						to="/demo/form/simple"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<ClipboardType size={20} />
-						<span className="font-medium">Simple Form</span>
-					</Link>
-
-					<Link
-						to="/demo/form/address"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<ClipboardType size={20} />
-						<span className="font-medium">Address Form</span>
-					</Link>
-
-					<Link
-						to="/demo/convex"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Globe size={20} />
-						<span className="font-medium">Convex</span>
-					</Link>
-
-					<Link
-						to="/demo/convex-query"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Globe size={20} />
-						<span className="font-medium">Convex + TQ</span>
-					</Link>
-
-					<Link
-						to="/demo/file-upload"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Upload size={20} />
-						<span className="font-medium">File Upload</span>
-					</Link>
-
-					<Link
-						to="/demo/db-chat"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Database size={20} />
-						<span className="font-medium">DB Chat</span>
-					</Link>
-
-					<Link
-						to="/demo/db-optimistic"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Zap size={20} />
-						<span className="font-medium">DB Optimistic</span>
-					</Link>
-
-					<Link
-						to="/demo/tanstack-optimistic"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Zap size={20} />
-						<span className="font-medium">TQ Optimistic</span>
-					</Link>
-
-					{/* Demo Links End */}
-
-					<div className="mt-2 border-t border-gray-700 pt-2">
-						{currentUser ? (
-							<button
-								onClick={() => {
-									setIsOpen(false);
-									handleSignOut();
-								}}
-								className="mb-2 flex w-full items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-							>
-								<LogOut size={20} />
-								<span className="font-medium">Sign Out</span>
-							</button>
-						) : (
-							<Link
-								to="/auth/login"
-								onClick={() => setIsOpen(false)}
-								className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-								activeProps={{
-									className:
-										"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-								}}
-							>
-								<LogIn size={20} />
-								<span className="font-medium">Login / Sign Up</span>
-							</Link>
-						)}
-					</div>
-				</nav>
-			</aside>
-		</>
+function NavLink({
+	to,
+	children,
+}: {
+	to: "/app" | "/events" | "/demo/db-optimistic";
+	children: string;
+}) {
+	return (
+		<Link
+			to={to}
+			className="rounded-md px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white"
+			activeProps={{
+				className: "rounded-md bg-slate-800 px-3 py-1.5 text-sm text-white",
+			}}
+		>
+			{children}
+		</Link>
 	);
 }

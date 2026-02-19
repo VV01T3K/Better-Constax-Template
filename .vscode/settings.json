@@ -3,7 +3,7 @@
 	"files.exclude": {
 		"**/.turbo/": true,
 		"**/.tanstack/": true,
-		"AGENTS.md": true,
+		// "AGENTS.md": true,
 		".agents/": true,
 		".cursor/": true
 	},

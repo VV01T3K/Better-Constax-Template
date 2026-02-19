@@ -1,13 +1,11 @@
 import type { GenericCtx } from "@convex-dev/better-auth";
-import type { BetterAuthOptions } from "better-auth";
-
 import { createClient, type AuthFunctions } from "@convex-dev/better-auth";
 import { convex } from "@convex-dev/better-auth/plugins";
+import type { BetterAuthOptions } from "better-auth";
 import { betterAuth } from "better-auth/minimal";
 
-import type { DataModel } from "./_generated/dataModel";
-
 import { components, internal } from "./_generated/api";
+import type { DataModel } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 import authConfig from "./auth.config";
 import schema from "./betterAuth/schema";
@@ -37,6 +35,8 @@ export const authComponent = createClient<DataModel, typeof schema>(components.b
 export const { onCreate, onUpdate, onDelete } = authComponent.triggersApi();
 
 export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
+	const isProduction = process.env.NODE_ENV === "production";
+
 	return {
 		appName: "My TanStack App",
 		baseURL: process.env.SITE_URL,
@@ -64,9 +64,9 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
 		plugins: [convex({ authConfig })],
 		advanced: {
 			defaultCookieAttributes: {
-				sameSite: "none",
-				secure: true,
-				partitioned: true,
+				sameSite: isProduction ? "none" : "lax",
+				secure: isProduction,
+				partitioned: isProduction,
 			},
 		},
 	} satisfies BetterAuthOptions;
