@@ -91,9 +91,9 @@ function App() {
 
 			<section className="mx-auto max-w-7xl px-6 py-16">
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-					{features.map((feature, index) => (
+					{features.map((feature) => (
 						<div
-							key={index}
+							key={feature.title}
 							className="rounded-xl border border-slate-700 bg-slate-800 p-6 transition-all duration-300 hover:border-cyan-500/50 hover:shadow-lg hover:shadow-cyan-500/10"
 						>
 							<div className="mb-4">{feature.icon}</div>

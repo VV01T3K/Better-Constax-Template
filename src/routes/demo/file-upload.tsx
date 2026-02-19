@@ -47,6 +47,11 @@ function formatFileSize(bytes: number) {
 	return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function extractJsonStringField(responseText: string, fieldName: string) {
+	const fieldPattern = new RegExp(`"${fieldName}"\\s*:\\s*"([^"]+)"`);
+	return fieldPattern.exec(responseText)?.[1] ?? null;
+}
+
 async function downloadFile(url: string, fileName: string): Promise<Result<void, Error>> {
 	try {
 		const response = await fetch(url);
@@ -133,6 +138,13 @@ function FileUploadDemo() {
 	const [uploadProgress, setUploadProgress] = useState(0);
 	const [error, setError] = useState<string | null>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
+	const resetUploadUi = () => {
+		setUploading(false);
+		setUploadProgress(0);
+		if (inputRef.current) {
+			inputRef.current.value = "";
+		}
+	};
 
 	const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];
@@ -149,80 +161,72 @@ function FileUploadDemo() {
 		const detectResult = await detectFileType(file);
 		if (detectResult.isErr()) {
 			setError(detectResult.error.message);
-			setUploading(false);
-			if (inputRef.current) {
-				inputRef.current.value = "";
-			}
+			resetUploadUi();
 			return;
 		}
 		const detected = detectResult.value;
 
-		try {
-			const uploadUrl = await generateUploadUrl();
+		const uploadResult = await generateUploadUrl()
+			.then(
+				(uploadUrl) =>
+					// Use XMLHttpRequest for progress tracking.
+					new Promise<string>((resolve, reject) => {
+						const xhr = new XMLHttpRequest();
 
-			// Use XMLHttpRequest for progress tracking
-			const storageId = await new Promise<string>((resolve, reject) => {
-				const xhr = new XMLHttpRequest();
-
-				xhr.upload.addEventListener("progress", (progressEvent) => {
-					if (progressEvent.lengthComputable) {
-						const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
-						setUploadProgress(progress);
-					}
-				});
-
-				xhr.addEventListener("load", () => {
-					if (xhr.status >= 200 && xhr.status < 300) {
-						try {
-							const response = JSON.parse(xhr.responseText);
-							if (typeof response.storageId === "string" && response.storageId.length > 0) {
-								resolve(response.storageId);
-								return;
+						xhr.upload.addEventListener("progress", (progressEvent) => {
+							if (progressEvent.lengthComputable) {
+								const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+								setUploadProgress(progress);
 							}
-							reject(new Error("Upload failed: missing storage id"));
-						} catch {
-							reject(new Error("Invalid response"));
-						}
-					} else {
-						let errorMessage = `Upload failed: HTTP ${xhr.status}`;
-						try {
-							const response = JSON.parse(xhr.responseText);
-							if (typeof response?.message === "string" && response.message.length > 0) {
-								errorMessage = response.message;
+						});
+
+						xhr.addEventListener("load", () => {
+							if (xhr.status >= 200 && xhr.status < 300) {
+								const storageId = extractJsonStringField(xhr.responseText, "storageId");
+								if (storageId && storageId.length > 0) {
+									resolve(storageId);
+									return;
+								}
+								reject(new Error("Upload failed: missing storage id"));
+							} else {
+								const parsedMessage = extractJsonStringField(xhr.responseText, "message");
+								const errorMessage =
+									parsedMessage && parsedMessage.length > 0
+										? parsedMessage
+										: `Upload failed: HTTP ${xhr.status}`;
+								reject(new Error(errorMessage));
 							}
-						} catch {
-							// Ignore parse errors and keep the HTTP status message.
-						}
-						reject(new Error(errorMessage));
-					}
+						});
+
+						xhr.addEventListener("error", () => reject(new Error("Upload failed")));
+						xhr.addEventListener("abort", () => reject(new Error("Upload cancelled")));
+
+						xhr.open("POST", uploadUrl);
+						xhr.setRequestHeader("Content-Type", detected.mime);
+						xhr.send(file);
+					}),
+			)
+			.then(async (storageId) => {
+				await saveFile({
+					storageId,
+					fileName: file.name,
+					fileType: detected.mime,
+					fileSize: file.size,
+					detectedFileType: detected.detectedExt ?? undefined,
+					typeSource: detected.source,
 				});
+				await queryClient.invalidateQueries({ queryKey: filesQuery.queryKey });
+				return ok(undefined);
+			})
+			.catch((uploadError) =>
+				resultErr(uploadError instanceof Error ? uploadError : new Error(String(uploadError))),
+			);
 
-				xhr.addEventListener("error", () => reject(new Error("Upload failed")));
-				xhr.addEventListener("abort", () => reject(new Error("Upload cancelled")));
-
-				xhr.open("POST", uploadUrl);
-				xhr.setRequestHeader("Content-Type", detected.mime);
-				xhr.send(file);
-			});
-
-			await saveFile({
-				storageId,
-				fileName: file.name,
-				fileType: detected.mime,
-				fileSize: file.size,
-				detectedFileType: detected.detectedExt ?? undefined,
-				typeSource: detected.source,
-			});
-			await queryClient.invalidateQueries({ queryKey: filesQuery.queryKey });
-		} catch (uploadError) {
-			setError(uploadError instanceof Error ? uploadError.message : "Upload failed");
-		} finally {
-			setUploading(false);
-			setUploadProgress(0);
-			if (inputRef.current) {
-				inputRef.current.value = "";
-			}
+		if (uploadResult.isErr()) {
+			setError(uploadResult.error.message);
 		}
+
+		resetUploadUi();
 	};
 
 	const handleRemove = async (id: Id<"files">) => {

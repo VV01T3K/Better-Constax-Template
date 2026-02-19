@@ -11,9 +11,7 @@ const MessageSchema = IncomingMessageSchema.extend({
 	id: z.number(),
 });
 
-export type Message = z.infer<typeof MessageSchema>;
-
-export const serverMessagesCollection = createCollection(
+const serverMessagesCollection = createCollection(
 	localOnlyCollectionOptions({
 		getKey: (message) => message.id,
 		schema: MessageSchema,

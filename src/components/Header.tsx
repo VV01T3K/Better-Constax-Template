@@ -24,7 +24,7 @@ import {
 	Zap,
 	type LucideIcon,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 
 import { authClient } from "@/lib/auth-client";
 
@@ -61,6 +61,8 @@ type NavTarget =
 	| (typeof legacyDemoLinks)[number]["to"]
 	| "/auth/login";
 
+const noopSubscribe = () => () => {};
+
 export default function Header() {
 	const currentUserQuery = convexQuery(api.auth.getCurrentUser, {});
 	const filesQuery = convexQuery(api.functions.files.list, {});
@@ -68,26 +70,25 @@ export default function Header() {
 	const { isLoading: isAuthLoading } = useConvexAuth();
 	const [isOpen, setIsOpen] = useState(false);
 	const [legacyExpanded, setLegacyExpanded] = useState(false);
-	const [isHydrated, setIsHydrated] = useState(false);
+	const isHydrated = useSyncExternalStore(
+		noopSubscribe,
+		() => true,
+		() => false,
+	);
 	const queryClient = useQueryClient();
 	const router = useRouter();
 	const showAuthPlaceholder = !isHydrated || isAuthLoading;
 
-	useEffect(() => {
-		setIsHydrated(true);
-	}, []);
-
 	const handleSignOut = async () => {
-		try {
-			await authClient.signOut();
-		} finally {
-			queryClient.setQueryData(currentUserQuery.queryKey, null);
-			queryClient.removeQueries({ queryKey: filesQuery.queryKey });
-			await queryClient.invalidateQueries({ queryKey: currentUserQuery.queryKey });
-			await router.invalidate();
-			await router.navigate({ to: "/auth/login", replace: true });
-			setIsOpen(false);
-		}
+		await authClient.signOut().catch(() => undefined);
+		queryClient.setQueryData(currentUserQuery.queryKey, null);
+		queryClient.removeQueries({ queryKey: filesQuery.queryKey });
+		await Promise.all([
+			queryClient.invalidateQueries({ queryKey: currentUserQuery.queryKey }),
+			router.invalidate(),
+		]);
+		await router.navigate({ to: "/auth/login", replace: true });
+		setIsOpen(false);
 	};
 
 	return (

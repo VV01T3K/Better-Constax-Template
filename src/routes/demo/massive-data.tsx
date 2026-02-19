@@ -3,13 +3,12 @@ import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import { useInfiniteQuery, useQueryClient, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useVirtualizer } from "@tanstack/react-virtual";
 import { BarChart3, Database, Rows3, Timer } from "lucide-react";
-import { type ReactNode, useMemo, useRef, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 
 type MassiveMode = "paginated" | "infinite";
 
-export type MassiveRow = {
+type MassiveRow = {
 	id: number;
 	name: string;
 	region: string;
@@ -20,7 +19,7 @@ export type MassiveRow = {
 	updatedAt: number;
 };
 
-export type MassivePageResult = {
+type MassivePageResult = {
 	rows: MassiveRow[];
 	nextCursor: number | null;
 	totalRows: number;
@@ -55,8 +54,8 @@ function MassiveDataPage() {
 						<div>
 							<h1 className="text-3xl font-bold tracking-tight">Massive Data Demo</h1>
 							<p className="mt-2 max-w-3xl text-sm text-slate-300">
-								Convex-generated dataset rendered with TanStack Query + TanStack Virtual. Switch
-								between paginated and infinite loading modes.
+								Convex-generated dataset rendered with TanStack Query in paginated and infinite
+								loading modes.
 							</p>
 						</div>
 						<div className="inline-flex rounded-xl border border-slate-700 bg-slate-950 p-1">
@@ -187,16 +186,16 @@ function PaginatedDatasetView() {
 					</button>
 					<button
 						type="button"
-						onClick={() => setPageIndex(totalPages - 1)}
+						onClick={() => setPageIndex(() => Math.max(0, totalPages - 1))}
 						disabled={!canNext}
 						className="rounded-lg border border-slate-700 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
 					>
 						Last
 					</button>
 				</div>
-			</div>
 
-			<VirtualizedRows rows={data.rows} />
+				<DatasetRowsTable rows={data.rows} />
+			</div>
 		</div>
 	);
 }
@@ -272,7 +271,7 @@ function InfiniteDatasetView({ convexQueryClient }: { convexQueryClient: ConvexQ
 				</button>
 			</div>
 
-			<VirtualizedRows rows={rows} />
+			<DatasetRowsTable rows={rows} />
 
 			{isFetching && !isFetchingNextPage && (
 				<p className="text-right text-xs text-slate-400">Refreshing already loaded pages...</p>
@@ -330,15 +329,7 @@ function StatsBar({
 	);
 }
 
-function VirtualizedRows({ rows }: { rows: MassiveRow[] }) {
-	const parentRef = useRef<HTMLDivElement>(null);
-	const rowVirtualizer = useVirtualizer({
-		count: rows.length,
-		getScrollElement: () => parentRef.current,
-		estimateSize: () => 44,
-		overscan: 10,
-	});
-
+function DatasetRowsTable({ rows }: { rows: MassiveRow[] }) {
 	return (
 		<div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-900/80">
 			<div className="grid grid-cols-[110px_180px_90px_90px_110px_120px_110px_130px] border-b border-slate-700 bg-slate-950/90 px-4 py-3 text-xs tracking-wide text-slate-400 uppercase">
@@ -351,41 +342,22 @@ function VirtualizedRows({ rows }: { rows: MassiveRow[] }) {
 				<span>Latency</span>
 				<span>Updated</span>
 			</div>
-			<div ref={parentRef} className="h-[560px] overflow-auto">
-				<div
-					className="relative"
-					style={{
-						height: `${rowVirtualizer.getTotalSize()}px`,
-						width: "100%",
-					}}
-				>
-					{rowVirtualizer.getVirtualItems().map((virtualRow) => {
-						const row = rows[virtualRow.index];
-						if (!row) {
-							return null;
-						}
-
-						return (
-							<div
-								key={row.id}
-								className="absolute left-0 grid w-full grid-cols-[110px_180px_90px_90px_110px_120px_110px_130px] items-center border-b border-slate-800 px-4 text-sm text-slate-100"
-								style={{
-									height: `${virtualRow.size}px`,
-									transform: `translateY(${virtualRow.start}px)`,
-								}}
-							>
-								<span className="font-mono text-xs text-slate-300">{row.id}</span>
-								<span className="truncate">{row.name}</span>
-								<span>{row.region}</span>
-								<span className={statusClassName(row.status)}>{row.status}</span>
-								<span>{formatInt(row.score)}</span>
-								<span>{formatInt(row.throughput)}</span>
-								<span>{row.latencyMs}ms</span>
-								<span className="text-xs text-slate-400">{formatTime(row.updatedAt)}</span>
-							</div>
-						);
-					})}
-				</div>
+			<div className="h-140 overflow-auto">
+				{rows.map((row) => (
+					<div
+						key={row.id}
+						className="grid w-full grid-cols-[110px_180px_90px_90px_110px_120px_110px_130px] items-center border-b border-slate-800 px-4 py-3 text-sm text-slate-100"
+					>
+						<span className="font-mono text-xs text-slate-300">{row.id}</span>
+						<span className="truncate">{row.name}</span>
+						<span>{row.region}</span>
+						<span className={statusClassName(row.status)}>{row.status}</span>
+						<span>{formatInt(row.score)}</span>
+						<span>{formatInt(row.throughput)}</span>
+						<span>{row.latencyMs}ms</span>
+						<span className="text-xs text-slate-400">{formatTime(row.updatedAt)}</span>
+					</div>
+				))}
 			</div>
 		</div>
 	);

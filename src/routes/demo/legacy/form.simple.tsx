@@ -39,10 +39,8 @@ function SimpleForm() {
 		>
 			<div className="w-full max-w-2xl rounded-xl border-8 border-black/10 bg-black/80 p-8 shadow-xl">
 				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						e.stopPropagation();
-						form.handleSubmit();
+					action={() => {
+						void form.handleSubmit();
 					}}
 					className="space-y-6"
 				>

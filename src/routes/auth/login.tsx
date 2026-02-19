@@ -80,10 +80,8 @@ function LoginPage() {
 				)}
 
 				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						e.stopPropagation();
-						form.handleSubmit();
+					action={() => {
+						void form.handleSubmit();
 					}}
 					className="space-y-4"
 				>

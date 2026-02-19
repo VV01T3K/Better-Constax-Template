@@ -1,4 +1,4 @@
-import { AlertCircle, Check, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 
 import type { OptimisticTodo } from "@/db-collections";
 
@@ -22,15 +22,4 @@ export function StatusBadge({ status }: { status: OptimisticTodo["status"] }) {
 	}
 
 	return null;
-}
-
-export function ConfirmedFlash({ show }: { show: boolean }) {
-	if (!show) return null;
-
-	return (
-		<span className="animate-fade-out inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-600">
-			<Check size={12} />
-			Saved
-		</span>
-	);
 }

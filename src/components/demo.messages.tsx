@@ -1,6 +1,6 @@
 import type { Message } from "@/db-collections";
 
-export const getAvatarColor = (username: string) => {
+const getAvatarColor = (username: string) => {
 	const colors = [
 		"bg-blue-500",
 		"bg-green-500",
