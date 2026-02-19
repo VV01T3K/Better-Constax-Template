@@ -72,7 +72,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	beforeLoad: async (ctx) => {
 		// Only fetch token during SSR — on client navigations the
 		// ConvexBetterAuthProvider already manages auth state.
-		if (typeof window !== "undefined") {
+		if (!import.meta.env.SSR) {
 			return { token: undefined };
 		}
 
