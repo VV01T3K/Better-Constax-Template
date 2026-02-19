@@ -2,8 +2,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
 import {
 	Archive,
@@ -22,19 +21,22 @@ import {
 import { err as resultErr, ok, type Result } from "neverthrow";
 import { useRef, useState } from "react";
 
-import { authMiddleware } from "@/lib/auth-middleware";
 import { detectFileType } from "@/lib/file-type";
 
-const requireFileUploadAuth = createServerFn({ method: "GET" })
-	.middleware([authMiddleware])
-	.handler(async () => true);
-
 export const Route = createFileRoute("/demo/file-upload")({
-	beforeLoad: async () => {
-		await requireFileUploadAuth();
-	},
-	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(convexQuery(api.files.list, {}));
+	loader: async ({ context, location }) => {
+		const currentUser = await context.queryClient.fetchQuery({
+			...convexQuery(api.auth.getCurrentUser, {}),
+			staleTime: 0,
+		});
+		if (!currentUser) {
+			throw redirect({
+				to: "/auth/login",
+				search: { redirect: location.href },
+			});
+		}
+
+		await context.queryClient.fetchQuery(convexQuery(api.files.list, {}));
 	},
 	component: FileUploadDemo,
 });
@@ -173,12 +175,25 @@ function FileUploadDemo() {
 					if (xhr.status >= 200 && xhr.status < 300) {
 						try {
 							const response = JSON.parse(xhr.responseText);
-							resolve(response.storageId);
+							if (typeof response.storageId === "string" && response.storageId.length > 0) {
+								resolve(response.storageId);
+								return;
+							}
+							reject(new Error("Upload failed: missing storage id"));
 						} catch {
 							reject(new Error("Invalid response"));
 						}
 					} else {
-						reject(new Error("Upload failed"));
+						let errorMessage = `Upload failed: HTTP ${xhr.status}`;
+						try {
+							const response = JSON.parse(xhr.responseText);
+							if (typeof response?.message === "string" && response.message.length > 0) {
+								errorMessage = response.message;
+							}
+						} catch {
+							// Ignore parse errors and keep the HTTP status message.
+						}
+						reject(new Error(errorMessage));
 					}
 				});
 

@@ -59,31 +59,31 @@ type NavTarget =
 
 export default function Header() {
 	const currentUserQuery = convexQuery(api.auth.getCurrentUser, {});
+	const filesQuery = convexQuery(api.files.list, {});
 	const { data: currentUser } = useSuspenseQuery(currentUserQuery);
 	const { isLoading: isAuthLoading } = useConvexAuth();
 	const [isOpen, setIsOpen] = useState(false);
 	const [legacyExpanded, setLegacyExpanded] = useState(false);
-	const [stableUser, setStableUser] = useState(currentUser);
+	const [isHydrated, setIsHydrated] = useState(false);
 	const queryClient = useQueryClient();
 	const router = useRouter();
+	const showAuthPlaceholder = !isHydrated || isAuthLoading;
 
 	useEffect(() => {
-		if (currentUser) {
-			setStableUser(currentUser);
-			return;
-		}
-		if (!isAuthLoading) {
-			setStableUser(null);
-		}
-	}, [currentUser, isAuthLoading]);
-
-	const displayUser = currentUser ?? (isAuthLoading ? stableUser : null);
+		setIsHydrated(true);
+	}, []);
 
 	const handleSignOut = async () => {
-		await authClient.signOut();
-		await queryClient.invalidateQueries({ queryKey: currentUserQuery.queryKey });
-		await router.invalidate();
-		setIsOpen(false);
+		try {
+			await authClient.signOut();
+		} finally {
+			queryClient.setQueryData(currentUserQuery.queryKey, null);
+			queryClient.removeQueries({ queryKey: filesQuery.queryKey });
+			await queryClient.invalidateQueries({ queryKey: currentUserQuery.queryKey });
+			await router.invalidate();
+			await router.navigate({ to: "/auth/login", replace: true });
+			setIsOpen(false);
+		}
 	};
 
 	return (
@@ -105,11 +105,13 @@ export default function Header() {
 				</div>
 
 				<div className="flex items-center gap-3">
-					{displayUser ? (
+					{showAuthPlaceholder ? (
+						<div className="h-8 w-24 animate-pulse rounded-lg bg-gray-700" aria-hidden="true" />
+					) : currentUser ? (
 						<>
 							<span className="flex items-center gap-2 text-sm text-gray-300">
 								<User size={16} />
-								{displayUser.name || displayUser.email || displayUser.subject}
+								{currentUser.name || currentUser.email || currentUser.subject}
 							</span>
 							<button
 								onClick={() => {
@@ -121,8 +123,6 @@ export default function Header() {
 								Sign Out
 							</button>
 						</>
-					) : isAuthLoading ? (
-						<div className="h-8 w-28 animate-pulse rounded-lg bg-gray-700/80" />
 					) : (
 						<Link
 							to="/auth/login"
@@ -198,7 +198,9 @@ export default function Header() {
 					</div>
 
 					<div className="mt-2 border-t border-gray-700 pt-2">
-						{displayUser ? (
+						{showAuthPlaceholder ? (
+							<div className="mb-2 h-12 animate-pulse rounded-lg bg-gray-800" aria-hidden="true" />
+						) : currentUser ? (
 							<button
 								type="button"
 								onClick={() => {
@@ -209,8 +211,6 @@ export default function Header() {
 								<LogOut size={20} />
 								<span className="font-medium">Sign Out</span>
 							</button>
-						) : isAuthLoading ? (
-							<div className="mb-2 h-12 animate-pulse rounded-lg bg-gray-800/80 p-3" />
 						) : (
 							<NavLinkItem
 								to="/auth/login"

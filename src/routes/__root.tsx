@@ -1,25 +1,18 @@
-import type { ConvexQueryClient } from "@convex-dev/react-query";
-import type { QueryClient } from "@tanstack/react-query";
-
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
+import type { ConvexQueryClient } from "@convex-dev/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { formDevtoolsPlugin } from "@tanstack/react-form-devtools";
+import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { createServerFn } from "@tanstack/react-start";
 
 import Header from "@/components/Header";
 import { authClient } from "@/lib/auth-client";
-import { getToken } from "@/lib/auth-server";
 
 import appCss from "../styles.css?url";
-
-const getAuth = createServerFn({ method: "GET" }).handler(async () => {
-	return await getToken();
-});
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -27,43 +20,54 @@ interface MyRouterContext {
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
-	head: () => ({
-		meta: [
-			{
-				charSet: "utf-8",
-			},
-			{
-				name: "viewport",
-				content: "width=device-width, initial-scale=1",
-			},
-			{
-				name: "theme-color",
-				content: "#000000",
-			},
-			{
-				title: "TanStack Start Starter",
-			},
-		],
-		links: [
-			{
-				rel: "stylesheet",
-				href: appCss,
-			},
-			{
-				rel: "manifest",
-				href: "/manifest.webmanifest",
-			},
-			{
-				rel: "apple-touch-icon",
-				href: "/logo192.png",
-			},
-		],
-		scripts: [
-			{
-				src: "/registerSW.js",
-			},
-		],
-	}),
+	head: () => {
+		const pwaLinks = import.meta.env.PROD
+			? [
+					{
+						rel: "manifest",
+						href: "/manifest.webmanifest",
+					},
+				]
+			: [];
+		const pwaScripts = import.meta.env.PROD
+			? [
+					{
+						src: "/registerSW.js",
+					},
+				]
+			: [];
+
+		return {
+			meta: [
+				{
+					charSet: "utf-8",
+				},
+				{
+					name: "viewport",
+					content: "width=device-width, initial-scale=1",
+				},
+				{
+					name: "theme-color",
+					content: "#000000",
+				},
+				{
+					title: "TanStack Start Starter",
+				},
+			],
+			links: [
+				{
+					rel: "stylesheet",
+					href: appCss,
+				},
+				...pwaLinks,
+				{
+					rel: "apple-touch-icon",
+					href: "/logo192.png",
+				},
+			],
+			scripts: pwaScripts,
+		};
+	},
 
 	beforeLoad: async (ctx) => {
 		// Only fetch token during SSR — on client navigations the
@@ -72,7 +76,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 			return { token: undefined };
 		}
 
-		const token = await getAuth();
+		const { getToken } = await import("@/lib/auth-server");
+		const token = await getToken();
 
 		if (token) {
 			ctx.context.convexQueryClient.serverHttpClient?.setAuth(token);
@@ -81,7 +86,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 		return { token };
 	},
 	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(convexQuery(api.auth.getCurrentUser, {}));
+		await context.queryClient.fetchQuery({
+			...convexQuery(api.auth.getCurrentUser, {}),
+			staleTime: 0,
+		});
 	},
 
 	component: RootComponent,
