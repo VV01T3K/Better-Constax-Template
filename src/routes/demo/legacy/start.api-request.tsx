@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 async function getNames(): Promise<string[]> {
-	const res = await fetch("/demo/api/names");
+	const res = await fetch("/demo/legacy/api/names");
 	const data: unknown = await res.json();
 
 	if (Array.isArray(data) && data.every((item) => typeof item === "string")) {
@@ -12,7 +12,7 @@ async function getNames(): Promise<string[]> {
 	return [];
 }
 
-export const Route = createFileRoute("/demo/start/api-request")({
+export const Route = createFileRoute("/demo/legacy/start/api-request")({
 	component: Home,
 });
 

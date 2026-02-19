@@ -8,7 +8,7 @@ import { useMutation } from "convex/react";
 import { Check, Circle, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-export const Route = createFileRoute("/demo/convex")({
+export const Route = createFileRoute("/demo/legacy/convex")({
 	loader: async ({ context }) => {
 		await context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {}));
 	},

@@ -40,7 +40,7 @@ const sendMessage = (message: { user: string; text: string }) => {
 	});
 };
 
-export const Route = createFileRoute("/demo/db-chat-api")({
+export const Route = createFileRoute("/demo/legacy/db-chat-api")({
 	server: {
 		handlers: {
 			GET: () => {

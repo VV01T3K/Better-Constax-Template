@@ -37,19 +37,23 @@ const coreLinks = [
 ] as const;
 
 const legacyDemoLinks = [
-	{ to: "/demo/start/server-funcs", label: "Start - Server Functions", icon: SquareFunction },
-	{ to: "/demo/start/api-request", label: "Start - API Request", icon: Network },
-	{ to: "/demo/start/ssr", label: "Start - SSR Demos", icon: StickyNote },
-	{ to: "/demo/start/ssr/spa-mode", label: "Start - SSR: SPA Mode", icon: StickyNote },
-	{ to: "/demo/start/ssr/full-ssr", label: "Start - SSR: Full SSR", icon: StickyNote },
-	{ to: "/demo/start/ssr/data-only", label: "Start - SSR: Data Only", icon: StickyNote },
-	{ to: "/demo/tanstack-query", label: "TanStack Query", icon: Network },
-	{ to: "/demo/table", label: "TanStack Table", icon: Table },
-	{ to: "/demo/form/simple", label: "Simple Form", icon: ClipboardType },
-	{ to: "/demo/form/address", label: "Address Form", icon: ClipboardType },
-	{ to: "/demo/convex", label: "Convex", icon: Globe },
-	{ to: "/demo/db-chat", label: "DB Chat", icon: Database },
-	{ to: "/demo/db-optimistic", label: "DB Optimistic", icon: Zap },
+	{
+		to: "/demo/legacy/start/server-funcs",
+		label: "Start - Server Functions",
+		icon: SquareFunction,
+	},
+	{ to: "/demo/legacy/start/api-request", label: "Start - API Request", icon: Network },
+	{ to: "/demo/legacy/start/ssr", label: "Start - SSR Demos", icon: StickyNote },
+	{ to: "/demo/legacy/start/ssr/spa-mode", label: "Start - SSR: SPA Mode", icon: StickyNote },
+	{ to: "/demo/legacy/start/ssr/full-ssr", label: "Start - SSR: Full SSR", icon: StickyNote },
+	{ to: "/demo/legacy/start/ssr/data-only", label: "Start - SSR: Data Only", icon: StickyNote },
+	{ to: "/demo/legacy/tanstack-query", label: "TanStack Query", icon: Network },
+	{ to: "/demo/legacy/table", label: "TanStack Table", icon: Table },
+	{ to: "/demo/legacy/form/simple", label: "Simple Form", icon: ClipboardType },
+	{ to: "/demo/legacy/form/address", label: "Address Form", icon: ClipboardType },
+	{ to: "/demo/legacy/convex", label: "Convex", icon: Globe },
+	{ to: "/demo/legacy/db-chat", label: "DB Chat", icon: Database },
+	{ to: "/demo/legacy/db-optimistic", label: "DB Optimistic", icon: Zap },
 ] as const;
 
 type NavTarget =

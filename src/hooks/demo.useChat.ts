@@ -25,7 +25,7 @@ function useStreamConnection(url: string, collection: Collection<any, any, any>)
 				for (const chunk of decoder
 					.decode(value, { stream: true })
 					.split("\n")
-					.filter((chunk) => chunk.length > 0)) {
+					.filter((line) => line.length > 0)) {
 					collection.insert(JSON.parse(chunk));
 				}
 			}
@@ -35,14 +35,14 @@ function useStreamConnection(url: string, collection: Collection<any, any, any>)
 }
 
 const sendMessage = (message: string, user: string) => {
-	fetch("/demo/db-chat-api", {
+	fetch("/demo/legacy/db-chat-api", {
 		method: "POST",
 		body: JSON.stringify({ text: message.trim(), user: user.trim() }),
 	});
 };
 
 export function useChat() {
-	useStreamConnection("/demo/db-chat-api", messagesCollection);
+	useStreamConnection("/demo/legacy/db-chat-api", messagesCollection);
 
 	return { sendMessage };
 }

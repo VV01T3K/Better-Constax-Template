@@ -13,7 +13,7 @@ import {
 	useToggleTodoOptimistic,
 } from "@/hooks/demo.useOptimisticTodos";
 
-export const Route = createFileRoute("/demo/db-optimistic")({
+export const Route = createFileRoute("/demo/legacy/db-optimistic")({
 	loader: async ({ context }) => {
 		await context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {}));
 	},
