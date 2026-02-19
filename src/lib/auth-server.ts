@@ -1,6 +1,6 @@
 import { convexBetterAuthReactStart } from "@convex-dev/better-auth/react-start";
 
-import { env } from "@/env/server";
+import { env } from "@/env";
 
 const authServer = convexBetterAuthReactStart({
 	convexUrl: env.VITE_CONVEX_URL,

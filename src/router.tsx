@@ -3,7 +3,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 
-import { env } from "@/env/client";
+import { env } from "@/env";
 
 import { routeTree } from "./routeTree.gen";
 
