@@ -11,7 +11,18 @@ const zMutation = zCustomMutation(mutation, NoOp);
 export const list = zQuery({
 	args: {},
 	handler: async (ctx) => {
-		return await ctx.db.query("todos").withIndex("by_creation_time").order("desc").collect();
+		const identity = await ctx.auth.getUserIdentity();
+		if (!identity) {
+			throw new ConvexError({
+				code: "UNAUTHORIZED",
+				message: "You must be logged in to list todos",
+			});
+		}
+		return await ctx.db
+			.query("todos")
+			.withIndex("by_authUserId", (q) => q.eq("authUserId", identity.subject))
+			.order("desc")
+			.collect();
 	},
 });
 
@@ -26,6 +37,7 @@ export const add = zMutation({
 			});
 		}
 		return await ctx.db.insert("todos", {
+			authUserId: identity.subject,
 			text,
 			completed: false,
 		});
@@ -35,11 +47,25 @@ export const add = zMutation({
 export const toggle = zMutation({
 	args: { id: zid("todos") },
 	handler: async (ctx, { id }) => {
+		const identity = await ctx.auth.getUserIdentity();
+		if (!identity) {
+			throw new ConvexError({
+				code: "UNAUTHORIZED",
+				message: "You must be logged in to update a todo",
+			});
+		}
+
 		const todo = await ctx.db.get(id);
 		if (!todo) {
 			throw new ConvexError({
 				code: "NOT_FOUND",
 				message: "Todo not found",
+			});
+		}
+		if (todo.authUserId !== identity.subject) {
+			throw new ConvexError({
+				code: "FORBIDDEN",
+				message: "You can only update your own todos",
 			});
 		}
 		return await ctx.db.patch(id, {
@@ -51,6 +77,27 @@ export const toggle = zMutation({
 export const remove = zMutation({
 	args: { id: zid("todos") },
 	handler: async (ctx, { id }) => {
+		const identity = await ctx.auth.getUserIdentity();
+		if (!identity) {
+			throw new ConvexError({
+				code: "UNAUTHORIZED",
+				message: "You must be logged in to delete a todo",
+			});
+		}
+
+		const todo = await ctx.db.get(id);
+		if (!todo) {
+			throw new ConvexError({
+				code: "NOT_FOUND",
+				message: "Todo not found",
+			});
+		}
+		if (todo.authUserId !== identity.subject) {
+			throw new ConvexError({
+				code: "FORBIDDEN",
+				message: "You can only delete your own todos",
+			});
+		}
 		return await ctx.db.delete(id);
 	},
 });

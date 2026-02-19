@@ -40,6 +40,7 @@ export const saveFile = zMutation({
 			});
 		}
 		return await ctx.db.insert("files", {
+			authUserId: identity.subject,
 			storageId: args.storageId,
 			fileName: args.fileName,
 			fileType: args.fileType,
@@ -61,7 +62,11 @@ export const list = zQuery({
 			});
 		}
 
-		const files = await ctx.db.query("files").withIndex("by_creation_time").order("desc").collect();
+		const files = await ctx.db
+			.query("files")
+			.withIndex("by_authUserId", (q) => q.eq("authUserId", identity.subject))
+			.order("desc")
+			.collect();
 		return await Promise.all(
 			files.map(async (file) => ({
 				...file,
@@ -87,6 +92,12 @@ export const remove = zMutation({
 			throw new ConvexError({
 				code: "NOT_FOUND",
 				message: "File not found",
+			});
+		}
+		if (file.authUserId !== identity.subject) {
+			throw new ConvexError({
+				code: "FORBIDDEN",
+				message: "You can only delete your own files",
 			});
 		}
 		await ctx.storage.delete(file.storageId);

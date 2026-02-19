@@ -99,6 +99,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootComponent() {
 	const { convexQueryClient, token } = Route.useRouteContext();
+	const showDevtools = import.meta.env.DEV;
 
 	return (
 		<ConvexBetterAuthProvider
@@ -108,22 +109,24 @@ function RootComponent() {
 		>
 			<Header />
 			<Outlet />
-			<TanStackDevtools
-				config={{
-					position: "bottom-right",
-				}}
-				plugins={[
-					{
-						name: "Tanstack Router",
-						render: <TanStackRouterDevtoolsPanel />,
-					},
-					{
-						name: "Tanstack Query",
-						render: <ReactQueryDevtoolsPanel />,
-					},
-					formDevtoolsPlugin(),
-				]}
-			/>
+			{showDevtools ? (
+				<TanStackDevtools
+					config={{
+						position: "bottom-right",
+					}}
+					plugins={[
+						{
+							name: "Tanstack Router",
+							render: <TanStackRouterDevtoolsPanel />,
+						},
+						{
+							name: "Tanstack Query",
+							render: <ReactQueryDevtoolsPanel />,
+						},
+						formDevtoolsPlugin(),
+					]}
+				/>
+			) : null}
 		</ConvexBetterAuthProvider>
 	);
 }

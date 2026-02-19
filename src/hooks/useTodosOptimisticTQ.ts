@@ -5,7 +5,7 @@ import { todoSchema } from "@convex/schemas";
 import { useMutation, useMutationState, useSuspenseQuery } from "@tanstack/react-query";
 import { z } from "zod";
 
-const OptimisticTodoSchema = todoSchema.extend({
+const OptimisticTodoSchema = todoSchema.pick({ text: true, completed: true }).extend({
 	id: z.string(),
 	status: z.enum(["pending", "confirmed"]),
 	createdAt: z.number(),
