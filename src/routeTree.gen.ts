@@ -11,12 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTanstackOptimisticRouteImport } from './routes/demo/tanstack-optimistic'
+import { Route as DemoTableRouteImport } from './routes/demo/table'
 import { Route as DemoMassiveDataRouteImport } from './routes/demo/massive-data'
 import { Route as DemoFileUploadRouteImport } from './routes/demo/file-upload'
 import { Route as DemoConvexQueryRouteImport } from './routes/demo/convex-query'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
-import { Route as DemoLegacyTableRouteImport } from './routes/demo/legacy/table'
-import { Route as DemoLegacyFormAddressRouteImport } from './routes/demo/legacy/form.address'
+import { Route as DemoFormAddressRouteImport } from './routes/demo/form.address'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -26,6 +26,11 @@ const IndexRoute = IndexRouteImport.update({
 const DemoTanstackOptimisticRoute = DemoTanstackOptimisticRouteImport.update({
   id: '/demo/tanstack-optimistic',
   path: '/demo/tanstack-optimistic',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoTableRoute = DemoTableRouteImport.update({
+  id: '/demo/table',
+  path: '/demo/table',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoMassiveDataRoute = DemoMassiveDataRouteImport.update({
@@ -48,14 +53,9 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoLegacyTableRoute = DemoLegacyTableRouteImport.update({
-  id: '/demo/legacy/table',
-  path: '/demo/legacy/table',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoLegacyFormAddressRoute = DemoLegacyFormAddressRouteImport.update({
-  id: '/demo/legacy/form/address',
-  path: '/demo/legacy/form/address',
+const DemoFormAddressRoute = DemoFormAddressRouteImport.update({
+  id: '/demo/form/address',
+  path: '/demo/form/address',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -65,9 +65,9 @@ export interface FileRoutesByFullPath {
   '/demo/convex-query': typeof DemoConvexQueryRoute
   '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/massive-data': typeof DemoMassiveDataRoute
+  '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
-  '/demo/legacy/table': typeof DemoLegacyTableRoute
-  '/demo/legacy/form/address': typeof DemoLegacyFormAddressRoute
+  '/demo/form/address': typeof DemoFormAddressRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,9 +75,9 @@ export interface FileRoutesByTo {
   '/demo/convex-query': typeof DemoConvexQueryRoute
   '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/massive-data': typeof DemoMassiveDataRoute
+  '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
-  '/demo/legacy/table': typeof DemoLegacyTableRoute
-  '/demo/legacy/form/address': typeof DemoLegacyFormAddressRoute
+  '/demo/form/address': typeof DemoFormAddressRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,9 +86,9 @@ export interface FileRoutesById {
   '/demo/convex-query': typeof DemoConvexQueryRoute
   '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/massive-data': typeof DemoMassiveDataRoute
+  '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
-  '/demo/legacy/table': typeof DemoLegacyTableRoute
-  '/demo/legacy/form/address': typeof DemoLegacyFormAddressRoute
+  '/demo/form/address': typeof DemoFormAddressRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -98,9 +98,9 @@ export interface FileRouteTypes {
     | '/demo/convex-query'
     | '/demo/file-upload'
     | '/demo/massive-data'
+    | '/demo/table'
     | '/demo/tanstack-optimistic'
-    | '/demo/legacy/table'
-    | '/demo/legacy/form/address'
+    | '/demo/form/address'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -108,9 +108,9 @@ export interface FileRouteTypes {
     | '/demo/convex-query'
     | '/demo/file-upload'
     | '/demo/massive-data'
+    | '/demo/table'
     | '/demo/tanstack-optimistic'
-    | '/demo/legacy/table'
-    | '/demo/legacy/form/address'
+    | '/demo/form/address'
   id:
     | '__root__'
     | '/'
@@ -118,9 +118,9 @@ export interface FileRouteTypes {
     | '/demo/convex-query'
     | '/demo/file-upload'
     | '/demo/massive-data'
+    | '/demo/table'
     | '/demo/tanstack-optimistic'
-    | '/demo/legacy/table'
-    | '/demo/legacy/form/address'
+    | '/demo/form/address'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -129,9 +129,9 @@ export interface RootRouteChildren {
   DemoConvexQueryRoute: typeof DemoConvexQueryRoute
   DemoFileUploadRoute: typeof DemoFileUploadRoute
   DemoMassiveDataRoute: typeof DemoMassiveDataRoute
+  DemoTableRoute: typeof DemoTableRoute
   DemoTanstackOptimisticRoute: typeof DemoTanstackOptimisticRoute
-  DemoLegacyTableRoute: typeof DemoLegacyTableRoute
-  DemoLegacyFormAddressRoute: typeof DemoLegacyFormAddressRoute
+  DemoFormAddressRoute: typeof DemoFormAddressRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -148,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/demo/tanstack-optimistic'
       fullPath: '/demo/tanstack-optimistic'
       preLoaderRoute: typeof DemoTanstackOptimisticRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/table': {
+      id: '/demo/table'
+      path: '/demo/table'
+      fullPath: '/demo/table'
+      preLoaderRoute: typeof DemoTableRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/massive-data': {
@@ -178,18 +185,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/demo/legacy/table': {
-      id: '/demo/legacy/table'
-      path: '/demo/legacy/table'
-      fullPath: '/demo/legacy/table'
-      preLoaderRoute: typeof DemoLegacyTableRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/legacy/form/address': {
-      id: '/demo/legacy/form/address'
-      path: '/demo/legacy/form/address'
-      fullPath: '/demo/legacy/form/address'
-      preLoaderRoute: typeof DemoLegacyFormAddressRouteImport
+    '/demo/form/address': {
+      id: '/demo/form/address'
+      path: '/demo/form/address'
+      fullPath: '/demo/form/address'
+      preLoaderRoute: typeof DemoFormAddressRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -201,9 +201,9 @@ const rootRouteChildren: RootRouteChildren = {
   DemoConvexQueryRoute: DemoConvexQueryRoute,
   DemoFileUploadRoute: DemoFileUploadRoute,
   DemoMassiveDataRoute: DemoMassiveDataRoute,
+  DemoTableRoute: DemoTableRoute,
   DemoTanstackOptimisticRoute: DemoTanstackOptimisticRoute,
-  DemoLegacyTableRoute: DemoLegacyTableRoute,
-  DemoLegacyFormAddressRoute: DemoLegacyFormAddressRoute,
+  DemoFormAddressRoute: DemoFormAddressRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -4,8 +4,6 @@ import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
 import { useConvexAuth } from "convex/react";
 import {
-	ChevronDown,
-	ChevronRight,
 	ClipboardType,
 	Database,
 	Globe,
@@ -31,17 +29,11 @@ const coreLinks = [
 	{ to: "/demo/tanstack-optimistic", label: "TQ Optimistic", icon: Zap },
 	{ to: "/demo/massive-data", label: "Massive Data", icon: Database },
 	{ to: "/demo/file-upload", label: "File Upload", icon: Upload },
+	{ to: "/demo/table", label: "TanStack Table", icon: Table },
+	{ to: "/demo/form/address", label: "Address Form", icon: ClipboardType },
 ] as const;
 
-const legacyDemoLinks = [
-	{ to: "/demo/legacy/table", label: "TanStack Table", icon: Table },
-	{ to: "/demo/legacy/form/address", label: "Address Form", icon: ClipboardType },
-] as const;
-
-type NavTarget =
-	| (typeof coreLinks)[number]["to"]
-	| (typeof legacyDemoLinks)[number]["to"]
-	| "/auth/login";
+type NavTarget = (typeof coreLinks)[number]["to"] | "/auth/login";
 
 const noopSubscribe = () => () => {};
 
@@ -51,7 +43,6 @@ export default function Header() {
 	const { data: currentUser } = useSuspenseQuery(currentUserQuery);
 	const { isLoading: isAuthLoading } = useConvexAuth();
 	const [isOpen, setIsOpen] = useState(false);
-	const [legacyExpanded, setLegacyExpanded] = useState(false);
 	const isHydrated = useSyncExternalStore(
 		noopSubscribe,
 		() => true,
@@ -142,7 +133,7 @@ export default function Header() {
 					<div className="mb-4">
 						<div className="mb-2 flex items-center gap-2 px-2 text-xs font-semibold tracking-wide text-cyan-300 uppercase">
 							<ShieldCheck size={14} />
-							Core
+							Demos
 						</div>
 						<div className="space-y-1">
 							{coreLinks.map((item) => (
@@ -155,33 +146,6 @@ export default function Header() {
 								/>
 							))}
 						</div>
-					</div>
-
-					<div className="mb-4 rounded-xl border border-gray-700/80 bg-gray-950/60 p-2">
-						<button
-							type="button"
-							onClick={() => setLegacyExpanded((prev) => !prev)}
-							className="flex w-full items-center justify-between rounded-lg px-2 py-2 text-left transition-colors hover:bg-gray-800"
-						>
-							<div>
-								<p className="text-sm font-semibold text-amber-300">Legacy demos (may break)</p>
-								<p className="text-xs text-gray-400">Kept for reference, not actively hardened</p>
-							</div>
-							{legacyExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-						</button>
-						{legacyExpanded && (
-							<div className="mt-1 space-y-1 border-l border-gray-700 pl-2">
-								{legacyDemoLinks.map((item) => (
-									<NavLinkItem
-										key={item.to}
-										to={item.to}
-										label={item.label}
-										icon={item.icon}
-										onNavigate={() => setIsOpen(false)}
-									/>
-								))}
-							</div>
-						)}
 					</div>
 
 					<div className="mt-2 border-t border-gray-700 pt-2">

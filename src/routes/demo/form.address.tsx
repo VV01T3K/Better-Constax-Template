@@ -1,22 +1,57 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
+import { api } from "@convex/_generated/api";
+import { submitAddressFormSchema } from "@convex/schemas";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useState } from "react";
 
 import { useAppForm } from "@/hooks/demo.form";
 
-export const Route = createFileRoute("/demo/legacy/form/address")({
+const currentUserQuery = convexQuery(api.auth.getCurrentUser, {});
+const submissionsQuery = convexQuery(api.functions.addressForms.listMine, { limit: 10 });
+
+export const Route = createFileRoute("/demo/form/address")({
+	loader: async ({ context, location }) => {
+		const currentUser = await context.queryClient.fetchQuery({
+			...currentUserQuery,
+			staleTime: 0,
+		});
+
+		if (!currentUser) {
+			throw redirect({
+				to: "/auth/login",
+				search: { redirect: location.href },
+			});
+		}
+
+		await context.queryClient.ensureQueryData(submissionsQuery);
+	},
 	component: AddressForm,
 });
 
 function AddressForm() {
+	const { data: currentUser } = useSuspenseQuery(currentUserQuery);
+	const { data: submissions } = useSuspenseQuery(submissionsQuery);
+	const queryClient = useQueryClient();
+	const [submitError, setSubmitError] = useState<string | null>(null);
+
+	const submitAddressForm = useMutation({
+		mutationFn: useConvexMutation(api.functions.addressForms.submit),
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: submissionsQuery.queryKey });
+		},
+	});
+
 	const form = useAppForm({
 		defaultValues: {
-			fullName: "",
-			email: "",
+			fullName: currentUser?.name ?? "",
+			email: currentUser?.email ?? "",
 			address: {
 				street: "",
 				city: "",
 				state: "",
 				zipCode: "",
-				country: "",
+				country: "US",
 			},
 			phone: "",
 		},
@@ -33,11 +68,18 @@ function AddressForm() {
 				return errors;
 			},
 		},
-		onSubmit: ({ value }) => {
-			// oxlint-disable-next-line no-console
-			console.log(value);
-			// Show success message
-			alert("Form submitted successfully!");
+		onSubmit: async ({ value }) => {
+			setSubmitError(null);
+
+			const parsed = submitAddressFormSchema.safeParse(value);
+			if (!parsed.success) {
+				setSubmitError(parsed.error.issues[0]?.message ?? "Invalid form data");
+				return;
+			}
+
+			await submitAddressForm.mutateAsync(parsed.data).catch((error: unknown) => {
+				setSubmitError(error instanceof Error ? error.message : "Failed to submit form");
+			});
 		},
 	});
 
@@ -49,7 +91,17 @@ function AddressForm() {
 					"radial-gradient(50% 50% at 5% 40%, #f4a460 0%, #8b4513 70%, #1a0f0a 100%)",
 			}}
 		>
-			<div className="w-full max-w-2xl rounded-xl border-8 border-black/10 bg-black/80 p-8 shadow-xl">
+			<div className="w-full max-w-3xl rounded-xl border-8 border-black/10 bg-black/80 p-8 shadow-xl">
+				<div className="mb-6 rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-3 text-sm text-cyan-100">
+					Submitting to Convex as {currentUser?.email ?? currentUser?.subject}
+				</div>
+
+				{submitError && (
+					<div className="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
+						{submitError}
+					</div>
+				)}
+
 				<form
 					action={() => {
 						void form.handleSubmit();
@@ -159,7 +211,6 @@ function AddressForm() {
 									{ label: "France", value: "FR" },
 									{ label: "Japan", value: "JP" },
 								]}
-								placeholder="Select a country"
 							/>
 						)}
 					</form.AppField>
@@ -181,12 +232,45 @@ function AddressForm() {
 						{(field) => <field.TextField label="Phone" placeholder="123-456-7890" />}
 					</form.AppField>
 
-					<div className="flex justify-end">
+					<div className="flex items-center justify-between">
+						<div className="text-sm text-cyan-100">
+							{submissions.length} submission{submissions.length === 1 ? "" : "s"} stored in Convex
+						</div>
 						<form.AppForm>
-							<form.SubscribeButton label="Submit" />
+							<form.SubscribeButton
+								label={submitAddressForm.isPending ? "Submitting..." : "Submit"}
+							/>
 						</form.AppForm>
 					</div>
 				</form>
+
+				<div className="mt-6 rounded-lg border border-cyan-500/30 bg-cyan-500/10 p-4">
+					<p className="mb-3 text-sm font-semibold text-cyan-100">Recent submissions</p>
+					{submissions.length === 0 ? (
+						<p className="text-sm text-cyan-200/80">No submissions yet.</p>
+					) : (
+						<div className="space-y-2">
+							{submissions.map((submission) => (
+								<div
+									key={submission._id}
+									className="rounded-md border border-cyan-400/20 bg-black/20 p-3"
+								>
+									<p className="text-sm font-medium text-cyan-100">
+										{submission.fullName} ({submission.email})
+									</p>
+									<p className="text-xs text-cyan-200/80">
+										{submission.address.street}, {submission.address.city},{" "}
+										{submission.address.state} {submission.address.zipCode},{" "}
+										{submission.address.country}
+									</p>
+									<p className="text-xs text-cyan-200/80">
+										{new Date(submission.submittedAt).toISOString()}
+									</p>
+								</div>
+							))}
+						</div>
+					)}
+				</div>
 			</div>
 		</div>
 	);

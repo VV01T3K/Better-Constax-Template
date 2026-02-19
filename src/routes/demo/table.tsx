@@ -1,13 +1,11 @@
-import { rankItem } from "@tanstack/match-sorter-utils";
+import { convexQuery } from "@convex-dev/react-query";
+import { api } from "@convex/_generated/api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useReducer, useState } from "react";
+import { useState } from "react";
 
-import type { Person } from "@/data/demo-table-data";
-import { makeData } from "@/data/demo-table-data";
-
-export const Route = createFileRoute("/demo/legacy/table")({
-	component: TableDemo,
-});
+const DEFAULT_PAGE_SIZE = 20;
+const PAGE_SIZE_OPTIONS = [10, 20, 30, 40, 50] as const;
 
 type SortKey = "id" | "firstName" | "lastName" | "fullName";
 type SortDirection = "asc" | "desc";
@@ -20,62 +18,60 @@ type TableState = {
 	pageSize: number;
 };
 
-const PAGE_SIZE_OPTIONS = [10, 20, 30, 40, 50] as const;
+const defaultTableState: TableState = {
+	globalFilter: "",
+	sortKey: "id",
+	sortDirection: "asc",
+	pageIndex: 0,
+	pageSize: DEFAULT_PAGE_SIZE,
+};
+
+export const Route = createFileRoute("/demo/table")({
+	loader: async ({ context }) => {
+		await context.queryClient.ensureQueryData(
+			convexQuery(api.functions.tableDemo.page, {
+				filter: defaultTableState.globalFilter,
+				sortKey: defaultTableState.sortKey,
+				sortDirection: defaultTableState.sortDirection,
+				pageIndex: defaultTableState.pageIndex,
+				pageSize: defaultTableState.pageSize,
+			}),
+		);
+	},
+	component: TableDemo,
+});
 
 function TableDemo() {
-	const rerender = useReducer(() => ({}), {})[1];
-	const [data, setData] = useState<Person[]>(() => makeData(5_000));
-	const [tableState, setTableState] = useState<TableState>({
-		globalFilter: "",
-		sortKey: "id",
-		sortDirection: "asc",
-		pageIndex: 0,
-		pageSize: 20,
-	});
+	const [tableState, setTableState] = useState<TableState>(defaultTableState);
+	const queryClient = useQueryClient();
 
 	const { globalFilter, sortKey, sortDirection, pageIndex, pageSize } = tableState;
 
-	const refreshData = () => setData(() => makeData(50_000));
+	const pageQuery = convexQuery(api.functions.tableDemo.page, {
+		filter: globalFilter,
+		sortKey,
+		sortDirection,
+		pageIndex,
+		pageSize,
+	});
 
-	const filteredRows = useMemo(() => {
-		const normalizedFilter = globalFilter.trim();
-		if (normalizedFilter.length === 0) {
-			return data;
-		}
+	const { data, isFetching } = useQuery({
+		...pageQuery,
+		placeholderData: (previousData) => previousData,
+	});
 
-		return data.filter((row) => {
-			const searchable = [
-				String(row.id),
-				row.firstName,
-				row.lastName,
-				fullName(row),
-				String(row.age),
-				String(row.visits),
-				String(row.progress),
-				row.status,
-			].join(" ");
+	if (!data) {
+		return (
+			<div className="min-h-screen bg-gray-900 p-6 text-gray-200">
+				<div className="rounded-lg border border-gray-700 bg-gray-800 p-4">
+					Loading table data...
+				</div>
+			</div>
+		);
+	}
 
-			return rankItem(searchable, normalizedFilter).passed;
-		});
-	}, [data, globalFilter]);
-
-	const sortedRows = useMemo(() => {
-		const rows = [...filteredRows];
-		rows.sort((a, b) => {
-			const left = getSortableValue(a, sortKey);
-			const right = getSortableValue(b, sortKey);
-			const direction = sortDirection === "asc" ? 1 : -1;
-			return compareValues(left, right) * direction;
-		});
-		return rows;
-	}, [filteredRows, sortDirection, sortKey]);
-
-	const pageCount = Math.max(1, Math.ceil(sortedRows.length / pageSize));
-	const pageIndexForView = Math.min(pageIndex, pageCount - 1);
-	const pagedRows = useMemo(() => {
-		const start = pageIndexForView * pageSize;
-		return sortedRows.slice(start, start + pageSize);
-	}, [pageIndexForView, pageSize, sortedRows]);
+	const pageCount = data.pageCount;
+	const pageIndexForView = data.pageIndex;
 
 	const toggleSort = (nextKey: SortKey) => {
 		setTableState((prev) => {
@@ -150,12 +146,12 @@ function TableDemo() {
 						</tr>
 					</thead>
 					<tbody className="divide-y divide-gray-700">
-						{pagedRows.map((row) => (
+						{data.rows.map((row) => (
 							<tr key={row.id} className="transition-colors hover:bg-gray-800">
 								<td className="px-4 py-3">{row.id}</td>
 								<td className="px-4 py-3">{row.firstName}</td>
 								<td className="px-4 py-3">{row.lastName}</td>
-								<td className="px-4 py-3">{fullName(row)}</td>
+								<td className="px-4 py-3">{row.fullName}</td>
 							</tr>
 						))}
 					</tbody>
@@ -252,22 +248,19 @@ function TableDemo() {
 				</select>
 			</div>
 
-			<div className="mt-4 text-gray-400">{filteredRows.length} Rows</div>
+			<div className="mt-4 text-gray-400">
+				{data.totalRows} Rows {isFetching ? "(refreshing...)" : ""}
+			</div>
 
 			<div className="mt-4 flex gap-2">
 				<button
 					type="button"
-					onClick={() => rerender()}
+					onClick={() => {
+						void queryClient.invalidateQueries({ queryKey: pageQuery.queryKey });
+					}}
 					className="rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
 				>
-					Force Rerender
-				</button>
-				<button
-					type="button"
-					onClick={refreshData}
-					className="rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-				>
-					Refresh Data
+					Refetch from Convex
 				</button>
 			</div>
 
@@ -279,6 +272,7 @@ function TableDemo() {
 						sortDirection,
 						pageIndex: pageIndexForView,
 						pageSize,
+						totalRows: data.totalRows,
 					},
 					null,
 					2,
@@ -316,28 +310,4 @@ function SortableHeader({
 			</button>
 		</th>
 	);
-}
-
-function getSortableValue(person: Person, sortKey: SortKey): string | number {
-	if (sortKey === "id") {
-		return person.id;
-	}
-	if (sortKey === "firstName") {
-		return person.firstName;
-	}
-	if (sortKey === "lastName") {
-		return person.lastName;
-	}
-	return fullName(person);
-}
-
-function compareValues(a: string | number, b: string | number) {
-	if (typeof a === "number" && typeof b === "number") {
-		return a - b;
-	}
-	return String(a).localeCompare(String(b));
-}
-
-function fullName(person: Person) {
-	return `${person.firstName} ${person.lastName}`;
 }
