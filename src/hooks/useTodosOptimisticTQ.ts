@@ -14,7 +14,7 @@ const OptimisticTodoSchema = todoSchema.extend({
 type OptimisticTodo = z.infer<typeof OptimisticTodoSchema>;
 
 export function useTodosOptimisticTQ() {
-	const { data: serverTodos } = useSuspenseQuery(convexQuery(api.todos.list, {}));
+	const { data: serverTodos } = useSuspenseQuery(convexQuery(api.functions.todos.list, {}));
 
 	const pendingAddTodos = useMutationState({
 		filters: { mutationKey: ["addTodo"], status: "pending" },
@@ -79,17 +79,17 @@ export function useTodosOptimisticTQ() {
 
 	const { mutate: addTodo } = useMutation({
 		mutationKey: ["addTodo"],
-		mutationFn: useConvexMutation(api.todos.add),
+		mutationFn: useConvexMutation(api.functions.todos.add),
 	});
 
 	const { mutate: toggleTodo } = useMutation({
 		mutationKey: ["toggleTodo"],
-		mutationFn: useConvexMutation(api.todos.toggle),
+		mutationFn: useConvexMutation(api.functions.todos.toggle),
 	});
 
 	const { mutate: removeTodo } = useMutation({
 		mutationKey: ["removeTodo"],
-		mutationFn: useConvexMutation(api.todos.remove),
+		mutationFn: useConvexMutation(api.functions.todos.remove),
 	});
 
 	const totalPendingCount =

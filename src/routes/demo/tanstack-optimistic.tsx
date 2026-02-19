@@ -10,7 +10,7 @@ import { useTodosOptimisticTQ } from "@/hooks/useTodosOptimisticTQ";
 
 export const Route = createFileRoute("/demo/tanstack-optimistic")({
 	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(convexQuery(api.todos.list, {}));
+		await context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {}));
 	},
 	component: TanStackOptimisticTodos,
 });

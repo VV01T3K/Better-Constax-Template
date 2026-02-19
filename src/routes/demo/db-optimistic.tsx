@@ -15,7 +15,7 @@ import {
 
 export const Route = createFileRoute("/demo/db-optimistic")({
 	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(convexQuery(api.todos.list, {}));
+		await context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {}));
 	},
 	component: DbOptimisticTodos,
 });

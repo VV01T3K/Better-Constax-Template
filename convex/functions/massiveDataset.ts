@@ -2,7 +2,7 @@ import { NoOp } from "convex-helpers/server/customFunctions";
 import { zCustomQuery } from "convex-helpers/server/zod4";
 import { z } from "zod";
 
-import { query } from "./_generated/server";
+import { query } from "../_generated/server";
 
 const zQuery = zCustomQuery(query, NoOp);
 

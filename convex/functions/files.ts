@@ -3,7 +3,7 @@ import { zCustomMutation, zCustomQuery, zid } from "convex-helpers/server/zod4";
 import { ConvexError } from "convex/values";
 import { z } from "zod";
 
-import { mutation, query } from "./_generated/server";
+import { mutation, query } from "../_generated/server";
 
 const zQuery = zCustomQuery(query, NoOp);
 const zMutation = zCustomMutation(mutation, NoOp);

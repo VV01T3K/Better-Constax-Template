@@ -59,7 +59,7 @@ type NavTarget =
 
 export default function Header() {
 	const currentUserQuery = convexQuery(api.auth.getCurrentUser, {});
-	const filesQuery = convexQuery(api.files.list, {});
+	const filesQuery = convexQuery(api.functions.files.list, {});
 	const { data: currentUser } = useSuspenseQuery(currentUserQuery);
 	const { isLoading: isAuthLoading } = useConvexAuth();
 	const [isOpen, setIsOpen] = useState(false);

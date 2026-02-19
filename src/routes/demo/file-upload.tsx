@@ -36,7 +36,7 @@ export const Route = createFileRoute("/demo/file-upload")({
 			});
 		}
 
-		await context.queryClient.fetchQuery(convexQuery(api.files.list, {}));
+		await context.queryClient.fetchQuery(convexQuery(api.functions.files.list, {}));
 	},
 	component: FileUploadDemo,
 });
@@ -122,11 +122,11 @@ function FileIcon({ fileType }: { fileType: string }) {
 }
 
 function FileUploadDemo() {
-	const filesQuery = convexQuery(api.files.list, {});
+	const filesQuery = convexQuery(api.functions.files.list, {});
 	const { data: files } = useSuspenseQuery(filesQuery);
-	const generateUploadUrl = useMutation(api.files.generateUploadUrl);
-	const saveFile = useMutation(api.files.saveFile);
-	const removeFile = useMutation(api.files.remove);
+	const generateUploadUrl = useMutation(api.functions.files.generateUploadUrl);
+	const saveFile = useMutation(api.functions.files.saveFile);
+	const removeFile = useMutation(api.functions.files.remove);
 	const queryClient = useQueryClient();
 
 	const [uploading, setUploading] = useState(false);

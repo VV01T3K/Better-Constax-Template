@@ -9,22 +9,22 @@ import { useState } from "react";
 
 export const Route = createFileRoute("/demo/convex-query")({
 	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(convexQuery(api.todos.list, {}));
+		await context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {}));
 	},
 	component: ConvexQueryTodos,
 });
 
 function ConvexQueryTodos() {
-	const { data: todos } = useSuspenseQuery(convexQuery(api.todos.list, {}));
+	const { data: todos } = useSuspenseQuery(convexQuery(api.functions.todos.list, {}));
 
 	const { mutate: addTodo } = useMutation({
-		mutationFn: useConvexMutation(api.todos.add),
+		mutationFn: useConvexMutation(api.functions.todos.add),
 	});
 	const { mutate: toggleTodo } = useMutation({
-		mutationFn: useConvexMutation(api.todos.toggle),
+		mutationFn: useConvexMutation(api.functions.todos.toggle),
 	});
 	const { mutate: removeTodo } = useMutation({
-		mutationFn: useConvexMutation(api.todos.remove),
+		mutationFn: useConvexMutation(api.functions.todos.remove),
 	});
 
 	const [newTodo, setNewTodo] = useState("");

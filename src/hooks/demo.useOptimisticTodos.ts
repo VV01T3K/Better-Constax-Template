@@ -55,7 +55,7 @@ function syncServerToCollection(serverTodos: Array<Doc<"todos">>) {
 }
 
 export function useOptimisticTodos() {
-	const { data: serverTodos } = useSuspenseQuery(convexQuery(api.todos.list, {}));
+	const { data: serverTodos } = useSuspenseQuery(convexQuery(api.functions.todos.list, {}));
 
 	// SSR-safe initial state from server data
 	const [todos, setTodos] = useState<OptimisticTodo[]>(() =>
@@ -79,7 +79,7 @@ export function useOptimisticTodos() {
 }
 
 export function useAddTodoOptimistic() {
-	const addTodoMutation = useConvexMutation(api.todos.add);
+	const addTodoMutation = useConvexMutation(api.functions.todos.add);
 	const [error, setError] = useState<string | null>(null);
 
 	const addTodo = async (text: string) => {
@@ -116,7 +116,7 @@ export function useAddTodoOptimistic() {
 }
 
 export function useToggleTodoOptimistic() {
-	const toggleMutation = useConvexMutation(api.todos.toggle);
+	const toggleMutation = useConvexMutation(api.functions.todos.toggle);
 	const [error, setError] = useState<string | null>(null);
 
 	const toggleTodo = async (id: string) => {
@@ -155,7 +155,7 @@ export function useToggleTodoOptimistic() {
 }
 
 export function useRemoveTodoOptimistic() {
-	const removeMutation = useConvexMutation(api.todos.remove);
+	const removeMutation = useConvexMutation(api.functions.todos.remove);
 	const [error, setError] = useState<string | null>(null);
 
 	const removeTodo = async (id: string) => {

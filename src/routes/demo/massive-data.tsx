@@ -34,7 +34,7 @@ const PAGE_SIZE_OPTIONS = [50, 100, 200, 500] as const;
 export const Route = createFileRoute("/demo/massive-data")({
 	loader: async ({ context }) => {
 		await context.queryClient.ensureQueryData(
-			convexQuery(api.massiveDataset.page, {
+			convexQuery(api.functions.massiveDataset.page, {
 				cursor: null,
 				limit: DEFAULT_PAGE_SIZE,
 			}),
@@ -108,7 +108,7 @@ function PaginatedDatasetView() {
 
 	const cursor = pageIndex * pageSize;
 	const { data, isFetching } = useQuery({
-		...convexQuery(api.massiveDataset.page, {
+		...convexQuery(api.functions.massiveDataset.page, {
 			cursor,
 			limit: pageSize,
 		}),
@@ -206,7 +206,7 @@ function InfiniteDatasetView({ convexQueryClient }: { convexQueryClient: ConvexQ
 	const queryClient = useQueryClient();
 
 	const cachedFirstPage = queryClient.getQueryData<MassivePageResult>(
-		convexQuery(api.massiveDataset.page, {
+		convexQuery(api.functions.massiveDataset.page, {
 			cursor: null,
 			limit: pageSize,
 		}).queryKey,
@@ -216,7 +216,7 @@ function InfiniteDatasetView({ convexQueryClient }: { convexQueryClient: ConvexQ
 		queryKey: ["massive-dataset", "infinite", pageSize],
 		initialPageParam: null as number | null,
 		queryFn: async ({ pageParam }) => {
-			return await convexQueryClient.convexClient.query(api.massiveDataset.page, {
+			return await convexQueryClient.convexClient.query(api.functions.massiveDataset.page, {
 				cursor: pageParam,
 				limit: pageSize,
 			});
