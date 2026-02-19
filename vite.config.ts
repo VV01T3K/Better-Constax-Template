@@ -17,6 +17,9 @@ const config = defineConfig({
 			"@convex": import.meta.dirname + "/convex",
 		},
 	},
+	build: {
+		chunkSizeWarningLimit: 1024,
+	},
 	ssr: {
 		noExternal: ["@convex-dev/better-auth"],
 	},
