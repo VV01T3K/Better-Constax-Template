@@ -3,8 +3,9 @@ import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import { useInfiniteQuery, useQueryClient, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { BarChart3, Database, Rows3, Timer } from "lucide-react";
-import { type ReactNode, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 
 type MassiveMode = "paginated" | "infinite";
 
@@ -28,7 +29,10 @@ type MassivePageResult = {
 };
 
 const DEFAULT_PAGE_SIZE = 200;
-const PAGE_SIZE_OPTIONS = [50, 100, 200, 500] as const;
+const PAGE_SIZE_OPTIONS = [50, 100, 200, 500, 1000, 2000] as const;
+const VIRTUAL_ROW_HEIGHT = 52;
+const MIN_PREFETCH_AHEAD_ROWS = 50;
+const PREFETCH_LINEAR_SCALE = 0.3;
 
 export const Route = createFileRoute("/demo/massive-data")({
 	loader: async ({ context }) => {
@@ -44,7 +48,7 @@ export const Route = createFileRoute("/demo/massive-data")({
 
 function MassiveDataPage() {
 	const { convexQueryClient } = Route.useRouteContext();
-	const [mode, setMode] = useState<MassiveMode>("paginated");
+	const [mode, setMode] = useState<MassiveMode>("infinite");
 
 	return (
 		<div className="min-h-screen bg-radial from-slate-900 via-slate-950 to-black p-6 text-white">
@@ -232,6 +236,8 @@ function InfiniteDatasetView({ convexQueryClient }: { convexQueryClient: ConvexQ
 	const rows = useMemo(() => data?.pages.flatMap((page) => page.rows) ?? [], [data]);
 	const totalRows = data?.pages[0]?.totalRows ?? 0;
 	const hasMore = hasNextPage ?? false;
+	const effectivePageSize = data?.pages[data.pages.length - 1]?.limit ?? pageSize;
+	const prefetchAheadRows = calculatePrefetchAheadRows(effectivePageSize);
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -259,19 +265,22 @@ function InfiniteDatasetView({ convexQueryClient }: { convexQueryClient: ConvexQ
 					))}
 				</select>
 
-				<button
-					type="button"
-					onClick={() => {
-						void fetchNextPage();
-					}}
-					disabled={!hasMore || isFetchingNextPage}
-					className="ml-auto rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-cyan-600 disabled:cursor-not-allowed disabled:bg-slate-600"
-				>
-					{hasMore ? (isFetchingNextPage ? "Loading..." : "Load more") : "No more rows"}
-				</button>
+				<p className="ml-auto text-sm text-slate-300">
+					{hasMore
+						? isFetchingNextPage
+							? "Loading next page..."
+							: "Scroll to auto-load more (virtualized)"
+						: "No more rows"}
+				</p>
 			</div>
 
-			<DatasetRowsTable rows={rows} />
+			<VirtualizedDatasetRowsTable
+				rows={rows}
+				hasMore={hasMore}
+				isFetchingNextPage={isFetchingNextPage}
+				prefetchAheadRows={prefetchAheadRows}
+				fetchNextPage={fetchNextPage}
+			/>
 
 			{isFetching && !isFetchingNextPage && (
 				<p className="text-right text-xs text-slate-400">Refreshing already loaded pages...</p>
@@ -363,6 +372,105 @@ function DatasetRowsTable({ rows }: { rows: MassiveRow[] }) {
 	);
 }
 
+function VirtualizedDatasetRowsTable({
+	rows,
+	hasMore,
+	isFetchingNextPage,
+	prefetchAheadRows,
+	fetchNextPage,
+}: {
+	rows: MassiveRow[];
+	hasMore: boolean;
+	isFetchingNextPage: boolean;
+	prefetchAheadRows: number;
+	fetchNextPage: () => Promise<unknown>;
+}) {
+	const scrollRef = useRef<HTMLDivElement>(null);
+
+	const rowVirtualizer = useVirtualizer({
+		count: hasMore ? rows.length + 1 : rows.length,
+		getItemKey: (index) => rows[index]?.id ?? "loader-row",
+		getScrollElement: () => scrollRef.current,
+		estimateSize: () => VIRTUAL_ROW_HEIGHT,
+		overscan: 10,
+	});
+
+	const virtualItems = rowVirtualizer.getVirtualItems();
+
+	useEffect(() => {
+		if (rows.length === 0) return;
+
+		const lastItem = virtualItems[virtualItems.length - 1];
+		if (!lastItem) return;
+
+		const prefetchIndex = Math.max(0, rows.length - prefetchAheadRows);
+		if (lastItem.index >= prefetchIndex && hasMore && !isFetchingNextPage) {
+			void fetchNextPage();
+		}
+	}, [fetchNextPage, hasMore, isFetchingNextPage, prefetchAheadRows, rows.length, virtualItems]);
+
+	return (
+		<div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-900/80">
+			<div className="grid grid-cols-[110px_180px_90px_90px_110px_120px_110px_130px] border-b border-slate-700 bg-slate-950/90 px-4 py-3 text-xs tracking-wide text-slate-400 uppercase">
+				<span>ID</span>
+				<span>Name</span>
+				<span>Region</span>
+				<span>Status</span>
+				<span>Score</span>
+				<span>Throughput</span>
+				<span>Latency</span>
+				<span>Updated</span>
+			</div>
+
+			<div ref={scrollRef} className="h-140 overflow-auto [overflow-anchor:none]">
+				<div
+					className="relative w-full"
+					style={{
+						height: `${rowVirtualizer.getTotalSize()}px`,
+					}}
+				>
+					{virtualItems.map((virtualRow) => {
+						const isLoaderRow = virtualRow.index > rows.length - 1;
+						const row = rows[virtualRow.index];
+
+						return (
+							<div
+								key={virtualRow.key}
+								className="grid w-full grid-cols-[110px_180px_90px_90px_110px_120px_110px_130px] items-center border-b border-slate-800 px-4 py-3 text-sm text-slate-100"
+								style={{
+									position: "absolute",
+									top: 0,
+									left: 0,
+									width: "100%",
+									height: `${virtualRow.size}px`,
+									transform: `translateY(${virtualRow.start}px)`,
+								}}
+							>
+								{isLoaderRow || !row ? (
+									<span className="col-span-8 text-center text-xs text-slate-400">
+										{hasMore ? "Loading more rows..." : "All rows loaded"}
+									</span>
+								) : (
+									<>
+										<span className="font-mono text-xs text-slate-300">{row.id}</span>
+										<span className="truncate">{row.name}</span>
+										<span>{row.region}</span>
+										<span className={statusClassName(row.status)}>{row.status}</span>
+										<span>{formatInt(row.score)}</span>
+										<span>{formatInt(row.throughput)}</span>
+										<span>{row.latencyMs}ms</span>
+										<span className="text-xs text-slate-400">{formatTime(row.updatedAt)}</span>
+									</>
+								)}
+							</div>
+						);
+					})}
+				</div>
+			</div>
+		</div>
+	);
+}
+
 function statusClassName(status: MassiveRow["status"]) {
 	if (status === "active") return "text-emerald-300";
 	if (status === "paused") return "text-amber-300";
@@ -381,4 +489,9 @@ function formatTime(timestamp: number) {
 		second: "2-digit",
 		hour12: false,
 	});
+}
+
+function calculatePrefetchAheadRows(pageSize: number) {
+	const safePageSize = Math.max(1, pageSize);
+	return Math.max(MIN_PREFETCH_AHEAD_ROWS, Math.ceil(safePageSize * PREFETCH_LINEAR_SCALE));
 }
