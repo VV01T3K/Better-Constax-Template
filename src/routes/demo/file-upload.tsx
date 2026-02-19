@@ -318,6 +318,10 @@ function FileUploadDemo() {
 											<img
 												src={file.url}
 												alt={file.fileName}
+												width={48}
+												height={48}
+												loading="lazy"
+												decoding="async"
 												className="h-full w-full object-cover"
 											/>
 										) : (

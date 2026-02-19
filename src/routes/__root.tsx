@@ -62,7 +62,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 				...pwaLinks,
 				{
 					rel: "apple-touch-icon",
-					href: "/logo192.png",
+					href: "/logo192.webp",
 				},
 			],
 			scripts: pwaScripts,
