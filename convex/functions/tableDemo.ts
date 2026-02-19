@@ -36,7 +36,15 @@ const lastNames = [
 	"Moore",
 ] as const;
 
-type SortKey = "id" | "firstName" | "lastName" | "fullName";
+type SortKey =
+	| "id"
+	| "firstName"
+	| "lastName"
+	| "fullName"
+	| "age"
+	| "visits"
+	| "progress"
+	| "status";
 type SortDirection = "asc" | "desc";
 
 function seeded(index: number, salt: number) {
@@ -64,6 +72,8 @@ function buildRow(id: number) {
 	};
 }
 
+const allRows = Array.from({ length: TOTAL_ROWS }, (_, id) => buildRow(id));
+
 function compareValues(a: string | number, b: string | number) {
 	if (typeof a === "number" && typeof b === "number") {
 		return a - b;
@@ -75,13 +85,19 @@ function getSortableValue(row: ReturnType<typeof buildRow>, sortKey: SortKey): s
 	if (sortKey === "id") return row.id;
 	if (sortKey === "firstName") return row.firstName;
 	if (sortKey === "lastName") return row.lastName;
-	return row.fullName;
+	if (sortKey === "fullName") return row.fullName;
+	if (sortKey === "age") return row.age;
+	if (sortKey === "visits") return row.visits;
+	if (sortKey === "progress") return row.progress;
+	return row.status;
 }
 
 export const page = zQuery({
 	args: {
 		filter: z.string().optional(),
-		sortKey: z.enum(["id", "firstName", "lastName", "fullName"]).optional(),
+		sortKey: z
+			.enum(["id", "firstName", "lastName", "fullName", "age", "visits", "progress", "status"])
+			.optional(),
 		sortDirection: z.enum(["asc", "desc"]).optional(),
 		pageIndex: z.number().int().nonnegative().optional(),
 		pageSize: z.number().int().positive().optional(),
@@ -92,11 +108,6 @@ export const page = zQuery({
 		const pageIndex = args.pageIndex ?? 0;
 		const pageSize = Math.min(args.pageSize ?? DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
 		const normalizedFilter = (args.filter ?? "").trim().toLowerCase();
-
-		const allRows = [];
-		for (let id = 0; id < TOTAL_ROWS; id++) {
-			allRows.push(buildRow(id));
-		}
 
 		const filteredRows =
 			normalizedFilter.length === 0
