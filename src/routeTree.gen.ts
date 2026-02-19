@@ -15,22 +15,8 @@ import { Route as DemoMassiveDataRouteImport } from './routes/demo/massive-data'
 import { Route as DemoFileUploadRouteImport } from './routes/demo/file-upload'
 import { Route as DemoConvexQueryRouteImport } from './routes/demo/convex-query'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
-import { Route as DemoLegacyTanstackQueryRouteImport } from './routes/demo/legacy/tanstack-query'
 import { Route as DemoLegacyTableRouteImport } from './routes/demo/legacy/table'
-import { Route as DemoLegacyDbOptimisticRouteImport } from './routes/demo/legacy/db-optimistic'
-import { Route as DemoLegacyDbChatApiRouteImport } from './routes/demo/legacy/db-chat-api'
-import { Route as DemoLegacyDbChatRouteImport } from './routes/demo/legacy/db-chat'
-import { Route as DemoLegacyConvexRouteImport } from './routes/demo/legacy/convex'
-import { Route as DemoLegacyStartServerFuncsRouteImport } from './routes/demo/legacy/start.server-funcs'
-import { Route as DemoLegacyStartApiRequestRouteImport } from './routes/demo/legacy/start.api-request'
-import { Route as DemoLegacyFormSimpleRouteImport } from './routes/demo/legacy/form.simple'
 import { Route as DemoLegacyFormAddressRouteImport } from './routes/demo/legacy/form.address'
-import { Route as DemoLegacyApiTqTodosRouteImport } from './routes/demo/legacy/api.tq-todos'
-import { Route as DemoLegacyApiNamesRouteImport } from './routes/demo/legacy/api.names'
-import { Route as DemoLegacyStartSsrIndexRouteImport } from './routes/demo/legacy/start.ssr.index'
-import { Route as DemoLegacyStartSsrSpaModeRouteImport } from './routes/demo/legacy/start.ssr.spa-mode'
-import { Route as DemoLegacyStartSsrFullSsrRouteImport } from './routes/demo/legacy/start.ssr.full-ssr'
-import { Route as DemoLegacyStartSsrDataOnlyRouteImport } from './routes/demo/legacy/start.ssr.data-only'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -62,51 +48,9 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoLegacyTanstackQueryRoute = DemoLegacyTanstackQueryRouteImport.update({
-  id: '/demo/legacy/tanstack-query',
-  path: '/demo/legacy/tanstack-query',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DemoLegacyTableRoute = DemoLegacyTableRouteImport.update({
   id: '/demo/legacy/table',
   path: '/demo/legacy/table',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoLegacyDbOptimisticRoute = DemoLegacyDbOptimisticRouteImport.update({
-  id: '/demo/legacy/db-optimistic',
-  path: '/demo/legacy/db-optimistic',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoLegacyDbChatApiRoute = DemoLegacyDbChatApiRouteImport.update({
-  id: '/demo/legacy/db-chat-api',
-  path: '/demo/legacy/db-chat-api',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoLegacyDbChatRoute = DemoLegacyDbChatRouteImport.update({
-  id: '/demo/legacy/db-chat',
-  path: '/demo/legacy/db-chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoLegacyConvexRoute = DemoLegacyConvexRouteImport.update({
-  id: '/demo/legacy/convex',
-  path: '/demo/legacy/convex',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoLegacyStartServerFuncsRoute =
-  DemoLegacyStartServerFuncsRouteImport.update({
-    id: '/demo/legacy/start/server-funcs',
-    path: '/demo/legacy/start/server-funcs',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const DemoLegacyStartApiRequestRoute =
-  DemoLegacyStartApiRequestRouteImport.update({
-    id: '/demo/legacy/start/api-request',
-    path: '/demo/legacy/start/api-request',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const DemoLegacyFormSimpleRoute = DemoLegacyFormSimpleRouteImport.update({
-  id: '/demo/legacy/form/simple',
-  path: '/demo/legacy/form/simple',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoLegacyFormAddressRoute = DemoLegacyFormAddressRouteImport.update({
@@ -114,39 +58,6 @@ const DemoLegacyFormAddressRoute = DemoLegacyFormAddressRouteImport.update({
   path: '/demo/legacy/form/address',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoLegacyApiTqTodosRoute = DemoLegacyApiTqTodosRouteImport.update({
-  id: '/demo/legacy/api/tq-todos',
-  path: '/demo/legacy/api/tq-todos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoLegacyApiNamesRoute = DemoLegacyApiNamesRouteImport.update({
-  id: '/demo/legacy/api/names',
-  path: '/demo/legacy/api/names',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoLegacyStartSsrIndexRoute = DemoLegacyStartSsrIndexRouteImport.update({
-  id: '/demo/legacy/start/ssr/',
-  path: '/demo/legacy/start/ssr/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoLegacyStartSsrSpaModeRoute =
-  DemoLegacyStartSsrSpaModeRouteImport.update({
-    id: '/demo/legacy/start/ssr/spa-mode',
-    path: '/demo/legacy/start/ssr/spa-mode',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const DemoLegacyStartSsrFullSsrRoute =
-  DemoLegacyStartSsrFullSsrRouteImport.update({
-    id: '/demo/legacy/start/ssr/full-ssr',
-    path: '/demo/legacy/start/ssr/full-ssr',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const DemoLegacyStartSsrDataOnlyRoute =
-  DemoLegacyStartSsrDataOnlyRouteImport.update({
-    id: '/demo/legacy/start/ssr/data-only',
-    path: '/demo/legacy/start/ssr/data-only',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -155,22 +66,8 @@ export interface FileRoutesByFullPath {
   '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/massive-data': typeof DemoMassiveDataRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
-  '/demo/legacy/convex': typeof DemoLegacyConvexRoute
-  '/demo/legacy/db-chat': typeof DemoLegacyDbChatRoute
-  '/demo/legacy/db-chat-api': typeof DemoLegacyDbChatApiRoute
-  '/demo/legacy/db-optimistic': typeof DemoLegacyDbOptimisticRoute
   '/demo/legacy/table': typeof DemoLegacyTableRoute
-  '/demo/legacy/tanstack-query': typeof DemoLegacyTanstackQueryRoute
-  '/demo/legacy/api/names': typeof DemoLegacyApiNamesRoute
-  '/demo/legacy/api/tq-todos': typeof DemoLegacyApiTqTodosRoute
   '/demo/legacy/form/address': typeof DemoLegacyFormAddressRoute
-  '/demo/legacy/form/simple': typeof DemoLegacyFormSimpleRoute
-  '/demo/legacy/start/api-request': typeof DemoLegacyStartApiRequestRoute
-  '/demo/legacy/start/server-funcs': typeof DemoLegacyStartServerFuncsRoute
-  '/demo/legacy/start/ssr/data-only': typeof DemoLegacyStartSsrDataOnlyRoute
-  '/demo/legacy/start/ssr/full-ssr': typeof DemoLegacyStartSsrFullSsrRoute
-  '/demo/legacy/start/ssr/spa-mode': typeof DemoLegacyStartSsrSpaModeRoute
-  '/demo/legacy/start/ssr/': typeof DemoLegacyStartSsrIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -179,22 +76,8 @@ export interface FileRoutesByTo {
   '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/massive-data': typeof DemoMassiveDataRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
-  '/demo/legacy/convex': typeof DemoLegacyConvexRoute
-  '/demo/legacy/db-chat': typeof DemoLegacyDbChatRoute
-  '/demo/legacy/db-chat-api': typeof DemoLegacyDbChatApiRoute
-  '/demo/legacy/db-optimistic': typeof DemoLegacyDbOptimisticRoute
   '/demo/legacy/table': typeof DemoLegacyTableRoute
-  '/demo/legacy/tanstack-query': typeof DemoLegacyTanstackQueryRoute
-  '/demo/legacy/api/names': typeof DemoLegacyApiNamesRoute
-  '/demo/legacy/api/tq-todos': typeof DemoLegacyApiTqTodosRoute
   '/demo/legacy/form/address': typeof DemoLegacyFormAddressRoute
-  '/demo/legacy/form/simple': typeof DemoLegacyFormSimpleRoute
-  '/demo/legacy/start/api-request': typeof DemoLegacyStartApiRequestRoute
-  '/demo/legacy/start/server-funcs': typeof DemoLegacyStartServerFuncsRoute
-  '/demo/legacy/start/ssr/data-only': typeof DemoLegacyStartSsrDataOnlyRoute
-  '/demo/legacy/start/ssr/full-ssr': typeof DemoLegacyStartSsrFullSsrRoute
-  '/demo/legacy/start/ssr/spa-mode': typeof DemoLegacyStartSsrSpaModeRoute
-  '/demo/legacy/start/ssr': typeof DemoLegacyStartSsrIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -204,22 +87,8 @@ export interface FileRoutesById {
   '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/massive-data': typeof DemoMassiveDataRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
-  '/demo/legacy/convex': typeof DemoLegacyConvexRoute
-  '/demo/legacy/db-chat': typeof DemoLegacyDbChatRoute
-  '/demo/legacy/db-chat-api': typeof DemoLegacyDbChatApiRoute
-  '/demo/legacy/db-optimistic': typeof DemoLegacyDbOptimisticRoute
   '/demo/legacy/table': typeof DemoLegacyTableRoute
-  '/demo/legacy/tanstack-query': typeof DemoLegacyTanstackQueryRoute
-  '/demo/legacy/api/names': typeof DemoLegacyApiNamesRoute
-  '/demo/legacy/api/tq-todos': typeof DemoLegacyApiTqTodosRoute
   '/demo/legacy/form/address': typeof DemoLegacyFormAddressRoute
-  '/demo/legacy/form/simple': typeof DemoLegacyFormSimpleRoute
-  '/demo/legacy/start/api-request': typeof DemoLegacyStartApiRequestRoute
-  '/demo/legacy/start/server-funcs': typeof DemoLegacyStartServerFuncsRoute
-  '/demo/legacy/start/ssr/data-only': typeof DemoLegacyStartSsrDataOnlyRoute
-  '/demo/legacy/start/ssr/full-ssr': typeof DemoLegacyStartSsrFullSsrRoute
-  '/demo/legacy/start/ssr/spa-mode': typeof DemoLegacyStartSsrSpaModeRoute
-  '/demo/legacy/start/ssr/': typeof DemoLegacyStartSsrIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -230,22 +99,8 @@ export interface FileRouteTypes {
     | '/demo/file-upload'
     | '/demo/massive-data'
     | '/demo/tanstack-optimistic'
-    | '/demo/legacy/convex'
-    | '/demo/legacy/db-chat'
-    | '/demo/legacy/db-chat-api'
-    | '/demo/legacy/db-optimistic'
     | '/demo/legacy/table'
-    | '/demo/legacy/tanstack-query'
-    | '/demo/legacy/api/names'
-    | '/demo/legacy/api/tq-todos'
     | '/demo/legacy/form/address'
-    | '/demo/legacy/form/simple'
-    | '/demo/legacy/start/api-request'
-    | '/demo/legacy/start/server-funcs'
-    | '/demo/legacy/start/ssr/data-only'
-    | '/demo/legacy/start/ssr/full-ssr'
-    | '/demo/legacy/start/ssr/spa-mode'
-    | '/demo/legacy/start/ssr/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -254,22 +109,8 @@ export interface FileRouteTypes {
     | '/demo/file-upload'
     | '/demo/massive-data'
     | '/demo/tanstack-optimistic'
-    | '/demo/legacy/convex'
-    | '/demo/legacy/db-chat'
-    | '/demo/legacy/db-chat-api'
-    | '/demo/legacy/db-optimistic'
     | '/demo/legacy/table'
-    | '/demo/legacy/tanstack-query'
-    | '/demo/legacy/api/names'
-    | '/demo/legacy/api/tq-todos'
     | '/demo/legacy/form/address'
-    | '/demo/legacy/form/simple'
-    | '/demo/legacy/start/api-request'
-    | '/demo/legacy/start/server-funcs'
-    | '/demo/legacy/start/ssr/data-only'
-    | '/demo/legacy/start/ssr/full-ssr'
-    | '/demo/legacy/start/ssr/spa-mode'
-    | '/demo/legacy/start/ssr'
   id:
     | '__root__'
     | '/'
@@ -278,22 +119,8 @@ export interface FileRouteTypes {
     | '/demo/file-upload'
     | '/demo/massive-data'
     | '/demo/tanstack-optimistic'
-    | '/demo/legacy/convex'
-    | '/demo/legacy/db-chat'
-    | '/demo/legacy/db-chat-api'
-    | '/demo/legacy/db-optimistic'
     | '/demo/legacy/table'
-    | '/demo/legacy/tanstack-query'
-    | '/demo/legacy/api/names'
-    | '/demo/legacy/api/tq-todos'
     | '/demo/legacy/form/address'
-    | '/demo/legacy/form/simple'
-    | '/demo/legacy/start/api-request'
-    | '/demo/legacy/start/server-funcs'
-    | '/demo/legacy/start/ssr/data-only'
-    | '/demo/legacy/start/ssr/full-ssr'
-    | '/demo/legacy/start/ssr/spa-mode'
-    | '/demo/legacy/start/ssr/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -303,22 +130,8 @@ export interface RootRouteChildren {
   DemoFileUploadRoute: typeof DemoFileUploadRoute
   DemoMassiveDataRoute: typeof DemoMassiveDataRoute
   DemoTanstackOptimisticRoute: typeof DemoTanstackOptimisticRoute
-  DemoLegacyConvexRoute: typeof DemoLegacyConvexRoute
-  DemoLegacyDbChatRoute: typeof DemoLegacyDbChatRoute
-  DemoLegacyDbChatApiRoute: typeof DemoLegacyDbChatApiRoute
-  DemoLegacyDbOptimisticRoute: typeof DemoLegacyDbOptimisticRoute
   DemoLegacyTableRoute: typeof DemoLegacyTableRoute
-  DemoLegacyTanstackQueryRoute: typeof DemoLegacyTanstackQueryRoute
-  DemoLegacyApiNamesRoute: typeof DemoLegacyApiNamesRoute
-  DemoLegacyApiTqTodosRoute: typeof DemoLegacyApiTqTodosRoute
   DemoLegacyFormAddressRoute: typeof DemoLegacyFormAddressRoute
-  DemoLegacyFormSimpleRoute: typeof DemoLegacyFormSimpleRoute
-  DemoLegacyStartApiRequestRoute: typeof DemoLegacyStartApiRequestRoute
-  DemoLegacyStartServerFuncsRoute: typeof DemoLegacyStartServerFuncsRoute
-  DemoLegacyStartSsrDataOnlyRoute: typeof DemoLegacyStartSsrDataOnlyRoute
-  DemoLegacyStartSsrFullSsrRoute: typeof DemoLegacyStartSsrFullSsrRoute
-  DemoLegacyStartSsrSpaModeRoute: typeof DemoLegacyStartSsrSpaModeRoute
-  DemoLegacyStartSsrIndexRoute: typeof DemoLegacyStartSsrIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -365,13 +178,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/demo/legacy/tanstack-query': {
-      id: '/demo/legacy/tanstack-query'
-      path: '/demo/legacy/tanstack-query'
-      fullPath: '/demo/legacy/tanstack-query'
-      preLoaderRoute: typeof DemoLegacyTanstackQueryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/demo/legacy/table': {
       id: '/demo/legacy/table'
       path: '/demo/legacy/table'
@@ -379,102 +185,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoLegacyTableRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/demo/legacy/db-optimistic': {
-      id: '/demo/legacy/db-optimistic'
-      path: '/demo/legacy/db-optimistic'
-      fullPath: '/demo/legacy/db-optimistic'
-      preLoaderRoute: typeof DemoLegacyDbOptimisticRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/legacy/db-chat-api': {
-      id: '/demo/legacy/db-chat-api'
-      path: '/demo/legacy/db-chat-api'
-      fullPath: '/demo/legacy/db-chat-api'
-      preLoaderRoute: typeof DemoLegacyDbChatApiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/legacy/db-chat': {
-      id: '/demo/legacy/db-chat'
-      path: '/demo/legacy/db-chat'
-      fullPath: '/demo/legacy/db-chat'
-      preLoaderRoute: typeof DemoLegacyDbChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/legacy/convex': {
-      id: '/demo/legacy/convex'
-      path: '/demo/legacy/convex'
-      fullPath: '/demo/legacy/convex'
-      preLoaderRoute: typeof DemoLegacyConvexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/legacy/start/server-funcs': {
-      id: '/demo/legacy/start/server-funcs'
-      path: '/demo/legacy/start/server-funcs'
-      fullPath: '/demo/legacy/start/server-funcs'
-      preLoaderRoute: typeof DemoLegacyStartServerFuncsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/legacy/start/api-request': {
-      id: '/demo/legacy/start/api-request'
-      path: '/demo/legacy/start/api-request'
-      fullPath: '/demo/legacy/start/api-request'
-      preLoaderRoute: typeof DemoLegacyStartApiRequestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/legacy/form/simple': {
-      id: '/demo/legacy/form/simple'
-      path: '/demo/legacy/form/simple'
-      fullPath: '/demo/legacy/form/simple'
-      preLoaderRoute: typeof DemoLegacyFormSimpleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/demo/legacy/form/address': {
       id: '/demo/legacy/form/address'
       path: '/demo/legacy/form/address'
       fullPath: '/demo/legacy/form/address'
       preLoaderRoute: typeof DemoLegacyFormAddressRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/legacy/api/tq-todos': {
-      id: '/demo/legacy/api/tq-todos'
-      path: '/demo/legacy/api/tq-todos'
-      fullPath: '/demo/legacy/api/tq-todos'
-      preLoaderRoute: typeof DemoLegacyApiTqTodosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/legacy/api/names': {
-      id: '/demo/legacy/api/names'
-      path: '/demo/legacy/api/names'
-      fullPath: '/demo/legacy/api/names'
-      preLoaderRoute: typeof DemoLegacyApiNamesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/legacy/start/ssr/': {
-      id: '/demo/legacy/start/ssr/'
-      path: '/demo/legacy/start/ssr'
-      fullPath: '/demo/legacy/start/ssr/'
-      preLoaderRoute: typeof DemoLegacyStartSsrIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/legacy/start/ssr/spa-mode': {
-      id: '/demo/legacy/start/ssr/spa-mode'
-      path: '/demo/legacy/start/ssr/spa-mode'
-      fullPath: '/demo/legacy/start/ssr/spa-mode'
-      preLoaderRoute: typeof DemoLegacyStartSsrSpaModeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/legacy/start/ssr/full-ssr': {
-      id: '/demo/legacy/start/ssr/full-ssr'
-      path: '/demo/legacy/start/ssr/full-ssr'
-      fullPath: '/demo/legacy/start/ssr/full-ssr'
-      preLoaderRoute: typeof DemoLegacyStartSsrFullSsrRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/legacy/start/ssr/data-only': {
-      id: '/demo/legacy/start/ssr/data-only'
-      path: '/demo/legacy/start/ssr/data-only'
-      fullPath: '/demo/legacy/start/ssr/data-only'
-      preLoaderRoute: typeof DemoLegacyStartSsrDataOnlyRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -487,22 +202,8 @@ const rootRouteChildren: RootRouteChildren = {
   DemoFileUploadRoute: DemoFileUploadRoute,
   DemoMassiveDataRoute: DemoMassiveDataRoute,
   DemoTanstackOptimisticRoute: DemoTanstackOptimisticRoute,
-  DemoLegacyConvexRoute: DemoLegacyConvexRoute,
-  DemoLegacyDbChatRoute: DemoLegacyDbChatRoute,
-  DemoLegacyDbChatApiRoute: DemoLegacyDbChatApiRoute,
-  DemoLegacyDbOptimisticRoute: DemoLegacyDbOptimisticRoute,
   DemoLegacyTableRoute: DemoLegacyTableRoute,
-  DemoLegacyTanstackQueryRoute: DemoLegacyTanstackQueryRoute,
-  DemoLegacyApiNamesRoute: DemoLegacyApiNamesRoute,
-  DemoLegacyApiTqTodosRoute: DemoLegacyApiTqTodosRoute,
   DemoLegacyFormAddressRoute: DemoLegacyFormAddressRoute,
-  DemoLegacyFormSimpleRoute: DemoLegacyFormSimpleRoute,
-  DemoLegacyStartApiRequestRoute: DemoLegacyStartApiRequestRoute,
-  DemoLegacyStartServerFuncsRoute: DemoLegacyStartServerFuncsRoute,
-  DemoLegacyStartSsrDataOnlyRoute: DemoLegacyStartSsrDataOnlyRoute,
-  DemoLegacyStartSsrFullSsrRoute: DemoLegacyStartSsrFullSsrRoute,
-  DemoLegacyStartSsrSpaModeRoute: DemoLegacyStartSsrSpaModeRoute,
-  DemoLegacyStartSsrIndexRoute: DemoLegacyStartSsrIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

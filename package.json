@@ -23,8 +23,6 @@
 		"@t3-oss/env-core": "^0.13.10",
 		"@tailwindcss/vite": "^4.1.18",
 		"@tanstack/match-sorter-utils": "^8.19.4",
-		"@tanstack/query-db-collection": "^1.0.23",
-		"@tanstack/react-db": "^0.1.70",
 		"@tanstack/react-devtools": "^0.9.6",
 		"@tanstack/react-form": "^1.28.3",
 		"@tanstack/react-form-devtools": "^0.2.16",
@@ -51,7 +49,6 @@
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
-		"@hono/zod-validator": "^0.7.6",
 		"@tanstack/devtools-vite": "^0.5.1",
 		"@tanstack/eslint-plugin-query": "^5.91.4",
 		"@testing-library/dom": "^10.4.1",

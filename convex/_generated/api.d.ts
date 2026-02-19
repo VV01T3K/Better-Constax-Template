@@ -16,7 +16,6 @@ import type * as http from "../http.js";
 import type * as schemas_auth from "../schemas/auth.js";
 import type * as schemas_files from "../schemas/files.js";
 import type * as schemas_index from "../schemas/index.js";
-import type * as schemas_products from "../schemas/products.js";
 import type * as schemas_todos from "../schemas/todos.js";
 
 import type {
@@ -34,7 +33,6 @@ declare const fullApi: ApiFromModules<{
   "schemas/auth": typeof schemas_auth;
   "schemas/files": typeof schemas_files;
   "schemas/index": typeof schemas_index;
-  "schemas/products": typeof schemas_products;
   "schemas/todos": typeof schemas_todos;
 }>;
 
