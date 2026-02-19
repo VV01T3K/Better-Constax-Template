@@ -2,10 +2,7 @@
 	"editor.tabSize": 3,
 	"files.exclude": {
 		"**/.turbo/": true,
-		"**/.tanstack/": true,
-		"AGENTS.md": true,
-		".agents/": true,
-		".cursor/": true
+		"**/.tanstack/": true
 	},
 	"tailwind-fold.autoFold": false,
 	"css.lint.unknownAtRules": "ignore",
