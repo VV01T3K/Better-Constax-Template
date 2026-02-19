@@ -1,6 +1,9 @@
+import { convexQuery } from "@convex-dev/react-query";
+import { api } from "@convex/_generated/api";
 import { signInSchema, signUpSchema } from "@convex/schemas";
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
@@ -15,6 +18,12 @@ const inputClass =
 function LoginPage() {
 	const [isSignUp, setIsSignUp] = useState(false);
 	const [serverError, setServerError] = useState<string | null>(null);
+	const queryClient = useQueryClient();
+	const router = useRouter();
+	const search = router.state.location.search as { redirect?: unknown };
+	const safeRedirect =
+		typeof search.redirect === "string" && search.redirect.startsWith("/") ? search.redirect : "/";
+	const currentUserQuery = convexQuery(api.auth.getCurrentUser, {});
 
 	const form = useForm({
 		defaultValues: {
@@ -36,8 +45,10 @@ function LoginPage() {
 			}
 
 			const callbacks = {
-				onSuccess: () => {
-					window.location.href = "/";
+				onSuccess: async () => {
+					await queryClient.invalidateQueries({ queryKey: currentUserQuery.queryKey });
+					await router.invalidate();
+					router.history.push(safeRedirect);
 				},
 				onError: (ctx: { error: { message?: string } }) => {
 					setServerError(ctx.error.message ?? `Sign ${isSignUp ? "up" : "in"} failed`);
@@ -161,17 +172,13 @@ function LoginPage() {
 						)}
 					</form.Field>
 
-					<form.Subscribe selector={(state) => state.isSubmitting}>
-						{(isSubmitting) => (
-							<button
-								type="submit"
-								disabled={isSubmitting}
-								className="w-full rounded-lg bg-cyan-500 py-3 font-semibold text-white transition-colors hover:bg-cyan-600 disabled:cursor-not-allowed disabled:bg-cyan-500/50"
-							>
-								{isSubmitting ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
-							</button>
-						)}
-					</form.Subscribe>
+					<button
+						type="submit"
+						disabled={form.state.isSubmitting}
+						className="w-full rounded-lg bg-cyan-500 py-3 font-semibold text-white transition-colors hover:bg-cyan-600 disabled:cursor-not-allowed disabled:bg-cyan-500/50"
+					>
+						{form.state.isSubmitting ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
+					</button>
 				</form>
 
 				<p className="mt-6 text-center text-sm text-slate-400">

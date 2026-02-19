@@ -53,6 +53,14 @@ export const saveFile = zMutation({
 export const list = zQuery({
 	args: {},
 	handler: async (ctx) => {
+		const identity = await ctx.auth.getUserIdentity();
+		if (!identity) {
+			throw new ConvexError({
+				code: "UNAUTHORIZED",
+				message: "You must be logged in to list files",
+			});
+		}
+
 		const files = await ctx.db.query("files").withIndex("by_creation_time").order("desc").collect();
 		return await Promise.all(
 			files.map(async (file) => ({
@@ -66,6 +74,14 @@ export const list = zQuery({
 export const remove = zMutation({
 	args: { id: zid("files") },
 	handler: async (ctx, { id }) => {
+		const identity = await ctx.auth.getUserIdentity();
+		if (!identity) {
+			throw new ConvexError({
+				code: "UNAUTHORIZED",
+				message: "You must be logged in to delete files",
+			});
+		}
+
 		const file = await ctx.db.get(id);
 		if (!file) {
 			throw new ConvexError({

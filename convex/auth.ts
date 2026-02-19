@@ -1,13 +1,11 @@
 import type { GenericCtx } from "@convex-dev/better-auth";
-import type { BetterAuthOptions } from "better-auth";
-
 import { createClient, type AuthFunctions } from "@convex-dev/better-auth";
 import { convex } from "@convex-dev/better-auth/plugins";
+import type { BetterAuthOptions } from "better-auth";
 import { betterAuth } from "better-auth/minimal";
 
-import type { DataModel } from "./_generated/dataModel";
-
 import { components, internal } from "./_generated/api";
+import type { DataModel } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 import authConfig from "./auth.config";
 import schema from "./betterAuth/schema";

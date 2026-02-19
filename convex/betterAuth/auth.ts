@@ -3,7 +3,6 @@
 import type { GenericCtx } from "@convex-dev/better-auth";
 
 import type { DataModel } from "../_generated/dataModel";
-
 import { createAuth } from "../auth";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion

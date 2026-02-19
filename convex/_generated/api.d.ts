@@ -11,6 +11,7 @@
 import type * as auth from "../auth.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
+import type * as massiveDataset from "../massiveDataset.js";
 import type * as schemas_auth from "../schemas/auth.js";
 import type * as schemas_files from "../schemas/files.js";
 import type * as schemas_index from "../schemas/index.js";
@@ -28,6 +29,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   files: typeof files;
   http: typeof http;
+  massiveDataset: typeof massiveDataset;
   "schemas/auth": typeof schemas_auth;
   "schemas/files": typeof schemas_files;
   "schemas/index": typeof schemas_index;

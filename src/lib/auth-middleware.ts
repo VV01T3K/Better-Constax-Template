@@ -3,11 +3,13 @@ import { createMiddleware } from "@tanstack/react-start";
 
 import { getToken } from "./auth-server";
 
-export const authMiddleware = createMiddleware().server(async ({ next }) => {
+export const authMiddleware = createMiddleware().server(async ({ next, request }) => {
 	const token = await getToken();
 
 	if (!token) {
-		throw redirect({ to: "/auth/login" });
+		const requestUrl = new URL(request.url);
+		const redirectTarget = `${requestUrl.pathname}${requestUrl.search}`;
+		throw redirect({ to: "/auth/login", search: { redirect: redirectTarget } });
 	}
 
 	return await next();

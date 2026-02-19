@@ -1,9 +1,9 @@
-import type { Id } from "@convex/_generated/dataModel";
-
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import type { Id } from "@convex/_generated/dataModel";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import { useMutation } from "convex/react";
 import {
 	Archive,
@@ -19,12 +19,20 @@ import {
 	Upload,
 	UploadCloud,
 } from "lucide-react";
-import { err, ok, type Result } from "neverthrow";
+import { err as resultErr, ok, type Result } from "neverthrow";
 import { useRef, useState } from "react";
 
+import { authMiddleware } from "@/lib/auth-middleware";
 import { detectFileType } from "@/lib/file-type";
 
+const requireFileUploadAuth = createServerFn({ method: "GET" })
+	.middleware([authMiddleware])
+	.handler(async () => true);
+
 export const Route = createFileRoute("/demo/file-upload")({
+	beforeLoad: async () => {
+		await requireFileUploadAuth();
+	},
 	loader: async ({ context }) => {
 		await context.queryClient.ensureQueryData(convexQuery(api.files.list, {}));
 	},
@@ -41,7 +49,9 @@ async function downloadFile(url: string, fileName: string): Promise<Result<void,
 	try {
 		const response = await fetch(url);
 		if (!response.ok) {
-			return err(new Error(`Download failed: HTTP ${response.status} ${response.statusText}`));
+			return resultErr(
+				new Error(`Download failed: HTTP ${response.status} ${response.statusText}`),
+			);
 		}
 		const blob = await response.blob();
 		const blobUrl = URL.createObjectURL(blob);
@@ -54,7 +64,7 @@ async function downloadFile(url: string, fileName: string): Promise<Result<void,
 		URL.revokeObjectURL(blobUrl);
 		return ok(undefined);
 	} catch (cause) {
-		return err(cause instanceof Error ? cause : new Error(String(cause)));
+		return resultErr(cause instanceof Error ? cause : new Error(String(cause)));
 	}
 }
 
@@ -110,18 +120,20 @@ function FileIcon({ fileType }: { fileType: string }) {
 }
 
 function FileUploadDemo() {
-	const { data: files } = useSuspenseQuery(convexQuery(api.files.list, {}));
+	const filesQuery = convexQuery(api.files.list, {});
+	const { data: files } = useSuspenseQuery(filesQuery);
 	const generateUploadUrl = useMutation(api.files.generateUploadUrl);
 	const saveFile = useMutation(api.files.saveFile);
 	const removeFile = useMutation(api.files.remove);
+	const queryClient = useQueryClient();
 
 	const [uploading, setUploading] = useState(false);
 	const [uploadProgress, setUploadProgress] = useState(0);
 	const [error, setError] = useState<string | null>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
+	const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
 		if (!file) return;
 
 		if (file.size > 50 * 1024 * 1024) {
@@ -150,9 +162,9 @@ function FileUploadDemo() {
 			const storageId = await new Promise<string>((resolve, reject) => {
 				const xhr = new XMLHttpRequest();
 
-				xhr.upload.addEventListener("progress", (e) => {
-					if (e.lengthComputable) {
-						const progress = Math.round((e.loaded / e.total) * 100);
+				xhr.upload.addEventListener("progress", (progressEvent) => {
+					if (progressEvent.lengthComputable) {
+						const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
 						setUploadProgress(progress);
 					}
 				});
@@ -186,8 +198,9 @@ function FileUploadDemo() {
 				detectedFileType: detected.detectedExt ?? undefined,
 				typeSource: detected.source,
 			});
-		} catch (err) {
-			setError(err instanceof Error ? err.message : "Upload failed");
+			await queryClient.invalidateQueries({ queryKey: filesQuery.queryKey });
+		} catch (uploadError) {
+			setError(uploadError instanceof Error ? uploadError.message : "Upload failed");
 		} finally {
 			setUploading(false);
 			setUploadProgress(0);
@@ -199,6 +212,7 @@ function FileUploadDemo() {
 
 	const handleRemove = async (id: Id<"files">) => {
 		await removeFile({ id });
+		await queryClient.invalidateQueries({ queryKey: filesQuery.queryKey });
 	};
 
 	const imageCount = files.filter((f) => f.fileType.startsWith("image/")).length;

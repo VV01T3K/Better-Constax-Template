@@ -1,5 +1,4 @@
 import type { Collection } from "@tanstack/react-db";
-
 import { useLiveQuery } from "@tanstack/react-db";
 import { useEffect, useRef } from "react";
 
