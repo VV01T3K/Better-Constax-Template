@@ -20,7 +20,7 @@ export const start = zMutation({
 			throwForbidden("Authentication required");
 		}
 
-		await requirePermissionForIdentity(ctx, identity, "admin.users.impersonate");
+		await requirePermissionForIdentity(ctx, identity, "admin.users.impersonation.mutate");
 
 		const actorUserId = getAuthUserId(identity);
 		if (actorUserId === args.targetUserId) {
@@ -48,7 +48,7 @@ export const cancelStart = zMutation({
 			throwForbidden("Authentication required");
 		}
 
-		await requirePermissionForIdentity(ctx, identity, "admin.users.impersonate");
+		await requirePermissionForIdentity(ctx, identity, "admin.users.impersonation.mutate");
 		const actorUserId = getAuthUserId(identity);
 		const record = await ctx.db.get(args.auditId);
 		if (!record) {
@@ -75,7 +75,7 @@ export const stop = zMutation({
 			throwForbidden("Authentication required");
 		}
 
-		await requirePermissionForIdentity(ctx, identity, "admin.users.impersonate");
+		await requirePermissionForIdentity(ctx, identity, "admin.users.impersonation.mutate");
 		const actorUserId = getAuthUserId(identity);
 		const openRecord = (
 			await ctx.db

@@ -13,7 +13,7 @@ export const Route = createFileRoute("/demo/convex-query")({
 	loader: async ({ context, location }) => {
 		await requireRoutePermission({
 			queryClient: context.queryClient,
-			permission: "demo.todos.manage",
+			permission: "demo.todos.access",
 			redirectHref: location.href,
 		});
 		await context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {}));

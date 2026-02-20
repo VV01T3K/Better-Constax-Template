@@ -14,7 +14,7 @@
 		"format": "oxfmt",
 		"check": "oxfmt && oxlint --type-aware --type-check --fix && tsgo --noEmit",
 		"auth:generate": "cd convex/betterAuth && bunx @better-auth/cli generate --output ./generatedSchema.ts -y",
-		"convex:env": "convex env set BETTER_AUTH_SECRET=$(openssl rand -base64 32) && convex env set SITE_URL http://localhost:3000"
+		"convex:env": "convex env set BETTER_AUTH_SECRET=$(openssl rand -base64 32) && convex env set SITE_URL http://localhost:3000 && convex env set BETTER_AUTH_ADMIN_EMAILS admin@gmail.com"
 	},
 	"dependencies": {
 		"@convex-dev/better-auth": "0.10.10",

@@ -40,7 +40,7 @@ export const Route = createFileRoute("/demo/massive-data")({
 	loader: async ({ context, location }) => {
 		await requireRoutePermission({
 			queryClient: context.queryClient,
-			permission: "demo.massive-data.view",
+			permission: "demo.massive-data.access",
 			redirectHref: location.href,
 		});
 

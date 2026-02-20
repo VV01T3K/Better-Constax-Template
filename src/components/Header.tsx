@@ -25,28 +25,29 @@ import {
 import { useMemo, useState, useSyncExternalStore } from "react";
 
 import { authClient } from "@/lib/auth-client";
+import { waitForImpersonationState } from "@/lib/impersonation-client";
 
 const demoLinks = [
-	{ to: "/demo/convex-query", label: "Convex + TQ", icon: Globe, permission: "demo.todos.manage" },
+	{ to: "/demo/convex-query", label: "Convex + TQ", icon: Globe, permission: "demo.todos.access" },
 	{
 		to: "/demo/tanstack-optimistic",
 		label: "TQ Optimistic",
 		icon: Zap,
-		permission: "demo.todos.manage",
+		permission: "demo.todos.access",
 	},
 	{
 		to: "/demo/massive-data",
 		label: "Massive Data",
 		icon: Database,
-		permission: "demo.massive-data.view",
+		permission: "demo.massive-data.access",
 	},
-	{ to: "/demo/file-upload", label: "File Upload", icon: Upload, permission: "demo.files.manage" },
-	{ to: "/demo/table", label: "TanStack Table", icon: Table, permission: "demo.table.view" },
+	{ to: "/demo/file-upload", label: "File Upload", icon: Upload, permission: "demo.files.access" },
+	{ to: "/demo/table", label: "TanStack Table", icon: Table, permission: "demo.table.access" },
 	{
 		to: "/demo/form/address",
 		label: "Address Form",
 		icon: ClipboardType,
-		permission: "demo.address-form.manage",
+		permission: "demo.address-form.access",
 	},
 ] as const;
 
@@ -55,13 +56,19 @@ const adminLinks = [
 		to: "/admin/users",
 		label: "Users",
 		icon: UserCog,
-		permission: "admin.users.view",
+		permission: "admin.users.access",
 	},
 	{
 		to: "/admin/permissions",
-		label: "Permissions",
+		label: "App Permissions",
 		icon: ShieldCheck,
-		permission: "admin.permissions.view",
+		permission: "admin.permissions.app.access",
+	},
+	{
+		to: "/admin/permissions/admin",
+		label: "Admin Permissions",
+		icon: ShieldCheck,
+		permission: "admin.permissions.admin.access",
 	},
 ] as const;
 
@@ -86,7 +93,11 @@ export default function Header() {
 	const accessQuery = convexQuery(api.functions.authorization.getMyAccess, {});
 	const { data: currentUser } = useSuspenseQuery(currentUserQuery);
 	const { data: myAccess } = useSuspenseQuery(accessQuery);
-	const { data: sessionData, isPending: isSessionPending } = authClient.useSession();
+	const {
+		data: sessionData,
+		isPending: isSessionPending,
+		refetch: refetchSession,
+	} = authClient.useSession();
 	const { isLoading: isAuthLoading } = useConvexAuth();
 	const [isOpen, setIsOpen] = useState(false);
 	const isHydrated = useSyncExternalStore(
@@ -137,11 +148,17 @@ export default function Header() {
 				.catch(() => undefined);
 		}
 
-		await Promise.all([
-			queryClient.invalidateQueries({ queryKey: currentUserQuery.queryKey }),
-			queryClient.invalidateQueries({ queryKey: accessQuery.queryKey }),
-			router.invalidate(),
-		]);
+		const switched = await waitForImpersonationState({
+			expectedImpersonating: false,
+			refetchSession,
+		});
+
+		await Promise.all([queryClient.invalidateQueries(), router.invalidate()]);
+		if (!switched) {
+			window.location.assign("/");
+			return;
+		}
+
 		await router.navigate({ to: "/" });
 	};
 

@@ -28,7 +28,7 @@ export const Route = createFileRoute("/demo/file-upload")({
 	loader: async ({ context, location }) => {
 		await requireRoutePermission({
 			queryClient: context.queryClient,
-			permission: "demo.files.manage",
+			permission: "demo.files.access",
 			redirectHref: location.href,
 		});
 

@@ -9,6 +9,7 @@ import { Loader2, ShieldCheck, UserCog } from "lucide-react";
 import { useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
+import { waitForImpersonationState } from "@/lib/impersonation-client";
 import { requireRoutePermission } from "@/lib/route-guards";
 
 type UserRole = (typeof appRoles)[number];
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/admin/users")({
 	loader: async ({ context, location }) => {
 		await requireRoutePermission({
 			queryClient: context.queryClient,
-			permission: "admin.users.view",
+			permission: "admin.users.access",
 			redirectHref: location.href,
 		});
 
@@ -80,11 +81,12 @@ function AdminUsersPage() {
 		convexQuery(api.functions.authorization.getMyAccess, {}),
 	);
 	const { data: currentUser } = useSuspenseQuery(convexQuery(api.auth.getCurrentUser, {}));
-	const { data: authSession } = authClient.useSession();
+	const { data: authSession, refetch: refetchSession } = authClient.useSession();
 	const [actionError, setActionError] = useState<string | null>(null);
 
-	const canEditRoles = myAccess?.permissions.includes("admin.users.roles.edit") ?? false;
-	const canImpersonate = myAccess?.permissions.includes("admin.users.impersonate") ?? false;
+	const canEditRoles = myAccess?.permissions.includes("admin.users.roles.mutate") ?? false;
+	const canImpersonate =
+		myAccess?.permissions.includes("admin.users.impersonation.mutate") ?? false;
 	const selfUserId = authSession?.user.id ?? currentUser?.tokenIdentifier ?? null;
 
 	const usersQuery = useQuery({
@@ -140,7 +142,17 @@ function AdminUsersPage() {
 		},
 		onSuccess: async () => {
 			setActionError(null);
-			await router.invalidate();
+			const switched = await waitForImpersonationState({
+				expectedImpersonating: true,
+				refetchSession,
+			});
+
+			await Promise.all([queryClient.invalidateQueries(), router.invalidate()]);
+			if (!switched) {
+				window.location.assign("/");
+				return;
+			}
+
 			await router.navigate({ to: "/" });
 		},
 		onError: (error) => {

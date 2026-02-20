@@ -54,7 +54,7 @@ export const Route = createFileRoute("/demo/table")({
 	loader: async ({ context, location }) => {
 		await requireRoutePermission({
 			queryClient: context.queryClient,
-			permission: "demo.table.view",
+			permission: "demo.table.access",
 			redirectHref: location.href,
 		});
 

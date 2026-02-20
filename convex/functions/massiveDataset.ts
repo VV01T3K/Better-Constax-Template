@@ -43,7 +43,7 @@ export const page = authedQuery({
 		limit: z.number().int().positive().optional(),
 	},
 	handler: withIdentity(async (_ctx, { cursor, limit }, identity) => {
-		await requirePermissionForIdentity(_ctx, identity, "demo.massive-data.view");
+		await requirePermissionForIdentity(_ctx, identity, "demo.massive-data.access");
 		const safeLimit = Math.min(Math.max(limit ?? DEFAULT_LIMIT, 1), MAX_LIMIT);
 		const start = cursor ?? 0;
 

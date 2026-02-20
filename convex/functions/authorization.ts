@@ -2,7 +2,10 @@ import { z } from "zod";
 
 import type { MutationCtx } from "../_generated/server";
 import {
+	dropScopePermissions,
 	getPermissionCatalog,
+	getPermissionsForScope,
+	keepScopePermissions,
 	getRoleAndPermissions,
 	getRolePermissionMatrix,
 	hasPermission as checkPermission,
@@ -18,9 +21,11 @@ import {
 import {
 	appPermissionSchema,
 	appPermissions,
+	permissionScopeSchema,
 	appRoles,
 	isAppPermission,
 	normalizePermissionList,
+	type PermissionScope,
 } from "../schemas";
 
 const editableRoles = ["user", "manager"] as const;
@@ -30,6 +35,25 @@ const updateMatrixInputSchema = z.object({
 	manager: z.array(z.string()),
 	admin: z.array(z.string()).optional(),
 });
+
+function getScopeViewPermission(scope: PermissionScope) {
+	return scope === "app" ? "admin.permissions.app.access" : "admin.permissions.admin.access";
+}
+
+function getScopeEditPermission(scope: PermissionScope) {
+	return scope === "app" ? "admin.permissions.app.mutate" : "admin.permissions.admin.mutate";
+}
+
+function getScopedMatrix(
+	matrix: RolePermissionMatrix,
+	scope: PermissionScope,
+): RolePermissionMatrix {
+	return {
+		user: keepScopePermissions(matrix.user, scope),
+		manager: keepScopePermissions(matrix.manager, scope),
+		admin: keepScopePermissions(matrix.admin, scope),
+	};
+}
 
 async function upsertRolePermissions(ctx: Pick<MutationCtx, "db">, matrix: RolePermissionMatrix) {
 	const updatedAt = Date.now();
@@ -57,21 +81,26 @@ async function upsertRolePermissions(ctx: Pick<MutationCtx, "db">, matrix: RoleP
 }
 
 export const getCatalogAndMatrix = zQuery({
-	args: {},
-	handler: async (ctx) => {
+	args: {
+		scope: permissionScopeSchema,
+	},
+	handler: async (ctx, args) => {
 		const identity = await ctx.auth.getUserIdentity();
 		if (!identity) {
 			throwForbidden("Authentication required");
 		}
 
-		await requirePermissionForIdentity(ctx, identity, "admin.permissions.view");
-		const matrix = await getRolePermissionMatrix(ctx);
+		await requirePermissionForIdentity(ctx, identity, getScopeViewPermission(args.scope));
+		const fullMatrix = await getRolePermissionMatrix(ctx);
+		const scopedPermissions = getPermissionsForScope(args.scope);
+		const matrix = getScopedMatrix(fullMatrix, args.scope);
 
 		return {
+			scope: args.scope,
 			roles: appRoles,
-			permissions: appPermissions,
+			permissions: scopedPermissions,
 			editableRoles,
-			catalog: getPermissionCatalog(),
+			catalog: getPermissionCatalog(args.scope),
 			matrix,
 		};
 	},
@@ -79,6 +108,7 @@ export const getCatalogAndMatrix = zQuery({
 
 export const updateMatrix = zMutation({
 	args: {
+		scope: permissionScopeSchema,
 		matrix: updateMatrixInputSchema,
 	},
 	handler: async (ctx, args) => {
@@ -87,39 +117,55 @@ export const updateMatrix = zMutation({
 			throwForbidden("Authentication required");
 		}
 
-		await requirePermissionForIdentity(ctx, identity, "admin.permissions.edit");
+		await requirePermissionForIdentity(ctx, identity, getScopeEditPermission(args.scope));
 
 		const candidatePermissions = [
 			...args.matrix.user,
 			...args.matrix.manager,
 			...(args.matrix.admin ?? []),
 		];
+		const scopedPermissionSet = new Set(getPermissionsForScope(args.scope));
 		const unknownPermissions = candidatePermissions.filter(
-			(permission) => !isAppPermission(permission),
+			(permission) => !isAppPermission(permission) || !scopedPermissionSet.has(permission),
 		);
 		if (unknownPermissions.length > 0) {
 			throwForbidden(`Unknown permission(s): ${unknownPermissions.join(", ")}`);
 		}
 
-		const nextMatrix: RolePermissionMatrix = {
+		const nextScopedMatrix: RolePermissionMatrix = {
 			user: normalizePermissionList(args.matrix.user),
 			manager: normalizePermissionList(args.matrix.manager),
+			admin: [...scopedPermissionSet],
+		};
+
+		const currentMatrix = await getRolePermissionMatrix(ctx);
+		const nextMatrix: RolePermissionMatrix = {
+			user: normalizePermissionList([
+				...dropScopePermissions(currentMatrix.user, args.scope),
+				...nextScopedMatrix.user,
+			]),
+			manager: normalizePermissionList([
+				...dropScopePermissions(currentMatrix.manager, args.scope),
+				...nextScopedMatrix.manager,
+			]),
 			admin: [...appPermissions],
 		};
 
 		// Lockout protection: keep critical admin edit permission available to admin role.
-		if (!nextMatrix.admin.includes("admin.permissions.edit")) {
+		if (!nextMatrix.admin.includes("admin.permissions.admin.mutate")) {
 			throwForbidden("Cannot remove admin permission editing capability");
 		}
 
 		await upsertRolePermissions(ctx, nextMatrix);
+		const scopedPermissions = getPermissionsForScope(args.scope);
 
 		return {
+			scope: args.scope,
 			roles: appRoles,
-			permissions: appPermissions,
+			permissions: scopedPermissions,
 			editableRoles,
-			catalog: getPermissionCatalog(),
-			matrix: nextMatrix,
+			catalog: getPermissionCatalog(args.scope),
+			matrix: getScopedMatrix(nextMatrix, args.scope),
 		};
 	},
 });

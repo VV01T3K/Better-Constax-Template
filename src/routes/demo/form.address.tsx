@@ -15,7 +15,7 @@ export const Route = createFileRoute("/demo/form/address")({
 	loader: async ({ context, location }) => {
 		await requireRoutePermission({
 			queryClient: context.queryClient,
-			permission: "demo.address-form.manage",
+			permission: "demo.address-form.access",
 			redirectHref: location.href,
 		});
 

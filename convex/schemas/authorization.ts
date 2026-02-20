@@ -4,17 +4,26 @@ export const appRoles = ["user", "manager", "admin"] as const;
 export const appRoleSchema = z.enum(appRoles);
 export type AppRole = z.infer<typeof appRoleSchema>;
 
+export const permissionScopes = ["app", "admin"] as const;
+export const permissionScopeSchema = z.enum(permissionScopes);
+export type PermissionScope = z.infer<typeof permissionScopeSchema>;
+
 export const appPermissions = [
-	"demo.todos.manage",
-	"demo.files.manage",
-	"demo.address-form.manage",
-	"demo.table.view",
-	"demo.massive-data.view",
-	"admin.users.view",
-	"admin.users.roles.edit",
-	"admin.users.impersonate",
-	"admin.permissions.view",
-	"admin.permissions.edit",
+	"demo.todos.access",
+	"demo.todos.mutate",
+	"demo.files.access",
+	"demo.files.mutate",
+	"demo.address-form.access",
+	"demo.address-form.mutate",
+	"demo.table.access",
+	"demo.massive-data.access",
+	"admin.users.access",
+	"admin.users.roles.mutate",
+	"admin.users.impersonation.mutate",
+	"admin.permissions.app.access",
+	"admin.permissions.app.mutate",
+	"admin.permissions.admin.access",
+	"admin.permissions.admin.mutate",
 ] as const;
 export const appPermissionSchema = z.enum(appPermissions);
 export type AppPermission = z.infer<typeof appPermissionSchema>;
@@ -22,70 +31,137 @@ export type AppPermission = z.infer<typeof appPermissionSchema>;
 type PermissionMeta = {
 	label: string;
 	description: string;
-	group: "Demos" | "Admin";
+	group:
+		| "Todos"
+		| "Files"
+		| "Address Forms"
+		| "Table Demo"
+		| "Massive Data"
+		| "Users"
+		| "Permissions";
+	action: "access" | "mutate";
+	scope: PermissionScope;
 };
 
 export const appPermissionCatalog: Record<AppPermission, PermissionMeta> = {
-	"demo.todos.manage": {
-		label: "Todos Demo",
-		description: "Access and modify todos demos.",
-		group: "Demos",
+	"demo.todos.access": {
+		label: "Todos Access",
+		description: "Open todo demo pages and read todo lists.",
+		group: "Todos",
+		action: "access",
+		scope: "app",
 	},
-	"demo.files.manage": {
-		label: "File Upload Demo",
-		description: "Upload, list, and delete demo files.",
-		group: "Demos",
+	"demo.todos.mutate": {
+		label: "Todos Mutations",
+		description: "Create, toggle, and delete todos.",
+		group: "Todos",
+		action: "mutate",
+		scope: "app",
 	},
-	"demo.address-form.manage": {
-		label: "Address Form Demo",
-		description: "Submit and view address form entries.",
-		group: "Demos",
+	"demo.files.access": {
+		label: "File Upload Access",
+		description: "Open file demo pages and list existing files.",
+		group: "Files",
+		action: "access",
+		scope: "app",
 	},
-	"demo.table.view": {
-		label: "Table Demo",
-		description: "View table demo data.",
-		group: "Demos",
+	"demo.files.mutate": {
+		label: "File Upload Mutations",
+		description: "Create upload URLs and add/delete files.",
+		group: "Files",
+		action: "mutate",
+		scope: "app",
 	},
-	"demo.massive-data.view": {
-		label: "Massive Data Demo",
-		description: "Access the massive dataset demo.",
-		group: "Demos",
+	"demo.address-form.access": {
+		label: "Address Form Access",
+		description: "Open the address form page and read submissions.",
+		group: "Address Forms",
+		action: "access",
+		scope: "app",
 	},
-	"admin.users.view": {
-		label: "Admin Users Page",
-		description: "View the admin user management page.",
-		group: "Admin",
+	"demo.address-form.mutate": {
+		label: "Address Form Mutations",
+		description: "Submit new address form entries.",
+		group: "Address Forms",
+		action: "mutate",
+		scope: "app",
 	},
-	"admin.users.roles.edit": {
-		label: "Edit User Roles",
-		description: "Change roles for users in admin users page.",
-		group: "Admin",
+	"demo.table.access": {
+		label: "Table Demo Access",
+		description: "Open the TanStack Table demo.",
+		group: "Table Demo",
+		action: "access",
+		scope: "app",
 	},
-	"admin.users.impersonate": {
-		label: "Impersonate Users",
-		description: "Start user impersonation sessions from admin users page.",
-		group: "Admin",
+	"demo.massive-data.access": {
+		label: "Massive Data Access",
+		description: "Open the massive data demo.",
+		group: "Massive Data",
+		action: "access",
+		scope: "app",
 	},
-	"admin.permissions.view": {
-		label: "Admin Permissions Page",
-		description: "View role-permission matrix page.",
-		group: "Admin",
+	"admin.users.access": {
+		label: "Users Admin Access",
+		description: "Open the admin users dashboard.",
+		group: "Users",
+		action: "access",
+		scope: "admin",
 	},
-	"admin.permissions.edit": {
-		label: "Edit Permissions Matrix",
-		description: "Update role-permission assignments.",
-		group: "Admin",
+	"admin.users.roles.mutate": {
+		label: "User Role Mutations",
+		description: "Change user roles from the admin users page.",
+		group: "Users",
+		action: "mutate",
+		scope: "admin",
+	},
+	"admin.users.impersonation.mutate": {
+		label: "Impersonation Mutations",
+		description: "Start and stop admin impersonation sessions.",
+		group: "Users",
+		action: "mutate",
+		scope: "admin",
+	},
+	"admin.permissions.app.access": {
+		label: "App Matrix Access",
+		description: "Open the app permissions matrix view.",
+		group: "Permissions",
+		action: "access",
+		scope: "admin",
+	},
+	"admin.permissions.app.mutate": {
+		label: "App Matrix Mutations",
+		description: "Update app permission assignments.",
+		group: "Permissions",
+		action: "mutate",
+		scope: "admin",
+	},
+	"admin.permissions.admin.access": {
+		label: "Admin Matrix Access",
+		description: "Open the admin permissions matrix view.",
+		group: "Permissions",
+		action: "access",
+		scope: "admin",
+	},
+	"admin.permissions.admin.mutate": {
+		label: "Admin Matrix Mutations",
+		description: "Update admin permission assignments.",
+		group: "Permissions",
+		action: "mutate",
+		scope: "admin",
 	},
 };
 
 export const defaultRolePermissionMatrix: Record<AppRole, readonly AppPermission[]> = {
-	user: ["demo.todos.manage", "demo.massive-data.view"],
+	user: ["demo.todos.access", "demo.todos.mutate", "demo.massive-data.access"],
 	manager: [
-		"demo.todos.manage",
-		"demo.files.manage",
-		"demo.address-form.manage",
-		"demo.table.view",
-		"demo.massive-data.view",
+		"demo.todos.access",
+		"demo.todos.mutate",
+		"demo.files.access",
+		"demo.files.mutate",
+		"demo.address-form.access",
+		"demo.address-form.mutate",
+		"demo.table.access",
+		"demo.massive-data.access",
 	],
 	admin: appPermissions,
 };
@@ -111,8 +187,33 @@ export function isAppPermission(value: unknown): value is AppPermission {
 	return typeof value === "string" && appPermissions.some((permission) => permission === value);
 }
 
+const legacyPermissionMigrationMap: Partial<Record<string, readonly AppPermission[]>> = {
+	"demo.todos.manage": ["demo.todos.access", "demo.todos.mutate"],
+	"demo.files.manage": ["demo.files.access", "demo.files.mutate"],
+	"demo.address-form.manage": ["demo.address-form.access", "demo.address-form.mutate"],
+	"demo.table.view": ["demo.table.access"],
+	"demo.massive-data.view": ["demo.massive-data.access"],
+	"admin.users.view": ["admin.users.access"],
+	"admin.users.roles.edit": ["admin.users.roles.mutate"],
+	"admin.users.impersonate": ["admin.users.impersonation.mutate"],
+	"admin.permissions.view": ["admin.permissions.app.access", "admin.permissions.admin.access"],
+	"admin.permissions.edit": ["admin.permissions.app.mutate", "admin.permissions.admin.mutate"],
+};
+
 export function normalizePermissionList(permissions: readonly unknown[]): AppPermission[] {
-	return [...new Set(permissions.filter(isAppPermission))];
+	const normalizedPermissions = permissions.flatMap((permission) => {
+		if (isAppPermission(permission)) {
+			return [permission];
+		}
+
+		if (typeof permission === "string") {
+			return legacyPermissionMigrationMap[permission] ?? [];
+		}
+
+		return [];
+	});
+
+	return [...new Set(normalizedPermissions)];
 }
 
 export const rolePermissionSchema = z.object({
@@ -131,12 +232,13 @@ export const impersonationAuditSchema = z.object({
 });
 
 export const routePermissionMap = {
-	"/demo/convex-query": "demo.todos.manage",
-	"/demo/tanstack-optimistic": "demo.todos.manage",
-	"/demo/file-upload": "demo.files.manage",
-	"/demo/form/address": "demo.address-form.manage",
-	"/demo/table": "demo.table.view",
-	"/demo/massive-data": "demo.massive-data.view",
-	"/admin/users": "admin.users.view",
-	"/admin/permissions": "admin.permissions.view",
+	"/demo/convex-query": "demo.todos.access",
+	"/demo/tanstack-optimistic": "demo.todos.access",
+	"/demo/file-upload": "demo.files.access",
+	"/demo/form/address": "demo.address-form.access",
+	"/demo/table": "demo.table.access",
+	"/demo/massive-data": "demo.massive-data.access",
+	"/admin/users": "admin.users.access",
+	"/admin/permissions": "admin.permissions.app.access",
+	"/admin/permissions/admin": "admin.permissions.admin.access",
 } as const;

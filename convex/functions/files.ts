@@ -13,7 +13,7 @@ import {
 export const generateUploadUrl = authedMutation({
 	args: {},
 	handler: async (ctx) => {
-		await requirePermissionForIdentity(ctx, ctx.identity, "demo.files.manage");
+		await requirePermissionForIdentity(ctx, ctx.identity, "demo.files.mutate");
 		return await ctx.storage.generateUploadUrl();
 	},
 });
@@ -28,7 +28,7 @@ export const saveFile = authedMutation({
 		typeSource: z.optional(z.enum(["magic-bytes", "extension", "content-sniff"])),
 	},
 	handler: withIdentity(async (ctx, args, identity) => {
-		await requirePermissionForIdentity(ctx, identity, "demo.files.manage");
+		await requirePermissionForIdentity(ctx, identity, "demo.files.mutate");
 		const authUserId = getAuthUserId(identity);
 		return await ctx.db.insert("files", {
 			authUserId,
@@ -45,7 +45,7 @@ export const saveFile = authedMutation({
 export const list = authedQuery({
 	args: {},
 	handler: withIdentity(async (ctx, _args, identity) => {
-		await requirePermissionForIdentity(ctx, identity, "demo.files.manage");
+		await requirePermissionForIdentity(ctx, identity, "demo.files.access");
 		const authUserId = getAuthUserId(identity);
 		const files = await ctx.db
 			.query("files")
@@ -64,7 +64,7 @@ export const list = authedQuery({
 export const remove = authedMutation({
 	args: { id: zid("files") },
 	handler: withIdentity(async (ctx, { id }, identity) => {
-		await requirePermissionForIdentity(ctx, identity, "demo.files.manage");
+		await requirePermissionForIdentity(ctx, identity, "demo.files.mutate");
 		const authUserId = getAuthUserId(identity);
 		const file = await getOwnedDocOrThrow(ctx, id, { ownerId: authUserId });
 		await ctx.storage.delete(file.storageId);

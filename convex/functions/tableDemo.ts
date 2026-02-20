@@ -99,7 +99,7 @@ export const page = authedQuery({
 		pageSize: z.number().int().positive().optional(),
 	},
 	handler: withIdentity(async (_ctx, args, identity) => {
-		await requirePermissionForIdentity(_ctx, identity, "demo.table.view");
+		await requirePermissionForIdentity(_ctx, identity, "demo.table.access");
 		const sortKey: SortKey = args.sortKey ?? "id";
 		const sortDirection: SortDirection = args.sortDirection ?? "asc";
 		const pageIndex = args.pageIndex ?? 0;

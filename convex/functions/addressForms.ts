@@ -14,7 +14,7 @@ export const listMine = authedQuery({
 		limit: z.number().int().positive().max(100).optional(),
 	},
 	handler: withIdentity(async (ctx, { limit }, identity) => {
-		await requirePermissionForIdentity(ctx, identity, "demo.address-form.manage");
+		await requirePermissionForIdentity(ctx, identity, "demo.address-form.access");
 		const authUserId = getAuthUserId(identity);
 		return await ctx.db
 			.query("addressSubmissions")
@@ -27,7 +27,7 @@ export const listMine = authedQuery({
 export const submit = authedMutation({
 	args: submitAddressFormSchema.shape,
 	handler: withIdentity(async (ctx, args, identity) => {
-		await requirePermissionForIdentity(ctx, identity, "demo.address-form.manage");
+		await requirePermissionForIdentity(ctx, identity, "demo.address-form.mutate");
 		const authUserId = getAuthUserId(identity);
 		return await ctx.db.insert("addressSubmissions", {
 			authUserId,

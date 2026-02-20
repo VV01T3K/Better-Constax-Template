@@ -20,6 +20,7 @@ import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminPermissionsRouteImport } from './routes/admin/permissions'
 import { Route as DemoFormAddressRouteImport } from './routes/demo/form.address'
+import { Route as AdminPermissionsAdminRouteImport } from './routes/admin/permissions.admin'
 
 const ForbiddenRoute = ForbiddenRouteImport.update({
   id: '/forbidden',
@@ -76,11 +77,16 @@ const DemoFormAddressRoute = DemoFormAddressRouteImport.update({
   path: '/demo/form/address',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPermissionsAdminRoute = AdminPermissionsAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AdminPermissionsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/forbidden': typeof ForbiddenRoute
-  '/admin/permissions': typeof AdminPermissionsRoute
+  '/admin/permissions': typeof AdminPermissionsRouteWithChildren
   '/admin/users': typeof AdminUsersRoute
   '/auth/login': typeof AuthLoginRoute
   '/demo/convex-query': typeof DemoConvexQueryRoute
@@ -88,12 +94,13 @@ export interface FileRoutesByFullPath {
   '/demo/massive-data': typeof DemoMassiveDataRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
+  '/admin/permissions/admin': typeof AdminPermissionsAdminRoute
   '/demo/form/address': typeof DemoFormAddressRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/forbidden': typeof ForbiddenRoute
-  '/admin/permissions': typeof AdminPermissionsRoute
+  '/admin/permissions': typeof AdminPermissionsRouteWithChildren
   '/admin/users': typeof AdminUsersRoute
   '/auth/login': typeof AuthLoginRoute
   '/demo/convex-query': typeof DemoConvexQueryRoute
@@ -101,13 +108,14 @@ export interface FileRoutesByTo {
   '/demo/massive-data': typeof DemoMassiveDataRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
+  '/admin/permissions/admin': typeof AdminPermissionsAdminRoute
   '/demo/form/address': typeof DemoFormAddressRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/forbidden': typeof ForbiddenRoute
-  '/admin/permissions': typeof AdminPermissionsRoute
+  '/admin/permissions': typeof AdminPermissionsRouteWithChildren
   '/admin/users': typeof AdminUsersRoute
   '/auth/login': typeof AuthLoginRoute
   '/demo/convex-query': typeof DemoConvexQueryRoute
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/demo/massive-data': typeof DemoMassiveDataRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
+  '/admin/permissions/admin': typeof AdminPermissionsAdminRoute
   '/demo/form/address': typeof DemoFormAddressRoute
 }
 export interface FileRouteTypes {
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
     | '/demo/massive-data'
     | '/demo/table'
     | '/demo/tanstack-optimistic'
+    | '/admin/permissions/admin'
     | '/demo/form/address'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
     | '/demo/massive-data'
     | '/demo/table'
     | '/demo/tanstack-optimistic'
+    | '/admin/permissions/admin'
     | '/demo/form/address'
   id:
     | '__root__'
@@ -156,13 +167,14 @@ export interface FileRouteTypes {
     | '/demo/massive-data'
     | '/demo/table'
     | '/demo/tanstack-optimistic'
+    | '/admin/permissions/admin'
     | '/demo/form/address'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ForbiddenRoute: typeof ForbiddenRoute
-  AdminPermissionsRoute: typeof AdminPermissionsRoute
+  AdminPermissionsRoute: typeof AdminPermissionsRouteWithChildren
   AdminUsersRoute: typeof AdminUsersRoute
   AuthLoginRoute: typeof AuthLoginRoute
   DemoConvexQueryRoute: typeof DemoConvexQueryRoute
@@ -252,13 +264,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoFormAddressRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/permissions/admin': {
+      id: '/admin/permissions/admin'
+      path: '/admin'
+      fullPath: '/admin/permissions/admin'
+      preLoaderRoute: typeof AdminPermissionsAdminRouteImport
+      parentRoute: typeof AdminPermissionsRoute
+    }
   }
 }
+
+interface AdminPermissionsRouteChildren {
+  AdminPermissionsAdminRoute: typeof AdminPermissionsAdminRoute
+}
+
+const AdminPermissionsRouteChildren: AdminPermissionsRouteChildren = {
+  AdminPermissionsAdminRoute: AdminPermissionsAdminRoute,
+}
+
+const AdminPermissionsRouteWithChildren =
+  AdminPermissionsRoute._addFileChildren(AdminPermissionsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ForbiddenRoute: ForbiddenRoute,
-  AdminPermissionsRoute: AdminPermissionsRoute,
+  AdminPermissionsRoute: AdminPermissionsRouteWithChildren,
   AdminUsersRoute: AdminUsersRoute,
   AuthLoginRoute: AuthLoginRoute,
   DemoConvexQueryRoute: DemoConvexQueryRoute,
