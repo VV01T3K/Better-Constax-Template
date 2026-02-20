@@ -1,10 +1,6 @@
-import { NoOp } from "convex-helpers/server/customFunctions";
-import { zCustomQuery } from "convex-helpers/server/zod4";
 import { z } from "zod";
 
-import { query } from "../_generated/server";
-
-const zQuery = zCustomQuery(query, NoOp);
+import { zQuery } from "../lib/functionHelpers";
 
 const TOTAL_ROWS = 5_000;
 const DEFAULT_PAGE_SIZE = 20;

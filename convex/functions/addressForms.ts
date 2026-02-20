@@ -1,48 +1,28 @@
-import { NoOp } from "convex-helpers/server/customFunctions";
-import { zCustomMutation, zCustomQuery } from "convex-helpers/server/zod4";
-import { ConvexError } from "convex/values";
 import { z } from "zod";
 
-import { mutation, query } from "../_generated/server";
+import { authedMutation, authedQuery, getAuthUserId, withIdentity } from "../lib/functionHelpers";
 import { submitAddressFormSchema } from "../schemas";
 
-const zQuery = zCustomQuery(query, NoOp);
-const zMutation = zCustomMutation(mutation, NoOp);
-
-export const listMine = zQuery({
+export const listMine = authedQuery({
 	args: {
 		limit: z.number().int().positive().max(100).optional(),
 	},
-	handler: async (ctx, { limit }) => {
-		const identity = await ctx.auth.getUserIdentity();
-		if (!identity) {
-			throw new ConvexError({
-				code: "UNAUTHORIZED",
-				message: "You must be logged in to view address submissions",
-			});
-		}
-
+	handler: withIdentity(async (ctx, { limit }, identity) => {
+		const authUserId = getAuthUserId(identity);
 		return await ctx.db
 			.query("addressSubmissions")
-			.withIndex("by_authUserId", (q) => q.eq("authUserId", identity.subject))
+			.withIndex("by_authUserId", (q) => q.eq("authUserId", authUserId))
 			.order("desc")
 			.take(limit ?? 20);
-	},
+	}),
 });
 
-export const submit = zMutation({
+export const submit = authedMutation({
 	args: submitAddressFormSchema.shape,
-	handler: async (ctx, args) => {
-		const identity = await ctx.auth.getUserIdentity();
-		if (!identity) {
-			throw new ConvexError({
-				code: "UNAUTHORIZED",
-				message: "You must be logged in to submit the address form",
-			});
-		}
-
+	handler: withIdentity(async (ctx, args, identity) => {
+		const authUserId = getAuthUserId(identity);
 		return await ctx.db.insert("addressSubmissions", {
-			authUserId: identity.subject,
+			authUserId,
 			fullName: args.fullName.trim(),
 			email: args.email.trim().toLowerCase(),
 			address: {
@@ -55,5 +35,5 @@ export const submit = zMutation({
 			phone: args.phone.trim(),
 			submittedAt: Date.now(),
 		});
-	},
+	}),
 });
