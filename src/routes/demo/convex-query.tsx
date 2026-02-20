@@ -7,8 +7,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Check, Circle, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
+import { requireRoutePermission } from "@/lib/route-guards";
+
 export const Route = createFileRoute("/demo/convex-query")({
-	loader: async ({ context }) => {
+	loader: async ({ context, location }) => {
+		await requireRoutePermission({
+			queryClient: context.queryClient,
+			permission: "demo.todos.manage",
+			redirectHref: location.href,
+		});
 		await context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {}));
 	},
 	component: ConvexQueryTodos,

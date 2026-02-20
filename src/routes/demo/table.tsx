@@ -15,6 +15,8 @@ import {
 } from "@tanstack/react-table";
 import { type InputHTMLAttributes, useEffect, useRef, useState } from "react";
 
+import { requireRoutePermission } from "@/lib/route-guards";
+
 const DEFAULT_PAGE_SIZE = 20;
 const PAGE_SIZE_OPTIONS = [10, 20, 30, 40, 50] as const;
 const FILTER_DEBOUNCE_MS = 250;
@@ -49,7 +51,13 @@ const DEFAULT_SORTING: SortingState = [{ id: "id", desc: false }];
 const DEFAULT_PAGINATION: PaginationState = { pageIndex: 0, pageSize: DEFAULT_PAGE_SIZE };
 
 export const Route = createFileRoute("/demo/table")({
-	loader: async ({ context }) => {
+	loader: async ({ context, location }) => {
+		await requireRoutePermission({
+			queryClient: context.queryClient,
+			permission: "demo.table.view",
+			redirectHref: location.href,
+		});
+
 		await context.queryClient.ensureQueryData(
 			convexQuery(api.functions.tableDemo.page, {
 				filter: "",

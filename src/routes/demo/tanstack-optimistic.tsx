@@ -7,9 +7,15 @@ import { Check, Circle, Loader2, Plus, Trash2, Zap } from "lucide-react";
 import { useState } from "react";
 
 import { useTodosOptimisticTQ } from "@/hooks/useTodosOptimisticTQ";
+import { requireRoutePermission } from "@/lib/route-guards";
 
 export const Route = createFileRoute("/demo/tanstack-optimistic")({
-	loader: async ({ context }) => {
+	loader: async ({ context, location }) => {
+		await requireRoutePermission({
+			queryClient: context.queryClient,
+			permission: "demo.todos.manage",
+			redirectHref: location.href,
+		});
 		await context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {}));
 	},
 	component: TanStackOptimisticTodos,

@@ -1,6 +1,7 @@
-import { convexQuery } from "@convex-dev/react-query";
+import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import type { AppPermission } from "@convex/schemas";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
 import { useConvexAuth } from "convex/react";
 import {
@@ -15,32 +16,77 @@ import {
 	Table,
 	Upload,
 	User,
+	UserCog,
+	UserRoundCheck,
 	X,
 	Zap,
 	type LucideIcon,
 } from "lucide-react";
-import { useState, useSyncExternalStore } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 
 import { authClient } from "@/lib/auth-client";
 
-const coreLinks = [
-	{ to: "/", label: "Home", icon: Home },
-	{ to: "/demo/convex-query", label: "Convex + TQ", icon: Globe },
-	{ to: "/demo/tanstack-optimistic", label: "TQ Optimistic", icon: Zap },
-	{ to: "/demo/massive-data", label: "Massive Data", icon: Database },
-	{ to: "/demo/file-upload", label: "File Upload", icon: Upload },
-	{ to: "/demo/table", label: "TanStack Table", icon: Table },
-	{ to: "/demo/form/address", label: "Address Form", icon: ClipboardType },
+const demoLinks = [
+	{ to: "/demo/convex-query", label: "Convex + TQ", icon: Globe, permission: "demo.todos.manage" },
+	{
+		to: "/demo/tanstack-optimistic",
+		label: "TQ Optimistic",
+		icon: Zap,
+		permission: "demo.todos.manage",
+	},
+	{
+		to: "/demo/massive-data",
+		label: "Massive Data",
+		icon: Database,
+		permission: "demo.massive-data.view",
+	},
+	{ to: "/demo/file-upload", label: "File Upload", icon: Upload, permission: "demo.files.manage" },
+	{ to: "/demo/table", label: "TanStack Table", icon: Table, permission: "demo.table.view" },
+	{
+		to: "/demo/form/address",
+		label: "Address Form",
+		icon: ClipboardType,
+		permission: "demo.address-form.manage",
+	},
 ] as const;
 
-type NavTarget = (typeof coreLinks)[number]["to"] | "/auth/login";
+const adminLinks = [
+	{
+		to: "/admin/users",
+		label: "Users",
+		icon: UserCog,
+		permission: "admin.users.view",
+	},
+	{
+		to: "/admin/permissions",
+		label: "Permissions",
+		icon: ShieldCheck,
+		permission: "admin.permissions.view",
+	},
+] as const;
+
+type NavTarget =
+	| "/"
+	| "/auth/login"
+	| (typeof demoLinks)[number]["to"]
+	| (typeof adminLinks)[number]["to"];
 
 const noopSubscribe = () => () => {};
+
+function hasAccess(
+	permissionSet: ReadonlySet<AppPermission>,
+	permission: (typeof demoLinks)[number]["permission"] | (typeof adminLinks)[number]["permission"],
+) {
+	return permissionSet.has(permission);
+}
 
 export default function Header() {
 	const currentUserQuery = convexQuery(api.auth.getCurrentUser, {});
 	const filesQuery = convexQuery(api.functions.files.list, {});
+	const accessQuery = convexQuery(api.functions.authorization.getMyAccess, {});
 	const { data: currentUser } = useSuspenseQuery(currentUserQuery);
+	const { data: myAccess } = useSuspenseQuery(accessQuery);
+	const { data: sessionData, isPending: isSessionPending } = authClient.useSession();
 	const { isLoading: isAuthLoading } = useConvexAuth();
 	const [isOpen, setIsOpen] = useState(false);
 	const isHydrated = useSyncExternalStore(
@@ -50,7 +96,17 @@ export default function Header() {
 	);
 	const queryClient = useQueryClient();
 	const router = useRouter();
-	const showAuthPlaceholder = !isHydrated || isAuthLoading;
+	const showAuthPlaceholder = !isHydrated || isAuthLoading || isSessionPending;
+
+	const permissionSet = useMemo(() => {
+		return new Set<AppPermission>(myAccess?.permissions ?? []);
+	}, [myAccess?.permissions]);
+	const visibleDemoLinks = demoLinks.filter((item) => hasAccess(permissionSet, item.permission));
+	const visibleAdminLinks = adminLinks.filter((item) => hasAccess(permissionSet, item.permission));
+
+	const stopAuditMutation = useMutation({
+		mutationFn: useConvexMutation(api.functions.impersonationAudit.stop),
+	});
 
 	const handleSignOut = async () => {
 		await authClient.signOut().catch(() => undefined);
@@ -58,14 +114,62 @@ export default function Header() {
 		queryClient.removeQueries({ queryKey: filesQuery.queryKey });
 		await Promise.all([
 			queryClient.invalidateQueries({ queryKey: currentUserQuery.queryKey }),
+			queryClient.invalidateQueries({ queryKey: accessQuery.queryKey }),
 			router.invalidate(),
 		]);
 		await router.navigate({ to: "/auth/login", replace: true });
 		setIsOpen(false);
 	};
 
+	const handleStopImpersonation = async () => {
+		const targetUserId = sessionData?.user?.id;
+		const result = await authClient.admin.stopImpersonating();
+		if (result.error) {
+			return;
+		}
+
+		if (targetUserId) {
+			await stopAuditMutation
+				.mutateAsync({
+					targetUserId,
+					source: "header-stop-impersonation",
+				})
+				.catch(() => undefined);
+		}
+
+		await Promise.all([
+			queryClient.invalidateQueries({ queryKey: currentUserQuery.queryKey }),
+			queryClient.invalidateQueries({ queryKey: accessQuery.queryKey }),
+			router.invalidate(),
+		]);
+		await router.navigate({ to: "/" });
+	};
+
+	const isImpersonating = Boolean(sessionData?.session?.impersonatedBy);
+
 	return (
 		<>
+			{isImpersonating ? (
+				<div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-700 bg-amber-900 px-4 py-2 text-sm text-amber-50">
+					<div className="flex items-center gap-2">
+						<UserRoundCheck size={16} />
+						<span>
+							Impersonating{" "}
+							<strong>{sessionData?.user?.email ?? sessionData?.user?.name ?? "user"}</strong>
+						</span>
+					</div>
+					<button
+						type="button"
+						onClick={() => {
+							void handleStopImpersonation();
+						}}
+						className="rounded-md bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900 hover:bg-white"
+					>
+						Stop Impersonation
+					</button>
+				</div>
+			) : null}
+
 			<header className="flex items-center justify-between bg-gray-800 p-4 text-white shadow-lg">
 				<div className="flex items-center">
 					<button
@@ -130,13 +234,17 @@ export default function Header() {
 				</div>
 
 				<nav className="flex-1 overflow-y-auto p-4">
-					<div className="mb-4">
+					<div className="space-y-1">
+						<NavLinkItem to="/" label="Home" icon={Home} onNavigate={() => setIsOpen(false)} />
+					</div>
+
+					<div className="mt-4 mb-4">
 						<div className="mb-2 flex items-center gap-2 px-2 text-xs font-semibold tracking-wide text-cyan-300 uppercase">
 							<ShieldCheck size={14} />
 							Demos
 						</div>
 						<div className="space-y-1">
-							{coreLinks.map((item) => (
+							{visibleDemoLinks.map((item) => (
 								<NavLinkItem
 									key={item.to}
 									to={item.to}
@@ -147,6 +255,26 @@ export default function Header() {
 							))}
 						</div>
 					</div>
+
+					{visibleAdminLinks.length > 0 ? (
+						<div className="mb-4">
+							<div className="mb-2 flex items-center gap-2 px-2 text-xs font-semibold tracking-wide text-orange-300 uppercase">
+								<ShieldCheck size={14} />
+								Admin
+							</div>
+							<div className="space-y-1">
+								{visibleAdminLinks.map((item) => (
+									<NavLinkItem
+										key={item.to}
+										to={item.to}
+										label={item.label}
+										icon={item.icon}
+										onNavigate={() => setIsOpen(false)}
+									/>
+								))}
+							</div>
+						</div>
+					) : null}
 
 					<div className="mt-2 border-t border-gray-700 pt-2">
 						{showAuthPlaceholder ? (

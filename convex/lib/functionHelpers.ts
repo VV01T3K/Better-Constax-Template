@@ -5,12 +5,15 @@ import { ConvexError } from "convex/values";
 
 import type { Doc, Id, TableNames } from "../_generated/dataModel";
 import { mutation, query, type MutationCtx, type QueryCtx } from "../_generated/server";
+import type { AppPermission, AppRole } from "../schemas";
+import { hasPermission } from "./authorization";
 
 export const zQuery = zCustomQuery(query, NoOp);
 export const zMutation = zCustomMutation(mutation, NoOp);
 
 type ContextWithAuth = Pick<QueryCtx, "auth"> | Pick<MutationCtx, "auth">;
 type ContextWithDb = Pick<QueryCtx, "db"> | Pick<MutationCtx, "db">;
+type ContextWithAuthAndDb = Pick<QueryCtx, "auth" | "db"> | Pick<MutationCtx, "auth" | "db">;
 type ContextWithIdentity = { identity: UserIdentity };
 type MaybePromise<T> = T | Promise<T>;
 type StringKeys<T> = {
@@ -58,6 +61,20 @@ export function getAuthUserId(identity: UserIdentity): string {
 	return identity.tokenIdentifier;
 }
 
+export function getAuthUserRole(identity: UserIdentity): AppRole {
+	const parsedRole = (identity as UserIdentity & { role?: unknown }).role;
+	if (typeof parsedRole !== "string") {
+		return "user";
+	}
+
+	const role = parsedRole.split(",")[0]?.trim().toLowerCase();
+	if (!role) {
+		return "user";
+	}
+
+	return role === "admin" || role === "manager" ? role : "user";
+}
+
 export const authedQuery = zCustomQuery(
 	query,
 	customCtx(async (ctx: QueryCtx) => ({
@@ -71,6 +88,40 @@ export const authedMutation = zCustomMutation(
 		identity: await requireAuth(ctx),
 	})),
 );
+
+export async function requireRole(
+	ctx: ContextWithAuth,
+	role: AppRole,
+	options?: { message?: string },
+): Promise<UserIdentity> {
+	const identity = await requireAuth(ctx, options);
+	if (getAuthUserRole(identity) !== role) {
+		throwForbidden(options?.message ?? "You do not have the required role");
+	}
+	return identity;
+}
+
+export async function requirePermission(
+	ctx: ContextWithAuthAndDb,
+	permission: AppPermission,
+	options?: { message?: string },
+): Promise<UserIdentity> {
+	const identity = await requireAuth(ctx, options);
+	await requirePermissionForIdentity(ctx, identity, permission, options);
+	return identity;
+}
+
+export async function requirePermissionForIdentity(
+	ctx: ContextWithDb,
+	identity: UserIdentity,
+	permission: AppPermission,
+	options?: { message?: string },
+): Promise<void> {
+	const allowed = await hasPermission(ctx, identity, permission);
+	if (!allowed) {
+		throwForbidden(options?.message ?? "You do not have permission to perform this action");
+	}
+}
 
 export function withIdentity<TContext extends ContextWithIdentity, TArgs, TResult>(
 	handler: (

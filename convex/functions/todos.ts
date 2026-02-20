@@ -6,12 +6,14 @@ import {
 	authedQuery,
 	getAuthUserId,
 	getOwnedDocOrThrow,
+	requirePermissionForIdentity,
 	withIdentity,
 } from "../lib/functionHelpers";
 
 export const list = authedQuery({
 	args: {},
 	handler: withIdentity(async (ctx, _args, identity) => {
+		await requirePermissionForIdentity(ctx, identity, "demo.todos.manage");
 		const authUserId = getAuthUserId(identity);
 		return await ctx.db
 			.query("todos")
@@ -24,6 +26,7 @@ export const list = authedQuery({
 export const add = authedMutation({
 	args: { text: z.string().min(1, "Text is required") },
 	handler: withIdentity(async (ctx, { text }, identity) => {
+		await requirePermissionForIdentity(ctx, identity, "demo.todos.manage");
 		const authUserId = getAuthUserId(identity);
 		return await ctx.db.insert("todos", {
 			authUserId,
@@ -36,6 +39,7 @@ export const add = authedMutation({
 export const toggle = authedMutation({
 	args: { id: zid("todos") },
 	handler: withIdentity(async (ctx, { id }, identity) => {
+		await requirePermissionForIdentity(ctx, identity, "demo.todos.manage");
 		const authUserId = getAuthUserId(identity);
 		const todo = await getOwnedDocOrThrow(ctx, id, { ownerId: authUserId });
 		return await ctx.db.patch(id, {
@@ -47,6 +51,7 @@ export const toggle = authedMutation({
 export const remove = authedMutation({
 	args: { id: zid("todos") },
 	handler: withIdentity(async (ctx, { id }, identity) => {
+		await requirePermissionForIdentity(ctx, identity, "demo.todos.manage");
 		const authUserId = getAuthUserId(identity);
 		await getOwnedDocOrThrow(ctx, id, { ownerId: authUserId });
 		return await ctx.db.delete(id);
