@@ -5,17 +5,13 @@ import { useFieldContext, useFormContext } from "@/hooks/demo.form-context";
 export function SubscribeButton({ label }: { label: string }) {
 	const form = useFormContext();
 	return (
-		<form.Subscribe selector={(state) => state.isSubmitting}>
-			{(isSubmitting) => (
-				<button
-					type="submit"
-					disabled={isSubmitting}
-					className="rounded-md bg-indigo-600 px-6 py-2 text-white transition-colors hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50"
-				>
-					{label}
-				</button>
-			)}
-		</form.Subscribe>
+		<button
+			type="submit"
+			disabled={form.state.isSubmitting}
+			className="rounded-md bg-indigo-600 px-6 py-2 text-white transition-colors hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50"
+		>
+			{label}
+		</button>
 	);
 }
 

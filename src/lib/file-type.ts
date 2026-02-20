@@ -1,7 +1,7 @@
 import { fileTypeFromBlob } from "file-type";
 import { err, ok, type Result } from "neverthrow";
 
-export interface DetectedFileType {
+interface DetectedFileType {
 	/** The MIME type to use (detected or fallback) */
 	mime: string;
 	/** The file extension detected by magic bytes (without dot), or null if not detected */
@@ -10,24 +10,13 @@ export interface DetectedFileType {
 	source: "magic-bytes" | "extension" | "content-sniff";
 }
 
-export class FileTypeError extends Error {
+class FileTypeError extends Error {
 	constructor(
 		message: string,
 		public readonly cause?: unknown,
 	) {
 		super(message, { cause });
 		this.name = "FileTypeError";
-	}
-}
-
-export class FileValidationError extends Error {
-	constructor(
-		message: string,
-		public readonly code: "EMPTY_FILE" | "FILE_TOO_SMALL" | "FILE_TOO_LARGE" | "UNKNOWN_TYPE",
-		public readonly maxSize?: number,
-	) {
-		super(message);
-		this.name = "FileValidationError";
 	}
 }
 

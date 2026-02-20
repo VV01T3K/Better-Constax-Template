@@ -1,9 +1,8 @@
-import type { NitroConfig } from "nitro/types";
-
 import tailwindcss from "@tailwindcss/vite";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
+import type { NitroConfig } from "nitro/types";
 import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
@@ -17,6 +16,9 @@ const config = defineConfig({
 			"@": import.meta.dirname + "/src",
 			"@convex": import.meta.dirname + "/convex",
 		},
+	},
+	build: {
+		chunkSizeWarningLimit: 1024,
 	},
 	ssr: {
 		noExternal: ["@convex-dev/better-auth"],
@@ -36,7 +38,7 @@ const config = defineConfig({
 		VitePWA({
 			registerType: "autoUpdate",
 			workbox: {
-				globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+				globPatterns: ["**/*.{js,css,html,ico,png,jpg,jpeg,webp,avif,svg,woff2}"],
 				navigateFallback: null,
 				swDest: ".output/public/sw.js",
 				globDirectory: ".output/public",
@@ -53,14 +55,26 @@ const config = defineConfig({
 						type: "image/x-icon",
 					},
 					{
-						src: "logo192.png",
-						type: "image/png",
+						src: "logo192.avif",
+						type: "image/avif",
 						sizes: "192x192",
 						purpose: "any maskable",
 					},
 					{
-						src: "logo512.png",
-						type: "image/png",
+						src: "logo192.webp",
+						type: "image/webp",
+						sizes: "192x192",
+						purpose: "any maskable",
+					},
+					{
+						src: "logo512.avif",
+						type: "image/avif",
+						sizes: "512x512",
+						purpose: "any maskable",
+					},
+					{
+						src: "logo512.webp",
+						type: "image/webp",
 						sizes: "512x512",
 						purpose: "any maskable",
 					},

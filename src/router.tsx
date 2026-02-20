@@ -3,7 +3,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 
-import { env } from "@/env/client";
+import { env } from "@/env";
 
 import { routeTree } from "./routeTree.gen";
 
@@ -24,6 +24,10 @@ export const getRouter = () => {
 			queries: {
 				queryKeyHashFn: convexQueryClient.hashFn(),
 				queryFn: convexQueryClient.queryFn(),
+				staleTime: 30_000,
+				gcTime: 5 * 60_000,
+				retry: 1,
+				refetchOnWindowFocus: false,
 			},
 		},
 	});

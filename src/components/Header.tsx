@@ -1,10 +1,9 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { Link, useRouter } from "@tanstack/react-router";
+import { useConvexAuth } from "convex/react";
 import {
-	ChevronDown,
-	ChevronRight,
 	ClipboardType,
 	Database,
 	Globe,
@@ -12,28 +11,57 @@ import {
 	LogIn,
 	LogOut,
 	Menu,
-	Network,
-	SquareFunction,
-	StickyNote,
+	ShieldCheck,
 	Table,
 	Upload,
 	User,
 	X,
 	Zap,
+	type LucideIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 
 import { authClient } from "@/lib/auth-client";
 
+const coreLinks = [
+	{ to: "/", label: "Home", icon: Home },
+	{ to: "/demo/convex-query", label: "Convex + TQ", icon: Globe },
+	{ to: "/demo/tanstack-optimistic", label: "TQ Optimistic", icon: Zap },
+	{ to: "/demo/massive-data", label: "Massive Data", icon: Database },
+	{ to: "/demo/file-upload", label: "File Upload", icon: Upload },
+	{ to: "/demo/table", label: "TanStack Table", icon: Table },
+	{ to: "/demo/form/address", label: "Address Form", icon: ClipboardType },
+] as const;
+
+type NavTarget = (typeof coreLinks)[number]["to"] | "/auth/login";
+
+const noopSubscribe = () => () => {};
+
 export default function Header() {
-	const { data: currentUser } = useSuspenseQuery({
-		...convexQuery(api.auth.getCurrentUser, {}),
-	});
+	const currentUserQuery = convexQuery(api.auth.getCurrentUser, {});
+	const filesQuery = convexQuery(api.functions.files.list, {});
+	const { data: currentUser } = useSuspenseQuery(currentUserQuery);
+	const { isLoading: isAuthLoading } = useConvexAuth();
 	const [isOpen, setIsOpen] = useState(false);
-	const [groupedExpanded, setGroupedExpanded] = useState<Record<string, boolean>>({});
+	const isHydrated = useSyncExternalStore(
+		noopSubscribe,
+		() => true,
+		() => false,
+	);
+	const queryClient = useQueryClient();
+	const router = useRouter();
+	const showAuthPlaceholder = !isHydrated || isAuthLoading;
 
 	const handleSignOut = async () => {
-		await authClient.signOut();
+		await authClient.signOut().catch(() => undefined);
+		queryClient.setQueryData(currentUserQuery.queryKey, null);
+		queryClient.removeQueries({ queryKey: filesQuery.queryKey });
+		await Promise.all([
+			queryClient.invalidateQueries({ queryKey: currentUserQuery.queryKey }),
+			router.invalidate(),
+		]);
+		await router.navigate({ to: "/auth/login", replace: true });
+		setIsOpen(false);
 	};
 
 	return (
@@ -55,14 +83,18 @@ export default function Header() {
 				</div>
 
 				<div className="flex items-center gap-3">
-					{currentUser ? (
+					{showAuthPlaceholder ? (
+						<div className="h-8 w-24 animate-pulse rounded-lg bg-gray-700" aria-hidden="true" />
+					) : currentUser ? (
 						<>
 							<span className="flex items-center gap-2 text-sm text-gray-300">
 								<User size={16} />
 								{currentUser.name || currentUser.email || currentUser.subject}
 							</span>
 							<button
-								onClick={handleSignOut}
+								onClick={() => {
+									void handleSignOut();
+								}}
 								className="flex items-center gap-2 rounded-lg bg-gray-700 px-3 py-1.5 text-sm transition-colors hover:bg-gray-600"
 							>
 								<LogOut size={16} />
@@ -98,257 +130,32 @@ export default function Header() {
 				</div>
 
 				<nav className="flex-1 overflow-y-auto p-4">
-					<Link
-						to="/"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Home size={20} />
-						<span className="font-medium">Home</span>
-					</Link>
-
-					{/* Demo Links Start */}
-
-					<Link
-						to="/demo/start/server-funcs"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<SquareFunction size={20} />
-						<span className="font-medium">Start - Server Functions</span>
-					</Link>
-
-					<Link
-						to="/demo/start/api-request"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Network size={20} />
-						<span className="font-medium">Start - API Request</span>
-					</Link>
-
-					<div className="flex flex-row justify-between">
-						<Link
-							to="/demo/start/ssr"
-							onClick={() => setIsOpen(false)}
-							className="mb-2 flex flex-1 items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-							activeProps={{
-								className:
-									"flex-1 flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-							}}
-						>
-							<StickyNote size={20} />
-							<span className="font-medium">Start - SSR Demos</span>
-						</Link>
-						<button
-							className="rounded-lg p-2 transition-colors hover:bg-gray-800"
-							onClick={() =>
-								setGroupedExpanded((prev) => ({
-									...prev,
-									StartSSRDemo: !prev.StartSSRDemo,
-								}))
-							}
-						>
-							{groupedExpanded.StartSSRDemo ? (
-								<ChevronDown size={20} />
-							) : (
-								<ChevronRight size={20} />
-							)}
-						</button>
-					</div>
-					{groupedExpanded.StartSSRDemo && (
-						<div className="ml-4 flex flex-col">
-							<Link
-								to="/demo/start/ssr/spa-mode"
-								onClick={() => setIsOpen(false)}
-								className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-								activeProps={{
-									className:
-										"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-								}}
-							>
-								<StickyNote size={20} />
-								<span className="font-medium">SPA Mode</span>
-							</Link>
-
-							<Link
-								to="/demo/start/ssr/full-ssr"
-								onClick={() => setIsOpen(false)}
-								className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-								activeProps={{
-									className:
-										"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-								}}
-							>
-								<StickyNote size={20} />
-								<span className="font-medium">Full SSR</span>
-							</Link>
-
-							<Link
-								to="/demo/start/ssr/data-only"
-								onClick={() => setIsOpen(false)}
-								className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-								activeProps={{
-									className:
-										"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-								}}
-							>
-								<StickyNote size={20} />
-								<span className="font-medium">Data Only</span>
-							</Link>
+					<div className="mb-4">
+						<div className="mb-2 flex items-center gap-2 px-2 text-xs font-semibold tracking-wide text-cyan-300 uppercase">
+							<ShieldCheck size={14} />
+							Demos
 						</div>
-					)}
-
-					<Link
-						to="/demo/tanstack-query"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Network size={20} />
-						<span className="font-medium">TanStack Query</span>
-					</Link>
-
-					<Link
-						to="/demo/table"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Table size={20} />
-						<span className="font-medium">TanStack Table</span>
-					</Link>
-
-					<Link
-						to="/demo/form/simple"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<ClipboardType size={20} />
-						<span className="font-medium">Simple Form</span>
-					</Link>
-
-					<Link
-						to="/demo/form/address"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<ClipboardType size={20} />
-						<span className="font-medium">Address Form</span>
-					</Link>
-
-					<Link
-						to="/demo/convex"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Globe size={20} />
-						<span className="font-medium">Convex</span>
-					</Link>
-
-					<Link
-						to="/demo/convex-query"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Globe size={20} />
-						<span className="font-medium">Convex + TQ</span>
-					</Link>
-
-					<Link
-						to="/demo/file-upload"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Upload size={20} />
-						<span className="font-medium">File Upload</span>
-					</Link>
-
-					<Link
-						to="/demo/db-chat"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Database size={20} />
-						<span className="font-medium">DB Chat</span>
-					</Link>
-
-					<Link
-						to="/demo/db-optimistic"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Zap size={20} />
-						<span className="font-medium">DB Optimistic</span>
-					</Link>
-
-					<Link
-						to="/demo/tanstack-optimistic"
-						onClick={() => setIsOpen(false)}
-						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-						activeProps={{
-							className:
-								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-						}}
-					>
-						<Zap size={20} />
-						<span className="font-medium">TQ Optimistic</span>
-					</Link>
-
-					{/* Demo Links End */}
+						<div className="space-y-1">
+							{coreLinks.map((item) => (
+								<NavLinkItem
+									key={item.to}
+									to={item.to}
+									label={item.label}
+									icon={item.icon}
+									onNavigate={() => setIsOpen(false)}
+								/>
+							))}
+						</div>
+					</div>
 
 					<div className="mt-2 border-t border-gray-700 pt-2">
-						{currentUser ? (
+						{showAuthPlaceholder ? (
+							<div className="mb-2 h-12 animate-pulse rounded-lg bg-gray-800" aria-hidden="true" />
+						) : currentUser ? (
 							<button
+								type="button"
 								onClick={() => {
-									setIsOpen(false);
-									handleSignOut();
+									void handleSignOut();
 								}}
 								className="mb-2 flex w-full items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
 							>
@@ -356,22 +163,43 @@ export default function Header() {
 								<span className="font-medium">Sign Out</span>
 							</button>
 						) : (
-							<Link
+							<NavLinkItem
 								to="/auth/login"
-								onClick={() => setIsOpen(false)}
-								className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
-								activeProps={{
-									className:
-										"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
-								}}
-							>
-								<LogIn size={20} />
-								<span className="font-medium">Login / Sign Up</span>
-							</Link>
+								label="Login / Sign Up"
+								icon={LogIn}
+								onNavigate={() => setIsOpen(false)}
+							/>
 						)}
 					</div>
 				</nav>
 			</aside>
 		</>
+	);
+}
+
+function NavLinkItem({
+	to,
+	label,
+	icon: Icon,
+	onNavigate,
+}: {
+	to: NavTarget;
+	label: string;
+	icon: LucideIcon;
+	onNavigate: () => void;
+}) {
+	return (
+		<Link
+			to={to}
+			onClick={onNavigate}
+			className="flex items-center gap-3 rounded-lg p-3 text-sm transition-colors hover:bg-gray-800"
+			activeProps={{
+				className:
+					"flex items-center gap-3 rounded-lg bg-cyan-600 p-3 text-sm transition-colors hover:bg-cyan-700",
+			}}
+		>
+			<Icon size={18} />
+			<span className="font-medium">{label}</span>
+		</Link>
 	);
 }

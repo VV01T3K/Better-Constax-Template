@@ -1,9 +1,8 @@
-import type { Id } from "@convex/_generated/dataModel";
-
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import type { Id } from "@convex/_generated/dataModel";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
 import {
 	Archive,
@@ -19,14 +18,25 @@ import {
 	Upload,
 	UploadCloud,
 } from "lucide-react";
-import { err, ok, type Result } from "neverthrow";
+import { err as resultErr, ok, type Result } from "neverthrow";
 import { useRef, useState } from "react";
 
 import { detectFileType } from "@/lib/file-type";
 
 export const Route = createFileRoute("/demo/file-upload")({
-	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(convexQuery(api.files.list, {}));
+	loader: async ({ context, location }) => {
+		const currentUser = await context.queryClient.fetchQuery({
+			...convexQuery(api.auth.getCurrentUser, {}),
+			staleTime: 0,
+		});
+		if (!currentUser) {
+			throw redirect({
+				to: "/auth/login",
+				search: { redirect: location.href },
+			});
+		}
+
+		await context.queryClient.fetchQuery(convexQuery(api.functions.files.list, {}));
 	},
 	component: FileUploadDemo,
 });
@@ -37,11 +47,18 @@ function formatFileSize(bytes: number) {
 	return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function extractJsonStringField(responseText: string, fieldName: string) {
+	const fieldPattern = new RegExp(`"${fieldName}"\\s*:\\s*"([^"]+)"`);
+	return fieldPattern.exec(responseText)?.[1] ?? null;
+}
+
 async function downloadFile(url: string, fileName: string): Promise<Result<void, Error>> {
 	try {
 		const response = await fetch(url);
 		if (!response.ok) {
-			return err(new Error(`Download failed: HTTP ${response.status} ${response.statusText}`));
+			return resultErr(
+				new Error(`Download failed: HTTP ${response.status} ${response.statusText}`),
+			);
 		}
 		const blob = await response.blob();
 		const blobUrl = URL.createObjectURL(blob);
@@ -54,7 +71,7 @@ async function downloadFile(url: string, fileName: string): Promise<Result<void,
 		URL.revokeObjectURL(blobUrl);
 		return ok(undefined);
 	} catch (cause) {
-		return err(cause instanceof Error ? cause : new Error(String(cause)));
+		return resultErr(cause instanceof Error ? cause : new Error(String(cause)));
 	}
 }
 
@@ -110,18 +127,27 @@ function FileIcon({ fileType }: { fileType: string }) {
 }
 
 function FileUploadDemo() {
-	const { data: files } = useSuspenseQuery(convexQuery(api.files.list, {}));
-	const generateUploadUrl = useMutation(api.files.generateUploadUrl);
-	const saveFile = useMutation(api.files.saveFile);
-	const removeFile = useMutation(api.files.remove);
+	const filesQuery = convexQuery(api.functions.files.list, {});
+	const { data: files } = useSuspenseQuery(filesQuery);
+	const generateUploadUrl = useMutation(api.functions.files.generateUploadUrl);
+	const saveFile = useMutation(api.functions.files.saveFile);
+	const removeFile = useMutation(api.functions.files.remove);
+	const queryClient = useQueryClient();
 
 	const [uploading, setUploading] = useState(false);
 	const [uploadProgress, setUploadProgress] = useState(0);
 	const [error, setError] = useState<string | null>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
+	const resetUploadUi = () => {
+		setUploading(false);
+		setUploadProgress(0);
+		if (inputRef.current) {
+			inputRef.current.value = "";
+		}
+	};
 
-	const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
+	const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
 		if (!file) return;
 
 		if (file.size > 50 * 1024 * 1024) {
@@ -135,70 +161,77 @@ function FileUploadDemo() {
 		const detectResult = await detectFileType(file);
 		if (detectResult.isErr()) {
 			setError(detectResult.error.message);
-			setUploading(false);
-			if (inputRef.current) {
-				inputRef.current.value = "";
-			}
+			resetUploadUi();
 			return;
 		}
 		const detected = detectResult.value;
 
-		try {
-			const uploadUrl = await generateUploadUrl();
+		const uploadResult = await generateUploadUrl()
+			.then(
+				(uploadUrl) =>
+					// Use XMLHttpRequest for progress tracking.
+					new Promise<string>((resolve, reject) => {
+						const xhr = new XMLHttpRequest();
 
-			// Use XMLHttpRequest for progress tracking
-			const storageId = await new Promise<string>((resolve, reject) => {
-				const xhr = new XMLHttpRequest();
+						xhr.upload.addEventListener("progress", (progressEvent) => {
+							if (progressEvent.lengthComputable) {
+								const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+								setUploadProgress(progress);
+							}
+						});
 
-				xhr.upload.addEventListener("progress", (e) => {
-					if (e.lengthComputable) {
-						const progress = Math.round((e.loaded / e.total) * 100);
-						setUploadProgress(progress);
-					}
+						xhr.addEventListener("load", () => {
+							if (xhr.status >= 200 && xhr.status < 300) {
+								const storageId = extractJsonStringField(xhr.responseText, "storageId");
+								if (storageId && storageId.length > 0) {
+									resolve(storageId);
+									return;
+								}
+								reject(new Error("Upload failed: missing storage id"));
+							} else {
+								const parsedMessage = extractJsonStringField(xhr.responseText, "message");
+								const errorMessage =
+									parsedMessage && parsedMessage.length > 0
+										? parsedMessage
+										: `Upload failed: HTTP ${xhr.status}`;
+								reject(new Error(errorMessage));
+							}
+						});
+
+						xhr.addEventListener("error", () => reject(new Error("Upload failed")));
+						xhr.addEventListener("abort", () => reject(new Error("Upload cancelled")));
+
+						xhr.open("POST", uploadUrl);
+						xhr.setRequestHeader("Content-Type", detected.mime);
+						xhr.send(file);
+					}),
+			)
+			.then(async (storageId) => {
+				await saveFile({
+					storageId,
+					fileName: file.name,
+					fileType: detected.mime,
+					fileSize: file.size,
+					detectedFileType: detected.detectedExt ?? undefined,
+					typeSource: detected.source,
 				});
+				await queryClient.invalidateQueries({ queryKey: filesQuery.queryKey });
+				return ok(undefined);
+			})
+			.catch((uploadError) =>
+				resultErr(uploadError instanceof Error ? uploadError : new Error(String(uploadError))),
+			);
 
-				xhr.addEventListener("load", () => {
-					if (xhr.status >= 200 && xhr.status < 300) {
-						try {
-							const response = JSON.parse(xhr.responseText);
-							resolve(response.storageId);
-						} catch {
-							reject(new Error("Invalid response"));
-						}
-					} else {
-						reject(new Error("Upload failed"));
-					}
-				});
-
-				xhr.addEventListener("error", () => reject(new Error("Upload failed")));
-				xhr.addEventListener("abort", () => reject(new Error("Upload cancelled")));
-
-				xhr.open("POST", uploadUrl);
-				xhr.setRequestHeader("Content-Type", detected.mime);
-				xhr.send(file);
-			});
-
-			await saveFile({
-				storageId,
-				fileName: file.name,
-				fileType: detected.mime,
-				fileSize: file.size,
-				detectedFileType: detected.detectedExt ?? undefined,
-				typeSource: detected.source,
-			});
-		} catch (err) {
-			setError(err instanceof Error ? err.message : "Upload failed");
-		} finally {
-			setUploading(false);
-			setUploadProgress(0);
-			if (inputRef.current) {
-				inputRef.current.value = "";
-			}
+		if (uploadResult.isErr()) {
+			setError(uploadResult.error.message);
 		}
+
+		resetUploadUi();
 	};
 
 	const handleRemove = async (id: Id<"files">) => {
 		await removeFile({ id });
+		await queryClient.invalidateQueries({ queryKey: filesQuery.queryKey });
 	};
 
 	const imageCount = files.filter((f) => f.fileType.startsWith("image/")).length;
@@ -285,6 +318,10 @@ function FileUploadDemo() {
 											<img
 												src={file.url}
 												alt={file.fileName}
+												width={48}
+												height={48}
+												loading="lazy"
+												decoding="async"
 												className="h-full w-full object-cover"
 											/>
 										) : (

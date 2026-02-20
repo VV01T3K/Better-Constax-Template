@@ -51,11 +51,18 @@ function App() {
 				<div className="absolute inset-0 bg-linear-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10"></div>
 				<div className="relative mx-auto max-w-5xl">
 					<div className="mb-6 flex items-center justify-center gap-6">
-						<img
-							src="/tanstack-circle-logo.png"
-							alt="TanStack Logo"
-							className="h-24 w-24 md:h-32 md:w-32"
-						/>
+						<picture>
+							<source srcSet="/tanstack-circle-logo.avif" type="image/avif" />
+							<img
+								src="/tanstack-circle-logo.webp"
+								alt="TanStack Logo"
+								width={512}
+								height={512}
+								fetchPriority="high"
+								decoding="async"
+								className="h-24 w-24 md:h-32 md:w-32"
+							/>
+						</picture>
 						<h1 className="text-6xl font-black tracking-[-0.08em] text-white md:text-7xl">
 							<span className="text-gray-300">TANSTACK</span>{" "}
 							<span className="bg-linear-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
@@ -91,9 +98,9 @@ function App() {
 
 			<section className="mx-auto max-w-7xl px-6 py-16">
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-					{features.map((feature, index) => (
+					{features.map((feature) => (
 						<div
-							key={index}
+							key={feature.title}
 							className="rounded-xl border border-slate-700 bg-slate-800 p-6 transition-all duration-300 hover:border-cyan-500/50 hover:shadow-lg hover:shadow-cyan-500/10"
 						>
 							<div className="mb-4">{feature.icon}</div>
