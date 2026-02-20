@@ -54,6 +54,10 @@ export async function requireAuth(
 	return identity;
 }
 
+export function getAuthUserId(identity: UserIdentity): string {
+	return identity.tokenIdentifier;
+}
+
 export const authedQuery = zCustomQuery(
 	query,
 	customCtx(async (ctx: QueryCtx) => ({

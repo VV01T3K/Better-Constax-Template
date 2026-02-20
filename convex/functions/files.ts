@@ -4,6 +4,7 @@ import { z } from "zod";
 import {
 	authedMutation,
 	authedQuery,
+	getAuthUserId,
 	getOwnedDocOrThrow,
 	withIdentity,
 } from "../lib/functionHelpers";
@@ -25,8 +26,9 @@ export const saveFile = authedMutation({
 		typeSource: z.optional(z.enum(["magic-bytes", "extension", "content-sniff"])),
 	},
 	handler: withIdentity(async (ctx, args, identity) => {
+		const authUserId = getAuthUserId(identity);
 		return await ctx.db.insert("files", {
-			authUserId: identity.subject,
+			authUserId,
 			storageId: args.storageId,
 			fileName: args.fileName,
 			fileType: args.fileType,
@@ -40,9 +42,10 @@ export const saveFile = authedMutation({
 export const list = authedQuery({
 	args: {},
 	handler: withIdentity(async (ctx, _args, identity) => {
+		const authUserId = getAuthUserId(identity);
 		const files = await ctx.db
 			.query("files")
-			.withIndex("by_authUserId", (q) => q.eq("authUserId", identity.subject))
+			.withIndex("by_authUserId", (q) => q.eq("authUserId", authUserId))
 			.order("desc")
 			.collect();
 		return await Promise.all(
@@ -57,7 +60,8 @@ export const list = authedQuery({
 export const remove = authedMutation({
 	args: { id: zid("files") },
 	handler: withIdentity(async (ctx, { id }, identity) => {
-		const file = await getOwnedDocOrThrow(ctx, id, { ownerId: identity.subject });
+		const authUserId = getAuthUserId(identity);
+		const file = await getOwnedDocOrThrow(ctx, id, { ownerId: authUserId });
 		await ctx.storage.delete(file.storageId);
 		return await ctx.db.delete(id);
 	}),

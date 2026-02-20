@@ -4,6 +4,7 @@ import { z } from "zod";
 import {
 	authedMutation,
 	authedQuery,
+	getAuthUserId,
 	getOwnedDocOrThrow,
 	withIdentity,
 } from "../lib/functionHelpers";
@@ -11,9 +12,10 @@ import {
 export const list = authedQuery({
 	args: {},
 	handler: withIdentity(async (ctx, _args, identity) => {
+		const authUserId = getAuthUserId(identity);
 		return await ctx.db
 			.query("todos")
-			.withIndex("by_authUserId", (q) => q.eq("authUserId", identity.subject))
+			.withIndex("by_authUserId", (q) => q.eq("authUserId", authUserId))
 			.order("desc")
 			.collect();
 	}),
@@ -22,8 +24,9 @@ export const list = authedQuery({
 export const add = authedMutation({
 	args: { text: z.string().min(1, "Text is required") },
 	handler: withIdentity(async (ctx, { text }, identity) => {
+		const authUserId = getAuthUserId(identity);
 		return await ctx.db.insert("todos", {
-			authUserId: identity.subject,
+			authUserId,
 			text,
 			completed: false,
 		});
@@ -33,7 +36,8 @@ export const add = authedMutation({
 export const toggle = authedMutation({
 	args: { id: zid("todos") },
 	handler: withIdentity(async (ctx, { id }, identity) => {
-		const todo = await getOwnedDocOrThrow(ctx, id, { ownerId: identity.subject });
+		const authUserId = getAuthUserId(identity);
+		const todo = await getOwnedDocOrThrow(ctx, id, { ownerId: authUserId });
 		return await ctx.db.patch(id, {
 			completed: !todo.completed,
 		});
@@ -43,7 +47,8 @@ export const toggle = authedMutation({
 export const remove = authedMutation({
 	args: { id: zid("todos") },
 	handler: withIdentity(async (ctx, { id }, identity) => {
-		await getOwnedDocOrThrow(ctx, id, { ownerId: identity.subject });
+		const authUserId = getAuthUserId(identity);
+		await getOwnedDocOrThrow(ctx, id, { ownerId: authUserId });
 		return await ctx.db.delete(id);
 	}),
 });

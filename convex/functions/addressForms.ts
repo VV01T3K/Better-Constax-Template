@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { authedMutation, authedQuery, withIdentity } from "../lib/functionHelpers";
+import { authedMutation, authedQuery, getAuthUserId, withIdentity } from "../lib/functionHelpers";
 import { submitAddressFormSchema } from "../schemas";
 
 export const listMine = authedQuery({
@@ -8,9 +8,10 @@ export const listMine = authedQuery({
 		limit: z.number().int().positive().max(100).optional(),
 	},
 	handler: withIdentity(async (ctx, { limit }, identity) => {
+		const authUserId = getAuthUserId(identity);
 		return await ctx.db
 			.query("addressSubmissions")
-			.withIndex("by_authUserId", (q) => q.eq("authUserId", identity.subject))
+			.withIndex("by_authUserId", (q) => q.eq("authUserId", authUserId))
 			.order("desc")
 			.take(limit ?? 20);
 	}),
@@ -19,8 +20,9 @@ export const listMine = authedQuery({
 export const submit = authedMutation({
 	args: submitAddressFormSchema.shape,
 	handler: withIdentity(async (ctx, args, identity) => {
+		const authUserId = getAuthUserId(identity);
 		return await ctx.db.insert("addressSubmissions", {
-			authUserId: identity.subject,
+			authUserId,
 			fullName: args.fullName.trim(),
 			email: args.email.trim().toLowerCase(),
 			address: {
