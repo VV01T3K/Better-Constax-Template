@@ -1,28 +1,21 @@
-import { NoOp } from "convex-helpers/server/customFunctions";
-import { zCustomMutation, zCustomQuery, zid } from "convex-helpers/server/zod4";
-import { ConvexError } from "convex/values";
+import { zid } from "convex-helpers/server/zod4";
 import { z } from "zod";
 
-import { mutation, query } from "../_generated/server";
+import {
+	authedMutation,
+	authedQuery,
+	getOwnedDocOrThrow,
+	withIdentity,
+} from "../lib/functionHelpers";
 
-const zQuery = zCustomQuery(query, NoOp);
-const zMutation = zCustomMutation(mutation, NoOp);
-
-export const generateUploadUrl = zMutation({
+export const generateUploadUrl = authedMutation({
 	args: {},
 	handler: async (ctx) => {
-		const identity = await ctx.auth.getUserIdentity();
-		if (!identity) {
-			throw new ConvexError({
-				code: "UNAUTHORIZED",
-				message: "You must be logged in to upload files",
-			});
-		}
 		return await ctx.storage.generateUploadUrl();
 	},
 });
 
-export const saveFile = zMutation({
+export const saveFile = authedMutation({
 	args: {
 		storageId: zid("_storage"),
 		fileName: z.string().min(1),
@@ -31,14 +24,7 @@ export const saveFile = zMutation({
 		detectedFileType: z.optional(z.string()),
 		typeSource: z.optional(z.enum(["magic-bytes", "extension", "content-sniff"])),
 	},
-	handler: async (ctx, args) => {
-		const identity = await ctx.auth.getUserIdentity();
-		if (!identity) {
-			throw new ConvexError({
-				code: "UNAUTHORIZED",
-				message: "You must be logged in to save files",
-			});
-		}
+	handler: withIdentity(async (ctx, args, identity) => {
 		return await ctx.db.insert("files", {
 			authUserId: identity.subject,
 			storageId: args.storageId,
@@ -48,20 +34,12 @@ export const saveFile = zMutation({
 			detectedFileType: args.detectedFileType,
 			typeSource: args.typeSource,
 		});
-	},
+	}),
 });
 
-export const list = zQuery({
+export const list = authedQuery({
 	args: {},
-	handler: async (ctx) => {
-		const identity = await ctx.auth.getUserIdentity();
-		if (!identity) {
-			throw new ConvexError({
-				code: "UNAUTHORIZED",
-				message: "You must be logged in to list files",
-			});
-		}
-
+	handler: withIdentity(async (ctx, _args, identity) => {
 		const files = await ctx.db
 			.query("files")
 			.withIndex("by_authUserId", (q) => q.eq("authUserId", identity.subject))
@@ -73,34 +51,14 @@ export const list = zQuery({
 				url: await ctx.storage.getUrl(file.storageId),
 			})),
 		);
-	},
+	}),
 });
 
-export const remove = zMutation({
+export const remove = authedMutation({
 	args: { id: zid("files") },
-	handler: async (ctx, { id }) => {
-		const identity = await ctx.auth.getUserIdentity();
-		if (!identity) {
-			throw new ConvexError({
-				code: "UNAUTHORIZED",
-				message: "You must be logged in to delete files",
-			});
-		}
-
-		const file = await ctx.db.get(id);
-		if (!file) {
-			throw new ConvexError({
-				code: "NOT_FOUND",
-				message: "File not found",
-			});
-		}
-		if (file.authUserId !== identity.subject) {
-			throw new ConvexError({
-				code: "FORBIDDEN",
-				message: "You can only delete your own files",
-			});
-		}
+	handler: withIdentity(async (ctx, { id }, identity) => {
+		const file = await getOwnedDocOrThrow(ctx, id, { ownerId: identity.subject });
 		await ctx.storage.delete(file.storageId);
 		return await ctx.db.delete(id);
-	},
+	}),
 });
