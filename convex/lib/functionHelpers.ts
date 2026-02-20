@@ -13,6 +13,14 @@ type ContextWithAuth = Pick<QueryCtx, "auth"> | Pick<MutationCtx, "auth">;
 type ContextWithDb = Pick<QueryCtx, "db"> | Pick<MutationCtx, "db">;
 type ContextWithIdentity = { identity: UserIdentity };
 type MaybePromise<T> = T | Promise<T>;
+type StringKeys<T> = {
+	[K in keyof T]-?: T[K] extends string ? K : never;
+}[keyof T] &
+	string;
+type TablesWithAuthUserId = {
+	[T in TableNames]: Doc<T> extends { authUserId: string } ? T : never;
+}[TableNames];
+type TablesWithoutAuthUserId = Exclude<TableNames, TablesWithAuthUserId>;
 
 export function throwUnauthorized(message = "Authentication required"): never {
 	throw new ConvexError({
@@ -72,9 +80,34 @@ export function withIdentity<TContext extends ContextWithIdentity, TArgs, TResul
 	};
 }
 
+export async function getOwnedDocOrThrow<TableName extends TablesWithAuthUserId>(
+	ctx: ContextWithDb,
+	id: Id<TableName>,
+	options: {
+		ownerId: string;
+		ownerField?: "authUserId";
+		notFoundMessage?: string;
+		forbiddenMessage?: string;
+	},
+): Promise<Doc<TableName>>;
+
+export async function getOwnedDocOrThrow<
+	TableName extends TablesWithoutAuthUserId,
+	OwnerField extends StringKeys<Doc<TableName>>,
+>(
+	ctx: ContextWithDb,
+	id: Id<TableName>,
+	options: {
+		ownerId: string;
+		ownerField: OwnerField;
+		notFoundMessage?: string;
+		forbiddenMessage?: string;
+	},
+): Promise<Doc<TableName>>;
+
 export async function getOwnedDocOrThrow<
 	TableName extends TableNames,
-	OwnerField extends Extract<keyof Doc<TableName>, string>,
+	OwnerField extends StringKeys<Doc<TableName>>,
 >(
 	ctx: ContextWithDb,
 	id: Id<TableName>,
@@ -90,14 +123,17 @@ export async function getOwnedDocOrThrow<
 		throwNotFound(options.notFoundMessage);
 	}
 
-	if (options.ownerField) {
+	if ("ownerField" in options && options.ownerField) {
 		if (document[options.ownerField] !== options.ownerId) {
 			throwForbidden(options.forbiddenMessage);
 		}
 		return document;
 	}
 
-	if (!("authUserId" in document) || document.authUserId !== options.ownerId) {
+	if (
+		!("authUserId" in document && typeof document.authUserId === "string") ||
+		document.authUserId !== options.ownerId
+	) {
 		throwForbidden(options.forbiddenMessage);
 	}
 
