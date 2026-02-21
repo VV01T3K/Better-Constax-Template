@@ -7,7 +7,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { BarChart3, Database, Rows3, Timer } from "lucide-react";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 
-import { requireRoutePermission } from "@/lib/route-guards";
+import { protectedRouteLoaderWithPrefetch } from "@/lib/route-guard-kit";
 
 type MassiveMode = "paginated" | "infinite";
 
@@ -38,18 +38,18 @@ const PREFETCH_LINEAR_SCALE = 0.3;
 
 export const Route = createFileRoute("/demo/massive-data")({
 	loader: async ({ context, location }) => {
-		await requireRoutePermission({
+		await protectedRouteLoaderWithPrefetch({
 			queryClient: context.queryClient,
 			permission: "demo.massive-data.access",
 			redirectHref: location.href,
+			prefetch: () =>
+				context.queryClient.ensureQueryData(
+					convexQuery(api.functions.massiveDataset.page, {
+						cursor: null,
+						limit: DEFAULT_PAGE_SIZE,
+					}),
+				),
 		});
-
-		await context.queryClient.ensureQueryData(
-			convexQuery(api.functions.massiveDataset.page, {
-				cursor: null,
-				limit: DEFAULT_PAGE_SIZE,
-			}),
-		);
 	},
 	component: MassiveDataPage,
 });

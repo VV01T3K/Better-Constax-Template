@@ -11,13 +11,8 @@ import {
 	hasPermission as checkPermission,
 	type RolePermissionMatrix,
 } from "../lib/authorization";
-import {
-	getAuthUserId,
-	requirePermissionForIdentity,
-	throwForbidden,
-	zMutation,
-	zQuery,
-} from "../lib/functionHelpers";
+import { getAuthUserId, throwForbidden, zQuery } from "../lib/functionHelpers";
+import { guardedMutation, guardedQuery } from "../lib/guard-kit";
 import {
 	appPermissionSchema,
 	appPermissions,
@@ -80,17 +75,15 @@ async function upsertRolePermissions(ctx: Pick<MutationCtx, "db">, matrix: RoleP
 	}
 }
 
-export const getCatalogAndMatrix = zQuery({
+export const getCatalogAndMatrix = guardedQuery({
 	args: {
 		scope: permissionScopeSchema,
 	},
+	access: ({ args }) => ({
+		type: "allPermissions",
+		permissions: [getScopeViewPermission(args.scope)],
+	}),
 	handler: async (ctx, args) => {
-		const identity = await ctx.auth.getUserIdentity();
-		if (!identity) {
-			throwForbidden("Authentication required");
-		}
-
-		await requirePermissionForIdentity(ctx, identity, getScopeViewPermission(args.scope));
 		const fullMatrix = await getRolePermissionMatrix(ctx);
 		const scopedPermissions = getPermissionsForScope(args.scope);
 		const matrix = getScopedMatrix(fullMatrix, args.scope);
@@ -106,19 +99,16 @@ export const getCatalogAndMatrix = zQuery({
 	},
 });
 
-export const updateMatrix = zMutation({
+export const updateMatrix = guardedMutation({
 	args: {
 		scope: permissionScopeSchema,
 		matrix: updateMatrixInputSchema,
 	},
+	access: ({ args }) => ({
+		type: "allPermissions",
+		permissions: [getScopeEditPermission(args.scope)],
+	}),
 	handler: async (ctx, args) => {
-		const identity = await ctx.auth.getUserIdentity();
-		if (!identity) {
-			throwForbidden("Authentication required");
-		}
-
-		await requirePermissionForIdentity(ctx, identity, getScopeEditPermission(args.scope));
-
 		const candidatePermissions = [
 			...args.matrix.user,
 			...args.matrix.manager,

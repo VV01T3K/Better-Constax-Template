@@ -22,17 +22,16 @@ import { err as resultErr, ok, type Result } from "neverthrow";
 import { useRef, useState } from "react";
 
 import { detectFileType } from "@/lib/file-type";
-import { requireRoutePermission } from "@/lib/route-guards";
+import { protectedRouteLoaderWithPrefetch } from "@/lib/route-guard-kit";
 
 export const Route = createFileRoute("/demo/file-upload")({
 	loader: async ({ context, location }) => {
-		await requireRoutePermission({
+		await protectedRouteLoaderWithPrefetch({
 			queryClient: context.queryClient,
 			permission: "demo.files.access",
 			redirectHref: location.href,
+			prefetch: () => context.queryClient.fetchQuery(convexQuery(api.functions.files.list, {})),
 		});
-
-		await context.queryClient.fetchQuery(convexQuery(api.functions.files.list, {}));
 	},
 	component: FileUploadDemo,
 });

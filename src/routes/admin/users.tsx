@@ -16,7 +16,7 @@ import { useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
 import { waitForImpersonationState } from "@/lib/impersonation-client";
-import { requireRoutePermission } from "@/lib/route-guards";
+import { protectedRouteLoaderWithPrefetch } from "@/lib/route-guard-kit";
 
 type AdminUserRow = {
 	id: string;
@@ -29,15 +29,15 @@ type AdminUserRow = {
 
 export const Route = createFileRoute("/admin/users")({
 	loader: async ({ context, location }) => {
-		await requireRoutePermission({
+		await protectedRouteLoaderWithPrefetch({
 			queryClient: context.queryClient,
 			permission: "admin.users.access",
 			redirectHref: location.href,
+			prefetch: () =>
+				context.queryClient.ensureQueryData(
+					convexQuery(api.functions.authorization.getMyAccess, {}),
+				),
 		});
-
-		await context.queryClient.ensureQueryData(
-			convexQuery(api.functions.authorization.getMyAccess, {}),
-		);
 	},
 	component: AdminUsersPage,
 });
