@@ -17,6 +17,7 @@ import type * as functions_massiveDataset from "../functions/massiveDataset.js";
 import type * as functions_tableDemo from "../functions/tableDemo.js";
 import type * as functions_todos from "../functions/todos.js";
 import type * as http from "../http.js";
+import type * as lib_authIdentity from "../lib/authIdentity.js";
 import type * as lib_authorization from "../lib/authorization.js";
 import type * as lib_functionHelpers from "../lib/functionHelpers.js";
 import type * as schemas_addressForms from "../schemas/addressForms.js";
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   "functions/tableDemo": typeof functions_tableDemo;
   "functions/todos": typeof functions_todos;
   http: typeof http;
+  "lib/authIdentity": typeof lib_authIdentity;
   "lib/authorization": typeof lib_authorization;
   "lib/functionHelpers": typeof lib_functionHelpers;
   "schemas/addressForms": typeof schemas_addressForms;

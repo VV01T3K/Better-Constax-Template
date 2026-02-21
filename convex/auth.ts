@@ -11,6 +11,7 @@ import type { DataModel } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 import authConfig from "./auth.config";
 import schema from "./betterAuth/schema";
+import { getRoleClaimValue } from "./lib/authIdentity";
 import { normalizeRole } from "./schemas";
 
 const authFunctions: AuthFunctions = internal.auth;
@@ -121,7 +122,7 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
 							return;
 						}
 
-						const existingRole = "role" in user ? (user as { role?: unknown }).role : undefined;
+						const existingRole = getRoleClaimValue(user);
 						const role = normalizeRole(existingRole);
 						if (role !== "admin") {
 							await hookCtx.context.internalAdapter.updateUser(session.userId, {

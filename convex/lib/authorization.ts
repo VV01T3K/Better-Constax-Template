@@ -9,8 +9,8 @@ import {
 	defaultRolePermissionMatrix,
 	permissionScopes,
 	normalizePermissionList,
-	normalizeRole,
 } from "../schemas";
+import { getRoleFromIdentity } from "./authIdentity";
 
 type ContextWithDb = Pick<QueryCtx, "db"> | Pick<MutationCtx, "db">;
 
@@ -105,10 +105,6 @@ export async function getRolePermissionMatrix(ctx: ContextWithDb): Promise<RoleP
 	// Admin always retains full access for lockout safety.
 	matrix.admin = [...appPermissions];
 	return matrix;
-}
-
-export function getRoleFromIdentity(identity: UserIdentity): AppRole {
-	return normalizeRole((identity as UserIdentity & { role?: unknown }).role);
 }
 
 export async function getRoleAndPermissions(

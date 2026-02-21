@@ -6,6 +6,7 @@ import { ConvexError } from "convex/values";
 import type { Doc, Id, TableNames } from "../_generated/dataModel";
 import { mutation, query, type MutationCtx, type QueryCtx } from "../_generated/server";
 import type { AppPermission, AppRole } from "../schemas";
+import { getRoleFromIdentity } from "./authIdentity";
 import { hasPermission } from "./authorization";
 
 export const zQuery = zCustomQuery(query, NoOp);
@@ -62,17 +63,7 @@ export function getAuthUserId(identity: UserIdentity): string {
 }
 
 export function getAuthUserRole(identity: UserIdentity): AppRole {
-	const parsedRole = (identity as UserIdentity & { role?: unknown }).role;
-	if (typeof parsedRole !== "string") {
-		return "user";
-	}
-
-	const role = parsedRole.split(",")[0]?.trim().toLowerCase();
-	if (!role) {
-		return "user";
-	}
-
-	return role === "admin" || role === "manager" ? role : "user";
+	return getRoleFromIdentity(identity);
 }
 
 export const authedQuery = zCustomQuery(

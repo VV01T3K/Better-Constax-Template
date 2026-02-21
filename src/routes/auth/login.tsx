@@ -5,10 +5,16 @@ import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
+import { z } from "zod";
 
 import { authClient } from "@/lib/auth-client";
 
+const loginSearchSchema = z.object({
+	redirect: z.string().optional(),
+});
+
 export const Route = createFileRoute("/auth/login")({
+	validateSearch: loginSearchSchema,
 	component: LoginPage,
 });
 
@@ -20,9 +26,8 @@ function LoginPage() {
 	const [serverError, setServerError] = useState<string | null>(null);
 	const queryClient = useQueryClient();
 	const router = useRouter();
-	const search = router.state.location.search as { redirect?: unknown };
-	const safeRedirect =
-		typeof search.redirect === "string" && search.redirect.startsWith("/") ? search.redirect : "/";
+	const search = Route.useSearch();
+	const safeRedirect = search.redirect?.startsWith("/") ? search.redirect : "/";
 	const currentUserQuery = convexQuery(api.auth.getCurrentUser, {});
 
 	const form = useForm({

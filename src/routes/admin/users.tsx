@@ -1,7 +1,13 @@
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { appRoles, isAppRole, normalizeRole } from "@convex/schemas";
+import {
+	adminListUsersResponseSchema,
+	appRoles,
+	isAppRole,
+	normalizeRole,
+	type AppRole,
+} from "@convex/schemas";
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { flexRender, getCoreRowModel, type ColumnDef, useReactTable } from "@tanstack/react-table";
@@ -12,13 +18,11 @@ import { authClient } from "@/lib/auth-client";
 import { waitForImpersonationState } from "@/lib/impersonation-client";
 import { requireRoutePermission } from "@/lib/route-guards";
 
-type UserRole = (typeof appRoles)[number];
-
 type AdminUserRow = {
 	id: string;
 	name: string;
 	email: string;
-	role: UserRole;
+	role: AppRole;
 	banned: boolean;
 	createdAt: Date | null;
 };
@@ -46,20 +50,11 @@ async function fetchAdminUsers(): Promise<{ rows: AdminUserRow[]; total: number 
 		throw new Error(response.error.message ?? "Failed to fetch users");
 	}
 
-	const payload = response.data as
-		| {
-				users?: Array<{
-					id: string;
-					name?: string;
-					email?: string;
-					role?: string;
-					banned?: boolean | null;
-					createdAt?: string | Date;
-				}>;
-				total?: number;
-		  }
-		| undefined;
-	const users = payload?.users ?? [];
+	const parsedPayload = adminListUsersResponseSchema.safeParse(response.data ?? {});
+	if (!parsedPayload.success) {
+		throw new Error("Received an invalid users response from auth server");
+	}
+	const users = parsedPayload.data.users;
 
 	return {
 		rows: users.map((user) => ({
@@ -70,7 +65,7 @@ async function fetchAdminUsers(): Promise<{ rows: AdminUserRow[]; total: number 
 			banned: Boolean(user.banned),
 			createdAt: user.createdAt ? new Date(user.createdAt) : null,
 		})),
-		total: payload?.total ?? users.length,
+		total: parsedPayload.data.total ?? users.length,
 	};
 }
 
@@ -102,7 +97,7 @@ function AdminUsersPage() {
 	});
 
 	const roleMutation = useMutation({
-		mutationFn: async ({ userId, role }: { userId: string; role: UserRole }) => {
+		mutationFn: async ({ userId, role }: { userId: string; role: AppRole }) => {
 			await authClient.$fetch("/admin/set-role", {
 				method: "POST",
 				body: { userId, role },
