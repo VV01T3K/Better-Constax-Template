@@ -58,7 +58,7 @@ export async function requireAuth(
 }
 
 export function getAuthUserId(identity: UserIdentity): string {
-	return identity.tokenIdentifier;
+	return identity.subject;
 }
 
 export function getAuthUserRole(identity: UserIdentity): AppRole {

@@ -87,7 +87,7 @@ function AdminUsersPage() {
 	const canEditRoles = myAccess?.permissions.includes("admin.users.roles.mutate") ?? false;
 	const canImpersonate =
 		myAccess?.permissions.includes("admin.users.impersonation.mutate") ?? false;
-	const selfUserId = authSession?.user.id ?? currentUser?.tokenIdentifier ?? null;
+	const selfUserId = authSession?.user.id ?? currentUser?.subject ?? null;
 
 	const usersQuery = useQuery({
 		queryKey: ["admin-users"],
