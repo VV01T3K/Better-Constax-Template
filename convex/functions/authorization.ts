@@ -12,7 +12,7 @@ import {
 	type RolePermissionMatrix,
 } from "../lib/authorization";
 import { getAuthUserId, throwForbidden, zQuery } from "../lib/functionHelpers";
-import { guardedMutation, guardedQuery } from "../lib/guard-kit";
+import { guardedMutation, guardedQuery } from "../lib/guardKit";
 import {
 	appPermissionSchema,
 	appPermissions,

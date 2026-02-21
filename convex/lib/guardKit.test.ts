@@ -34,7 +34,7 @@ vi.mock("./functionHelpers", () => {
 });
 
 const { getActor, requireAllPermissions, requireAnyPermission, requireRoleOrPermissions } =
-	await import("./guard-kit");
+	await import("./guardKit");
 
 function makeIdentity(role?: AppRole): UserIdentity & { role?: AppRole } {
 	return {
@@ -70,7 +70,7 @@ function makeActor(overrides?: Partial<{ role: AppRole; permissions: AppPermissi
 	};
 }
 
-describe("guard-kit", () => {
+describe("guardKit", () => {
 	it("returns actor for authenticated user", async () => {
 		const actor = await getActor(
 			makeCtx({

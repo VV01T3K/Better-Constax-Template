@@ -2,7 +2,7 @@
 
 Canonical auth/permission helpers for Convex handlers and TanStack route loaders.
 
-## Convex helpers (`convex/lib/guard-kit.ts`)
+## Convex helpers (`convex/lib/guardKit.ts`)
 
 ### `getActor(ctx, options?)`
 
