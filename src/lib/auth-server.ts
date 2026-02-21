@@ -7,4 +7,4 @@ const authServer = convexBetterAuthReactStart({
 	convexSiteUrl: env.VITE_CONVEX_SITE_URL,
 });
 
-export const { getToken } = authServer;
+export const { getToken, fetchAuthQuery, fetchAuthMutation, fetchAuthAction, handler } = authServer;

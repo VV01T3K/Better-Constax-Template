@@ -20,6 +20,7 @@ import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminPermissionsRouteImport } from './routes/admin/permissions'
 import { Route as DemoFormAddressRouteImport } from './routes/demo/form.address'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AdminPermissionsAdminRouteImport } from './routes/admin/permissions.admin'
 
 const ForbiddenRoute = ForbiddenRouteImport.update({
@@ -77,6 +78,11 @@ const DemoFormAddressRoute = DemoFormAddressRouteImport.update({
   path: '/demo/form/address',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPermissionsAdminRoute = AdminPermissionsAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
   '/admin/permissions/admin': typeof AdminPermissionsAdminRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/form/address': typeof DemoFormAddressRoute
 }
 export interface FileRoutesByTo {
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
   '/admin/permissions/admin': typeof AdminPermissionsAdminRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/form/address': typeof DemoFormAddressRoute
 }
 export interface FileRoutesById {
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
   '/admin/permissions/admin': typeof AdminPermissionsAdminRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/form/address': typeof DemoFormAddressRoute
 }
 export interface FileRouteTypes {
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/demo/table'
     | '/demo/tanstack-optimistic'
     | '/admin/permissions/admin'
+    | '/api/auth/$'
     | '/demo/form/address'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/demo/table'
     | '/demo/tanstack-optimistic'
     | '/admin/permissions/admin'
+    | '/api/auth/$'
     | '/demo/form/address'
   id:
     | '__root__'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/demo/table'
     | '/demo/tanstack-optimistic'
     | '/admin/permissions/admin'
+    | '/api/auth/$'
     | '/demo/form/address'
   fileRoutesById: FileRoutesById
 }
@@ -182,6 +194,7 @@ export interface RootRouteChildren {
   DemoMassiveDataRoute: typeof DemoMassiveDataRoute
   DemoTableRoute: typeof DemoTableRoute
   DemoTanstackOptimisticRoute: typeof DemoTanstackOptimisticRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   DemoFormAddressRoute: typeof DemoFormAddressRoute
 }
 
@@ -264,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoFormAddressRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/permissions/admin': {
       id: '/admin/permissions/admin'
       path: '/admin'
@@ -296,6 +316,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoMassiveDataRoute: DemoMassiveDataRoute,
   DemoTableRoute: DemoTableRoute,
   DemoTanstackOptimisticRoute: DemoTanstackOptimisticRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
   DemoFormAddressRoute: DemoFormAddressRoute,
 }
 export const routeTree = rootRouteImport
