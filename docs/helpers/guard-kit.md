@@ -8,7 +8,7 @@ Canonical auth/permission helpers for Convex handlers and TanStack route loaders
 
 - Returns a normalized actor object:
   - `identity`
-  - `userId`
+  - `userId` (`AuthUserId`)
   - `role`
   - `permissions`
 - Throws `UNAUTHORIZED` if no identity is present.

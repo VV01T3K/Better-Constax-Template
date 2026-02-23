@@ -6,6 +6,7 @@ import {
 	appRoles,
 	isAppRole,
 	normalizeRole,
+	type AuthUserId,
 	type AppRole,
 } from "@convex/schemas";
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
@@ -19,7 +20,7 @@ import { waitForImpersonationState } from "@/lib/impersonation-client";
 import { protectedRouteLoader } from "@/lib/route-guard-kit";
 
 type AdminUserRow = {
-	id: string;
+	id: AuthUserId;
 	name: string;
 	email: string;
 	role: AppRole;
@@ -114,7 +115,7 @@ function AdminUsersPage() {
 	});
 
 	const impersonateMutation = useMutation({
-		mutationFn: async ({ userId }: { userId: string }) => {
+		mutationFn: async ({ userId }: { userId: AuthUserId }) => {
 			let auditId: Id<"impersonationAudit"> | null = null;
 			try {
 				auditId = await startAuditMutation.mutateAsync({

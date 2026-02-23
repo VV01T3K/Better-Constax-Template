@@ -1,8 +1,10 @@
 import { z } from "zod";
 
+import { authUserIdSchema } from "./ids";
+
 // User profile (stored in database)
 export const profileSchema = z.object({
-	authUserId: z.string(),
+	authUserId: authUserIdSchema,
 	name: z.string(),
 	email: z.email(),
 	image: z.union([z.string(), z.null()]),
@@ -24,7 +26,7 @@ export const signInSchema = z.object({
 export type SignInInput = z.infer<typeof signInSchema>;
 
 export const adminUserSchema = z.object({
-	id: z.string(),
+	id: authUserIdSchema,
 	name: z.string().optional(),
 	email: z.string().optional(),
 	role: z.string().optional(),

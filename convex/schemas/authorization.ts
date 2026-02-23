@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { authUserIdSchema } from "./ids";
+
 export const appRoles = ["user", "manager", "admin"] as const;
 export const appRoleSchema = z.enum(appRoles);
 export type AppRole = z.infer<typeof appRoleSchema>;
@@ -191,8 +193,8 @@ export const rolePermissionSchema = z.object({
 });
 
 export const impersonationAuditSchema = z.object({
-	actorUserId: z.string(),
-	targetUserId: z.string(),
+	actorUserId: authUserIdSchema,
+	targetUserId: authUserIdSchema,
 	startedAt: z.number(),
 	endedAt: z.union([z.number(), z.null()]),
 	source: z.union([z.string(), z.null()]),

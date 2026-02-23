@@ -1,6 +1,6 @@
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
-import type { AppPermission } from "@convex/schemas";
+import { parseAuthUserId, type AppPermission } from "@convex/schemas";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
 import { useConvexAuth } from "convex/react";
@@ -100,6 +100,7 @@ export default function Header() {
 	} = authClient.useSession();
 	const { isLoading: isAuthLoading } = useConvexAuth();
 	const [isOpen, setIsOpen] = useState(false);
+	const [impersonationError, setImpersonationError] = useState<string | null>(null);
 	const isHydrated = useSyncExternalStore(
 		noopSubscribe,
 		() => true,
@@ -133,19 +134,26 @@ export default function Header() {
 	};
 
 	const handleStopImpersonation = async () => {
-		const targetUserId = sessionData?.user?.id;
+		setImpersonationError(null);
+		const targetUserIdRaw = sessionData?.user?.id;
 		const result = await authClient.admin.stopImpersonating();
 		if (result.error) {
+			setImpersonationError(result.error.message ?? "Failed to stop impersonation");
 			return;
 		}
 
-		if (targetUserId) {
-			await stopAuditMutation
-				.mutateAsync({
-					targetUserId,
-					source: "header-stop-impersonation",
-				})
-				.catch(() => undefined);
+		if (targetUserIdRaw) {
+			const targetUserId = parseAuthUserId(targetUserIdRaw);
+			if (targetUserId.isErr()) {
+				setImpersonationError(targetUserId.error.message);
+			} else {
+				await stopAuditMutation
+					.mutateAsync({
+						targetUserId: targetUserId.value,
+						source: "header-stop-impersonation",
+					})
+					.catch(() => undefined);
+			}
 		}
 
 		const switched = await waitForImpersonationState({
@@ -167,23 +175,30 @@ export default function Header() {
 	return (
 		<>
 			{isImpersonating ? (
-				<div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-700 bg-amber-900 px-4 py-2 text-sm text-amber-50">
-					<div className="flex items-center gap-2">
-						<UserRoundCheck size={16} />
-						<span>
-							Impersonating{" "}
-							<strong>{sessionData?.user?.email ?? sessionData?.user?.name ?? "user"}</strong>
-						</span>
+				<div className="border-b border-amber-700 bg-amber-900 px-4 py-2 text-sm text-amber-50">
+					<div className="flex flex-wrap items-center justify-between gap-2">
+						<div className="flex items-center gap-2">
+							<UserRoundCheck size={16} />
+							<span>
+								Impersonating{" "}
+								<strong>{sessionData?.user?.email ?? sessionData?.user?.name ?? "user"}</strong>
+							</span>
+						</div>
+						<button
+							type="button"
+							onClick={() => {
+								void handleStopImpersonation();
+							}}
+							className="rounded-md bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900 hover:bg-white"
+						>
+							Stop Impersonation
+						</button>
 					</div>
-					<button
-						type="button"
-						onClick={() => {
-							void handleStopImpersonation();
-						}}
-						className="rounded-md bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900 hover:bg-white"
-					>
-						Stop Impersonation
-					</button>
+					{impersonationError ? (
+						<div className="mt-2 rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800">
+							{impersonationError}
+						</div>
+					) : null}
 				</div>
 			) : null}
 

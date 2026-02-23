@@ -25,6 +25,7 @@ import type * as schemas_addressForms from "../schemas/addressForms.js";
 import type * as schemas_auth from "../schemas/auth.js";
 import type * as schemas_authorization from "../schemas/authorization.js";
 import type * as schemas_files from "../schemas/files.js";
+import type * as schemas_ids from "../schemas/ids.js";
 import type * as schemas_index from "../schemas/index.js";
 import type * as schemas_todos from "../schemas/todos.js";
 
@@ -52,6 +53,7 @@ declare const fullApi: ApiFromModules<{
   "schemas/auth": typeof schemas_auth;
   "schemas/authorization": typeof schemas_authorization;
   "schemas/files": typeof schemas_files;
+  "schemas/ids": typeof schemas_ids;
   "schemas/index": typeof schemas_index;
   "schemas/todos": typeof schemas_todos;
 }>;

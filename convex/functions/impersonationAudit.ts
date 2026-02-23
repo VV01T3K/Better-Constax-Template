@@ -7,10 +7,11 @@ import {
 	throwForbidden,
 	zMutation,
 } from "../lib/functionHelpers";
+import { authUserIdSchema } from "../schemas";
 
 export const start = zMutation({
 	args: {
-		targetUserId: z.string(),
+		targetUserId: authUserIdSchema,
 		source: z.string().optional(),
 		reason: z.string().optional(),
 	},
@@ -66,7 +67,7 @@ export const cancelStart = zMutation({
 
 export const stop = zMutation({
 	args: {
-		targetUserId: z.string(),
+		targetUserId: authUserIdSchema,
 		source: z.string().optional(),
 	},
 	handler: async (ctx, args) => {

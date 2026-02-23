@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { authUserIdSchema } from "./ids";
+
 export const addressSchema = z.object({
 	street: z.string().min(1, "Street address is required"),
 	city: z.string().min(1, "City is required"),
@@ -12,7 +14,7 @@ export const addressSchema = z.object({
 });
 
 export const addressFormSubmissionSchema = z.object({
-	authUserId: z.string(),
+	authUserId: authUserIdSchema,
 	fullName: z.string().min(1, "Full name is required"),
 	email: z.email("Invalid email address"),
 	address: addressSchema,

@@ -5,7 +5,7 @@ import { ConvexError } from "convex/values";
 
 import type { Doc, Id, TableNames } from "../_generated/dataModel";
 import { mutation, query, type MutationCtx, type QueryCtx } from "../_generated/server";
-import type { AppPermission } from "../schemas";
+import { parseAuthUserId, type AppPermission, type AuthUserId } from "../schemas";
 import { hasPermission } from "./authorization";
 
 export const zQuery = zCustomQuery(query, NoOp);
@@ -48,8 +48,13 @@ export async function requireAuth(
 	return identity;
 }
 
-export function getAuthUserId(identity: UserIdentity): string {
-	return identity.subject;
+export function getAuthUserId(identity: UserIdentity): AuthUserId {
+	const parsedUserId = parseAuthUserId(identity.subject);
+	if (parsedUserId.isErr()) {
+		throwUnauthorized("Invalid authenticated user identifier");
+	}
+
+	return parsedUserId.value;
 }
 
 export const authedQuery = zCustomQuery(
@@ -94,7 +99,7 @@ export async function getOwnedDocOrThrow<TableName extends TableNames>(
 	ctx: ContextWithDb,
 	id: Id<TableName>,
 	options: {
-		ownerId: string;
+		ownerId: AuthUserId;
 		ownerField?: string;
 		notFoundMessage?: string;
 		forbiddenMessage?: string;
