@@ -107,8 +107,12 @@ function RootComponent() {
 			authClient={authClient}
 			initialToken={token}
 		>
-			<Header />
-			<Outlet />
+			<div className="flex min-h-svh flex-col">
+				<Header />
+				<div className="flex min-h-0 flex-1 flex-col">
+					<Outlet />
+				</div>
+			</div>
 			{showDevtools ? (
 				<TanStackDevtools
 					config={{
