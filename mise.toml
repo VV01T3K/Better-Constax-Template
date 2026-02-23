@@ -16,7 +16,7 @@ postinstall = '''
 [tasks.docker]
 description = "Build and start the Docker container"
 dir = "docker"
-run = "docker compose --env-file ../.env.local -f compose.dev.yaml up -d --build"
+run = "docker compose --env-file ../apps/web/.env.local -f compose.dev.yaml up -d --build"
 
 [settings]
 experimental = true

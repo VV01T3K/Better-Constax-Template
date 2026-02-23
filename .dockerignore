@@ -3,13 +3,19 @@ node_modules
 
 # Build output
 .output
+**/.output
 dist
+**/dist
 build
 *.tsbuildinfo
 
 # Environment files
 .env
 .env.local
+.env.*
+**/.env
+**/.env.local
+**/.env.*
 .env.*.local
 
 # IDE & editors
@@ -47,11 +53,6 @@ docker
 .oxlintrc*
 .oxfmt*
 .cta.json
-
-# Convex — exclude all, then allow only what the Vite build imports
-convex
-!convex/_generated
-!convex/schemas
 
 # Docs
 README.md

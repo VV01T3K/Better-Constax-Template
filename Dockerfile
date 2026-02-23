@@ -6,7 +6,9 @@ WORKDIR /build
 ARG VITE_CONVEX_URL
 ARG VITE_CONVEX_SITE_URL
 
-COPY package.json bun.lock* ./
+COPY package.json bun.lock* turbo.json ./
+COPY apps/web/package.json ./apps/web/package.json
+COPY apps/convex/package.json ./apps/convex/package.json
 COPY patches ./patches
 
 # Install deps with cache mount (BuildKit required)
@@ -19,10 +21,7 @@ RUN bun run build
 FROM dhi.io/bun:1-alpine3.22 AS runner
 WORKDIR /app
 
-COPY --from=builder /build/.output ./.output
-WORKDIR /build
-
-COPY --from=builder /build/.output ./.output
+COPY --from=builder /build/apps/web/.output ./.output
 
 ENV NODE_ENV=production
 ENV PORT=8080

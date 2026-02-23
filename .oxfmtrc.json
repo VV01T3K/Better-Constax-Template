@@ -10,7 +10,9 @@
 	"ignorePatterns": [
 		"node_modules",
 		"dist",
+		"**/dist",
 		".output",
+		"**/.output",
 		"**/*.gen.*",
 		".claude/**",
 		".agents/**",

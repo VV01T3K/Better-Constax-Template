@@ -22,7 +22,7 @@
 		"noUncheckedSideEffectImports": true,
 		"paths": {
 			"@/*": ["./src/*"],
-			"@convex/*": ["./convex/*"]
+			"@convex/*": ["../convex/convex/*"]
 		}
 	}
 }

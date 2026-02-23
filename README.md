@@ -1,17 +1,25 @@
 # Better Constax Template
 
-Full-stack TanStack Start template with React 19, Convex, Better Auth, and TanStack Query.
+Full-stack TanStack Start monorepo with React 19, Convex, Better Auth, TanStack Query, and Turborepo.
+
+## Workspace Layout
+
+- `apps/web` - TanStack Start app (SSR/streaming via Nitro)
+- `apps/convex` - Convex backend source (`apps/convex/convex`)
+- `packages` - reserved for future shared packages
 
 ## Quick Start
 
-1. Install tools via `mise` and dependencies:
+1. Install tools and dependencies:
 
 ```bash
 mise install
 mise exec -- bun install
 ```
 
-2. Configure environment in `.env.local`:
+2. Configure environment files:
+
+`apps/web/.env.local`
 
 ```bash
 CONVEX_DEPLOYMENT=...
@@ -20,23 +28,34 @@ VITE_CONVEX_SITE_URL=...
 BETTER_AUTH_ADMIN_EMAILS=admin@gmail.com
 ```
 
-3. Run app and Convex:
+`apps/convex/.env.local`
+
+```bash
+CONVEX_DEPLOYMENT=...
+VITE_CONVEX_URL=...
+VITE_CONVEX_SITE_URL=...
+BETTER_AUTH_ADMIN_EMAILS=admin@gmail.com
+```
+
+3. Run the full dev stack:
 
 ```bash
 mise exec -- bun run dev
-mise exec -- bunx convex dev
 ```
 
 ## Commands (Mise-first)
 
 ```bash
-mise exec -- bun run dev
-mise exec -- bun run build
-mise exec -- bun run preview
+mise exec -- bun run dev          # web + convex
+mise exec -- bun run dev:web      # web only
+mise exec -- bun run dev:convex   # convex only
+mise exec -- bun run build        # web build
+mise exec -- bun run preview      # web preview
 mise exec -- bun run lint
 mise exec -- bun run format
 mise exec -- bun run check
 mise exec -- bun run auth:generate
+mise exec -- bun run convex:env
 ```
 
 ## Architecture
@@ -53,8 +72,6 @@ The side nav intentionally has two groups:
 
 - `Core`: actively maintained reference demos
 - `Legacy demos (may break)`: kept for reference, not actively hardened
-
-This keeps old demos available without forcing all of them to match current production patterns.
 
 ## Core Data/Auth Defaults
 

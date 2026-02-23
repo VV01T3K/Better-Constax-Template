@@ -10,5 +10,11 @@ count.txt
 .wrangler
 .output
 .vinxi
+.turbo
+**/.output
+**/.nitro
+**/.tanstack
+**/.vinxi
+**/.turbo
 todos.json
 .opencode/plans/*

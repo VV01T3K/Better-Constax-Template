@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import tailwindcss from "@tailwindcss/vite";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
@@ -9,12 +11,19 @@ import { VitePWA } from "vite-plugin-pwa";
 
 // Simple env validation for vite config - only checks NITRO_PRESET
 const nitroPreset = process.env.NITRO_PRESET as NitroConfig["preset"] | undefined;
+const webDir = import.meta.dirname;
+const convexDir = path.resolve(webDir, "../convex/convex");
 
 const config = defineConfig({
+	server: {
+		fs: {
+			allow: [webDir, convexDir],
+		},
+	},
 	resolve: {
 		alias: {
-			"@": import.meta.dirname + "/src",
-			"@convex": import.meta.dirname + "/convex",
+			"@": path.resolve(webDir, "src"),
+			"@convex": convexDir,
 		},
 	},
 	build: {

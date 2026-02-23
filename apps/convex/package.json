@@ -1,0 +1,22 @@
+{
+	"name": "@repo/convex",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "convex dev",
+		"lint": "oxlint --type-aware --type-check --fix convex",
+		"format": "oxfmt convex",
+		"check": "oxfmt convex && oxlint --type-aware --type-check --fix convex && tsgo --noEmit -p convex/tsconfig.json",
+		"auth:generate": "cd convex/betterAuth && bunx @better-auth/cli generate --output ./generatedSchema.ts -y",
+		"convex:env": "convex env set BETTER_AUTH_SECRET=$(openssl rand -base64 32) && convex env set SITE_URL http://localhost:3000 && convex env set BETTER_AUTH_ADMIN_EMAILS admin@gmail.com"
+	},
+	"dependencies": {
+		"@convex-dev/better-auth": "0.10.11",
+		"better-auth": "^1.4.18",
+		"convex": "^1.32.0",
+		"convex-helpers": "^0.1.113",
+		"hono": "^4.12.2",
+		"neverthrow": "^8.2.0",
+		"zod": "^4.3.6"
+	}
+}
