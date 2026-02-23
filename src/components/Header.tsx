@@ -89,7 +89,6 @@ function hasAccess(
 
 export default function Header() {
 	const currentUserQuery = convexQuery(api.auth.getCurrentUser, {});
-	const filesQuery = convexQuery(api.functions.files.list, {});
 	const accessQuery = convexQuery(api.functions.authorization.getMyAccess, {});
 	const { data: currentUser } = useSuspenseQuery(currentUserQuery);
 	const { data: myAccess } = useSuspenseQuery(accessQuery);
@@ -121,28 +120,46 @@ export default function Header() {
 	});
 
 	const handleSignOut = async () => {
+		await queryClient.cancelQueries();
 		await authClient.signOut().catch(() => undefined);
-		queryClient.setQueryData(currentUserQuery.queryKey, null);
-		queryClient.removeQueries({ queryKey: filesQuery.queryKey });
-		await Promise.all([
-			queryClient.invalidateQueries({ queryKey: currentUserQuery.queryKey }),
-			queryClient.invalidateQueries({ queryKey: accessQuery.queryKey }),
-			router.invalidate(),
-		]);
+		queryClient.clear();
 		await router.navigate({ to: "/auth/login", replace: true });
 		setIsOpen(false);
 	};
 
 	const handleStopImpersonation = async () => {
 		setImpersonationError(null);
-		const targetUserIdRaw = sessionData?.user?.id;
+		setIsOpen(false);
+		await queryClient.cancelQueries();
+		await router.navigate({ to: "/", replace: true });
+
+		const targetUserIdRaw = sessionData?.user?.id ?? null;
 		const result = await authClient.admin.stopImpersonating();
 		if (result.error) {
 			setImpersonationError(result.error.message ?? "Failed to stop impersonation");
 			return;
 		}
 
-		if (targetUserIdRaw) {
+		const switched = await waitForImpersonationState({
+			expectedImpersonating: false,
+			refetchSession,
+		});
+
+		if (!switched) {
+			window.location.assign("/");
+			return;
+		}
+
+		const refreshedAccess = await queryClient
+			.fetchQuery({
+				...accessQuery,
+				staleTime: 0,
+			})
+			.catch(() => null);
+		const canStopAudit =
+			refreshedAccess?.permissions.includes("admin.users.impersonation.mutate") ?? false;
+
+		if (targetUserIdRaw && canStopAudit) {
 			const targetUserId = parseAuthUserId(targetUserIdRaw);
 			if (targetUserId.isErr()) {
 				setImpersonationError(targetUserId.error.message);
@@ -156,18 +173,8 @@ export default function Header() {
 			}
 		}
 
-		const switched = await waitForImpersonationState({
-			expectedImpersonating: false,
-			refetchSession,
-		});
-
-		await Promise.all([queryClient.invalidateQueries(), router.invalidate()]);
-		if (!switched) {
-			window.location.assign("/");
-			return;
-		}
-
-		await router.navigate({ to: "/" });
+		queryClient.clear();
+		await router.invalidate();
 	};
 
 	const isImpersonating = Boolean(sessionData?.session?.impersonatedBy);

@@ -138,18 +138,21 @@ function AdminUsersPage() {
 		},
 		onSuccess: async () => {
 			setActionError(null);
+			await queryClient.cancelQueries();
+			await router.navigate({ to: "/", replace: true });
+
 			const switched = await waitForImpersonationState({
 				expectedImpersonating: true,
 				refetchSession,
 			});
 
-			await Promise.all([queryClient.invalidateQueries(), router.invalidate()]);
 			if (!switched) {
 				window.location.assign("/");
 				return;
 			}
 
-			await router.navigate({ to: "/" });
+			queryClient.clear();
+			await router.invalidate();
 		},
 		onError: (error) => {
 			setActionError(error instanceof Error ? error.message : "Failed to impersonate user");
