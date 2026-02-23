@@ -8,27 +8,21 @@
 	"css.lint.unknownAtRules": "ignore",
 	"files.watcherExclude": {
 		"**/routeTree.gen.ts": true,
-		".claude/**": true,
 		".agents/**": true,
-		".cursor/**": true
 	},
 	"search.exclude": {
 		"**/routeTree.gen.ts": true,
 		"**/bun.lock": true,
 		"**/_generated/**": true,
 		"**/betterAuth/generatedSchema.ts": true,
-		".claude/**": true,
 		".agents/**": true,
-		".cursor/**": true
 	},
 	"files.readonlyInclude": {
 		"**/routeTree.gen.ts": true,
 		"**/bun.lock": true,
 		"**/_generated/**": true,
 		"**/betterAuth/generatedSchema.ts": true,
-		".claude/**": true,
 		".agents/**": true,
-		".cursor/**": true
 	},
 	"editor.formatOnSave": true,
 	"[javascript]": {

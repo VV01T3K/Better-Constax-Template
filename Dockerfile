@@ -9,7 +9,6 @@ ARG VITE_CONVEX_SITE_URL
 COPY package.json bun.lock* turbo.json ./
 COPY apps/web/package.json ./apps/web/package.json
 COPY packages/backend/package.json ./packages/backend/package.json
-COPY packages/typescript-config/package.json ./packages/typescript-config/package.json
 COPY patches ./patches
 
 # Install deps with cache mount (BuildKit required)
