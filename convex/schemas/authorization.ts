@@ -167,16 +167,7 @@ export const defaultRolePermissionMatrix: Record<AppRole, readonly AppPermission
 };
 
 export function normalizeRole(value: unknown): AppRole {
-	if (typeof value !== "string") {
-		return "user";
-	}
-
-	const role = value.split(",")[0]?.trim().toLowerCase();
-	if (!role) {
-		return "user";
-	}
-
-	return appRoles.find((allowedRole) => allowedRole === role) ?? "user";
+	return isAppRole(value) ? value : "user";
 }
 
 export function isAppRole(value: unknown): value is AppRole {
@@ -187,31 +178,8 @@ export function isAppPermission(value: unknown): value is AppPermission {
 	return typeof value === "string" && appPermissions.some((permission) => permission === value);
 }
 
-const legacyPermissionMigrationMap: Partial<Record<string, readonly AppPermission[]>> = {
-	"demo.todos.manage": ["demo.todos.access", "demo.todos.mutate"],
-	"demo.files.manage": ["demo.files.access", "demo.files.mutate"],
-	"demo.address-form.manage": ["demo.address-form.access", "demo.address-form.mutate"],
-	"demo.table.view": ["demo.table.access"],
-	"demo.massive-data.view": ["demo.massive-data.access"],
-	"admin.users.view": ["admin.users.access"],
-	"admin.users.roles.edit": ["admin.users.roles.mutate"],
-	"admin.users.impersonate": ["admin.users.impersonation.mutate"],
-	"admin.permissions.view": ["admin.permissions.app.access", "admin.permissions.admin.access"],
-	"admin.permissions.edit": ["admin.permissions.app.mutate", "admin.permissions.admin.mutate"],
-};
-
 export function normalizePermissionList(permissions: readonly unknown[]): AppPermission[] {
-	const normalizedPermissions = permissions.flatMap((permission) => {
-		if (isAppPermission(permission)) {
-			return [permission];
-		}
-
-		if (typeof permission === "string") {
-			return legacyPermissionMigrationMap[permission] ?? [];
-		}
-
-		return [];
-	});
+	const normalizedPermissions = permissions.filter(isAppPermission);
 
 	return [...new Set(normalizedPermissions)];
 }
@@ -230,15 +198,3 @@ export const impersonationAuditSchema = z.object({
 	source: z.union([z.string(), z.null()]),
 	reason: z.union([z.string(), z.null()]),
 });
-
-export const routePermissionMap = {
-	"/demo/convex-query": "demo.todos.access",
-	"/demo/tanstack-optimistic": "demo.todos.access",
-	"/demo/file-upload": "demo.files.access",
-	"/demo/form/address": "demo.address-form.access",
-	"/demo/table": "demo.table.access",
-	"/demo/massive-data": "demo.massive-data.access",
-	"/admin/users": "admin.users.access",
-	"/admin/permissions": "admin.permissions.app.access",
-	"/admin/permissions/admin": "admin.permissions.admin.access",
-} as const;

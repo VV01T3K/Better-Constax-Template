@@ -18,7 +18,6 @@ import {
 	appPermissions,
 	permissionScopeSchema,
 	appRoles,
-	isAppPermission,
 	normalizePermissionList,
 	type PermissionScope,
 } from "../schemas";
@@ -26,9 +25,9 @@ import {
 const editableRoles = ["user", "manager"] as const;
 
 const updateMatrixInputSchema = z.object({
-	user: z.array(z.string()),
-	manager: z.array(z.string()),
-	admin: z.array(z.string()).optional(),
+	user: z.array(appPermissionSchema),
+	manager: z.array(appPermissionSchema),
+	admin: z.array(appPermissionSchema).optional(),
 });
 
 function getScopeViewPermission(scope: PermissionScope) {
@@ -115,11 +114,11 @@ export const updateMatrix = guardedMutation({
 			...(args.matrix.admin ?? []),
 		];
 		const scopedPermissionSet = new Set(getPermissionsForScope(args.scope));
-		const unknownPermissions = candidatePermissions.filter(
-			(permission) => !isAppPermission(permission) || !scopedPermissionSet.has(permission),
+		const outOfScopePermissions = candidatePermissions.filter(
+			(permission) => !scopedPermissionSet.has(permission),
 		);
-		if (unknownPermissions.length > 0) {
-			throwForbidden(`Unknown permission(s): ${unknownPermissions.join(", ")}`);
+		if (outOfScopePermissions.length > 0) {
+			throwForbidden(`Out-of-scope permission(s): ${outOfScopePermissions.join(", ")}`);
 		}
 
 		const nextScopedMatrix: RolePermissionMatrix = {
