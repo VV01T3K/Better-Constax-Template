@@ -125,5 +125,6 @@
 	}
 	html {
 		@apply font-sans;
+		color-scheme: dark;
 	}
 }
