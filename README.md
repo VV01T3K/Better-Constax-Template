@@ -36,7 +36,6 @@ mise exec -- bun run preview
 mise exec -- bun run lint
 mise exec -- bun run format
 mise exec -- bun run check
-mise exec -- bun run test
 mise exec -- bun run auth:generate
 ```
 

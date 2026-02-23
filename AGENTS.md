@@ -6,8 +6,6 @@
 bun install                          # Install dependencies
 bun run dev                    # Dev server on port 3000 (with TLS bypass)
 bun run build                  # Production build
-bun run test                   # Run all tests (Vitest)
-bun --bun vitest run src/path.test.ts  # Run a single test file
 bun run lint                   # Lint with oxlint (type-aware, auto-fix)
 bun run format                 # Format with oxfmt
 bun run check                  # Format + lint + type-check (oxfmt, oxlint, tsgo)
