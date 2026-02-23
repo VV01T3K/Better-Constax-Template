@@ -86,6 +86,7 @@ function SidebarProvider({
 
 	// Helper to toggle the sidebar.
 	const toggleSidebar = React.useCallback(() => {
+		// eslint-disable-next-line no-shadow -- callback params intentionally shadow outer `open`
 		return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
 	}, [isMobile, setOpen, setOpenMobile]);
 
@@ -182,6 +183,7 @@ function Sidebar({
 					data-mobile="true"
 					className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
 					style={
+						// eslint-disable-next-line typescript-eslint/no-unsafe-type-assertion -- CSS custom properties require type assertion
 						{
 							"--sidebar-width": SIDEBAR_WIDTH_MOBILE,
 						} as React.CSSProperties
@@ -598,6 +600,7 @@ function SidebarMenuSkeleton({
 				className="h-4 max-w-(--skeleton-width) flex-1"
 				data-sidebar="menu-skeleton-text"
 				style={
+					// eslint-disable-next-line typescript-eslint/no-unsafe-type-assertion -- CSS custom properties require type assertion
 					{
 						"--skeleton-width": width,
 					} as React.CSSProperties
