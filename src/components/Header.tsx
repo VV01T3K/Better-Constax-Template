@@ -9,6 +9,7 @@ import {
 	Database,
 	Globe,
 	Home,
+	Layers,
 	LogIn,
 	LogOut,
 	Menu,
@@ -75,6 +76,7 @@ const adminLinks = [
 type NavTarget =
 	| "/"
 	| "/auth/login"
+	| "/shadcn"
 	| (typeof demoLinks)[number]["to"]
 	| (typeof adminLinks)[number]["to"];
 
@@ -275,6 +277,12 @@ export default function Header() {
 				<nav className="flex-1 overflow-y-auto p-4">
 					<div className="space-y-1">
 						<NavLinkItem to="/" label="Home" icon={Home} onNavigate={() => setIsOpen(false)} />
+						<NavLinkItem
+							to="/shadcn"
+							label="shadcn UI"
+							icon={Layers}
+							onNavigate={() => setIsOpen(false)}
+						/>
 					</div>
 
 					<div className="mt-4 mb-4">

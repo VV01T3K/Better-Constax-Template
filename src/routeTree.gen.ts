@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ShadcnRouteImport } from './routes/shadcn'
 import { Route as ForbiddenRouteImport } from './routes/forbidden'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTanstackOptimisticRouteImport } from './routes/demo/tanstack-optimistic'
@@ -23,6 +24,11 @@ import { Route as DemoFormAddressRouteImport } from './routes/demo/form.address'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AdminPermissionsAdminRouteImport } from './routes/admin/permissions.admin'
 
+const ShadcnRoute = ShadcnRouteImport.update({
+  id: '/shadcn',
+  path: '/shadcn',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForbiddenRoute = ForbiddenRouteImport.update({
   id: '/forbidden',
   path: '/forbidden',
@@ -92,6 +98,7 @@ const AdminPermissionsAdminRoute = AdminPermissionsAdminRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/forbidden': typeof ForbiddenRoute
+  '/shadcn': typeof ShadcnRoute
   '/admin/permissions': typeof AdminPermissionsRouteWithChildren
   '/admin/users': typeof AdminUsersRoute
   '/auth/login': typeof AuthLoginRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/forbidden': typeof ForbiddenRoute
+  '/shadcn': typeof ShadcnRoute
   '/admin/permissions': typeof AdminPermissionsRouteWithChildren
   '/admin/users': typeof AdminUsersRoute
   '/auth/login': typeof AuthLoginRoute
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/forbidden': typeof ForbiddenRoute
+  '/shadcn': typeof ShadcnRoute
   '/admin/permissions': typeof AdminPermissionsRouteWithChildren
   '/admin/users': typeof AdminUsersRoute
   '/auth/login': typeof AuthLoginRoute
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/forbidden'
+    | '/shadcn'
     | '/admin/permissions'
     | '/admin/users'
     | '/auth/login'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/forbidden'
+    | '/shadcn'
     | '/admin/permissions'
     | '/admin/users'
     | '/auth/login'
@@ -170,6 +181,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/forbidden'
+    | '/shadcn'
     | '/admin/permissions'
     | '/admin/users'
     | '/auth/login'
@@ -186,6 +198,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ForbiddenRoute: typeof ForbiddenRoute
+  ShadcnRoute: typeof ShadcnRoute
   AdminPermissionsRoute: typeof AdminPermissionsRouteWithChildren
   AdminUsersRoute: typeof AdminUsersRoute
   AuthLoginRoute: typeof AuthLoginRoute
@@ -200,6 +213,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/shadcn': {
+      id: '/shadcn'
+      path: '/shadcn'
+      fullPath: '/shadcn'
+      preLoaderRoute: typeof ShadcnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forbidden': {
       id: '/forbidden'
       path: '/forbidden'
@@ -308,6 +328,7 @@ const AdminPermissionsRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ForbiddenRoute: ForbiddenRoute,
+  ShadcnRoute: ShadcnRoute,
   AdminPermissionsRoute: AdminPermissionsRouteWithChildren,
   AdminUsersRoute: AdminUsersRoute,
   AuthLoginRoute: AuthLoginRoute,
