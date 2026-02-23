@@ -259,7 +259,7 @@ function FormExample() {
 										onCheckedChange={(checked) =>
 											setNotifications({
 												...notifications,
-												email:  checked,
+												email: checked,
 											})
 										}
 									>
@@ -271,7 +271,7 @@ function FormExample() {
 										onCheckedChange={(checked) =>
 											setNotifications({
 												...notifications,
-												sms:  checked,
+												sms: checked,
 											})
 										}
 									>
@@ -349,7 +349,7 @@ function FormExample() {
 																		onCheckedChange={(checked) =>
 																			setNotifications({
 																				...notifications,
-																				push:  checked,
+																				push: checked,
 																			})
 																		}
 																	>
@@ -361,7 +361,7 @@ function FormExample() {
 																		onCheckedChange={(checked) =>
 																			setNotifications({
 																				...notifications,
-																				email:  checked,
+																				email: checked,
 																			})
 																		}
 																	>
