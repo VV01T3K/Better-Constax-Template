@@ -8,14 +8,7 @@ type RouteGuardOptions = {
 	queryClient: Pick<QueryClient, "fetchQuery">;
 	redirectHref: string;
 	permission?: AppPermission;
-	onAuthorized?: () => Promise<void> | void;
-};
-
-type RouteGuardWithPrefetchOptions = {
-	queryClient: Pick<QueryClient, "fetchQuery">;
-	redirectHref: string;
-	permission?: AppPermission;
-	prefetch: () => Promise<unknown> | void;
+	prefetch?: () => Promise<unknown> | void;
 };
 
 export async function protectedRouteLoader(options: RouteGuardOptions): Promise<void> {
@@ -46,18 +39,5 @@ export async function protectedRouteLoader(options: RouteGuardOptions): Promise<
 		}
 	}
 
-	await options.onAuthorized?.();
-}
-
-export async function protectedRouteLoaderWithPrefetch(
-	options: RouteGuardWithPrefetchOptions,
-): Promise<void> {
-	await protectedRouteLoader({
-		queryClient: options.queryClient,
-		redirectHref: options.redirectHref,
-		permission: options.permission,
-		onAuthorized: async () => {
-			await options.prefetch();
-		},
-	});
+	await options.prefetch?.();
 }

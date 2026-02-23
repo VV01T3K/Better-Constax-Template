@@ -6,14 +6,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { useAppForm } from "@/hooks/demo.form";
-import { protectedRouteLoaderWithPrefetch } from "@/lib/route-guard-kit";
+import { protectedRouteLoader } from "@/lib/route-guard-kit";
 
 const currentUserQuery = convexQuery(api.auth.getCurrentUser, {});
 const submissionsQuery = convexQuery(api.functions.addressForms.listMine, { limit: 10 });
 
 export const Route = createFileRoute("/demo/form/address")({
 	loader: async ({ context, location }) => {
-		await protectedRouteLoaderWithPrefetch({
+		await protectedRouteLoader({
 			queryClient: context.queryClient,
 			permission: "demo.address-form.access",
 			redirectHref: location.href,

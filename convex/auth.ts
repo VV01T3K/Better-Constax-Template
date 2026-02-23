@@ -12,7 +12,7 @@ import { query } from "./_generated/server";
 import authConfig from "./auth.config";
 import schema from "./betterAuth/schema";
 import { getRoleClaimValue } from "./lib/authIdentity";
-import { normalizeRole } from "./schemas";
+import { normalizeRole, parseAuthUserId } from "./schemas";
 
 const authFunctions: AuthFunctions = internal.auth;
 
@@ -24,8 +24,15 @@ export const authComponent = createClient<DataModel, typeof schema>(components.b
 	triggers: {
 		user: {
 			onCreate: async (ctx, doc) => {
+				const authUserId = parseAuthUserId(doc._id);
+				if (authUserId.isErr()) {
+					throw new Error("Invalid auth user identifier from Better Auth trigger", {
+						cause: authUserId.error,
+					});
+				}
+
 				await ctx.db.insert("profiles", {
-					authUserId: doc._id,
+					authUserId: authUserId.value,
 					name: doc.name,
 					email: doc.email,
 					image: doc.image ?? null,

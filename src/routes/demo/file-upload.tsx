@@ -22,11 +22,11 @@ import { err as resultErr, ok, type Result } from "neverthrow";
 import { useRef, useState } from "react";
 
 import { detectFileType } from "@/lib/file-type";
-import { protectedRouteLoaderWithPrefetch } from "@/lib/route-guard-kit";
+import { protectedRouteLoader } from "@/lib/route-guard-kit";
 
 export const Route = createFileRoute("/demo/file-upload")({
 	loader: async ({ context, location }) => {
-		await protectedRouteLoaderWithPrefetch({
+		await protectedRouteLoader({
 			queryClient: context.queryClient,
 			permission: "demo.files.access",
 			redirectHref: location.href,

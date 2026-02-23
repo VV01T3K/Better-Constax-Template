@@ -2,7 +2,8 @@ import type { UserIdentity } from "convex/server";
 import { z } from "zod";
 
 import type { MutationCtx, QueryCtx } from "../_generated/server";
-import type { AppPermission, AppRole } from "../schemas";
+import type { AppPermission, AppRole, AuthUserId } from "../schemas";
+import { getRoleAndPermissions } from "./authorization";
 import { getAuthUserId, throwForbidden, zMutation, zQuery, requireAuth } from "./functionHelpers";
 
 type MaybePromise<T> = T | Promise<T>;
@@ -19,11 +20,9 @@ type ZodArgsShape = z.ZodRawShape;
 type GuardArgs<TShape extends ZodArgsShape> = z.core.output<
 	z.core.$ZodObject<TShape, z.core.$strict>
 >;
-let roleAndPermissionResolver: RoleAndPermissionResolver | null = null;
-
 export type GuardActor = {
 	identity: UserIdentity;
-	userId: string;
+	userId: AuthUserId;
 	role: AppRole;
 	permissions: AppPermission[];
 };
@@ -79,15 +78,6 @@ type GuardedMutationOptions<TShape extends ZodArgsShape, TResult> = {
 	handler: (ctx: MutationCtx, args: GuardArgs<TShape>, actor: GuardActor) => MaybePromise<TResult>;
 };
 
-async function getRoleAndPermissionResolver(): Promise<RoleAndPermissionResolver> {
-	if (roleAndPermissionResolver) {
-		return roleAndPermissionResolver;
-	}
-	const authorization = await import("./authorization");
-	roleAndPermissionResolver = authorization.getRoleAndPermissions;
-	return roleAndPermissionResolver;
-}
-
 export async function getActor(
 	ctx: {
 		auth: ContextWithAuthAndDb["auth"];
@@ -98,8 +88,7 @@ export async function getActor(
 	},
 ): Promise<GuardActor> {
 	const identity = await requireAuth(ctx);
-	const resolveRoleAndPermissions =
-		options?.resolveRoleAndPermissions ?? (await getRoleAndPermissionResolver());
+	const resolveRoleAndPermissions = options?.resolveRoleAndPermissions ?? getRoleAndPermissions;
 	const { role, permissions } = await resolveRoleAndPermissions(ctx, identity);
 	return {
 		identity,

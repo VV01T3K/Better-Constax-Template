@@ -6,6 +6,7 @@ import {
 	appRoles,
 	isAppRole,
 	normalizeRole,
+	type AuthUserId,
 	type AppRole,
 } from "@convex/schemas";
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
@@ -16,10 +17,10 @@ import { useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
 import { waitForImpersonationState } from "@/lib/impersonation-client";
-import { protectedRouteLoaderWithPrefetch } from "@/lib/route-guard-kit";
+import { protectedRouteLoader } from "@/lib/route-guard-kit";
 
 type AdminUserRow = {
-	id: string;
+	id: AuthUserId;
 	name: string;
 	email: string;
 	role: AppRole;
@@ -29,7 +30,7 @@ type AdminUserRow = {
 
 export const Route = createFileRoute("/admin/users")({
 	loader: async ({ context, location }) => {
-		await protectedRouteLoaderWithPrefetch({
+		await protectedRouteLoader({
 			queryClient: context.queryClient,
 			permission: "admin.users.access",
 			redirectHref: location.href,
@@ -114,7 +115,7 @@ function AdminUsersPage() {
 	});
 
 	const impersonateMutation = useMutation({
-		mutationFn: async ({ userId }: { userId: string }) => {
+		mutationFn: async ({ userId }: { userId: AuthUserId }) => {
 			let auditId: Id<"impersonationAudit"> | null = null;
 			try {
 				auditId = await startAuditMutation.mutateAsync({
@@ -137,18 +138,21 @@ function AdminUsersPage() {
 		},
 		onSuccess: async () => {
 			setActionError(null);
+			await queryClient.cancelQueries();
+			await router.navigate({ to: "/", replace: true });
+
 			const switched = await waitForImpersonationState({
 				expectedImpersonating: true,
 				refetchSession,
 			});
 
-			await Promise.all([queryClient.invalidateQueries(), router.invalidate()]);
 			if (!switched) {
 				window.location.assign("/");
 				return;
 			}
 
-			await router.navigate({ to: "/" });
+			queryClient.clear();
+			await router.invalidate();
 		},
 		onError: (error) => {
 			setActionError(error instanceof Error ? error.message : "Failed to impersonate user");

@@ -1,7 +1,9 @@
 import { z } from "zod";
 
+import { authUserIdSchema } from "./ids";
+
 export const todoSchema = z.object({
-	authUserId: z.string(),
+	authUserId: authUserIdSchema,
 	text: z.string().min(1, "Text is required"),
 	completed: z.boolean(),
 });
