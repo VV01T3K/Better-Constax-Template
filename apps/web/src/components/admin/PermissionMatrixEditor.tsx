@@ -1,6 +1,6 @@
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
-import { api } from "@convex/_generated/api";
-import type { AppPermission, AppRole, PermissionScope } from "@convex/schemas";
+import { api } from "@repo/backend/convex/_generated/api";
+import type { AppPermission, AppRole, PermissionScope } from "@repo/backend/convex/schemas";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { flexRender, getCoreRowModel, type ColumnDef, useReactTable } from "@tanstack/react-table";

@@ -4,16 +4,11 @@
 	"type": "module",
 	"workspaces": ["apps/*", "packages/*"],
 	"scripts": {
-		"dev": "turbo run dev --filter=@repo/web --filter=@repo/convex",
-		"dev:web": "turbo run dev --filter=@repo/web",
-		"dev:convex": "turbo run dev --filter=@repo/convex",
+		"dev": "turbo run dev --filter=@repo/web --filter=@repo/backend",
 		"build": "turbo run build --filter=@repo/web",
-		"preview": "turbo run preview --filter=@repo/web",
-		"lint": "turbo run lint",
-		"format": "turbo run format",
 		"check": "turbo run check",
-		"auth:generate": "turbo run auth:generate --filter=@repo/convex",
-		"convex:env": "turbo run convex:env --filter=@repo/convex"
+		"auth:generate": "turbo run auth:generate --filter=@repo/backend",
+		"convex:env": "turbo run convex:env --filter=@repo/backend"
 	},
 	"devDependencies": {
 		"@tanstack/eslint-plugin-query": "^5.91.4",

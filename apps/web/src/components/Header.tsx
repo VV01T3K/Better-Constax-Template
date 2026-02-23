@@ -1,6 +1,6 @@
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
-import { api } from "@convex/_generated/api";
-import { parseAuthUserId, type AppPermission } from "@convex/schemas";
+import { api } from "@repo/backend/convex/_generated/api";
+import { parseAuthUserId, type AppPermission } from "@repo/backend/convex/schemas";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
 import { useConvexAuth } from "convex/react";

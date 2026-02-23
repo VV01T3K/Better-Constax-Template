@@ -1,6 +1,6 @@
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
-import { api } from "@convex/_generated/api";
-import { submitAddressFormSchema } from "@convex/schemas";
+import { api } from "@repo/backend/convex/_generated/api";
+import { submitAddressFormSchema } from "@repo/backend/convex/schemas";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";

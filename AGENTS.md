@@ -4,21 +4,23 @@
 
 ```bash
 bun install                          # Install dependencies
-bun run dev                          # Start web + convex in parallel
-bun run dev:web                      # Start web only (port 3000)
-bun run dev:convex                   # Start Convex backend only
+bun run dev                          # Start web + backend in parallel
 bun run build                        # Production build for web app
-bun run preview                      # Preview web production output
-bun run lint                         # Lint all workspaces with oxlint
-bun run format                       # Format all workspaces with oxfmt
 bun run check                        # Format + lint + type-check all workspaces
-bun run auth:generate                # Regenerate Better Auth schema in apps/convex
+bun run auth:generate                # Regenerate Better Auth schema in packages/backend
 bun run convex:env                   # Set Convex environment defaults
+
+# Per-package (run from package directory or via turbo filter):
+turbo run dev --filter=@repo/web     # Start web only (port 3000)
+turbo run dev --filter=@repo/backend # Start Convex backend only
+turbo run preview --filter=@repo/web # Preview web production output
+turbo run lint                       # Lint all workspaces with oxlint
+turbo run format                     # Format all workspaces with oxfmt
 ```
 
 ## Architecture
 
-**Monorepo** with Turborepo, Bun workspaces, TanStack Start frontend (`apps/web`), and Convex backend (`apps/convex`).
+**Monorepo** with Turborepo, Bun workspaces, TanStack Start frontend (`apps/web`), Convex backend (`packages/backend`), and shared TypeScript config (`packages/typescript-config`).
 
 ### Stack
 
@@ -27,8 +29,8 @@ bun run convex:env                   # Set Convex environment defaults
 - **Routing**: TanStack Router — file-based routing in `apps/web/src/routes/`. Route tree auto-generated in `apps/web/src/routeTree.gen.ts` (read-only, do not edit)
 - **Data layer**: Convex (real-time backend) + TanStack Query (client caching) bridged via `@convex-dev/react-query`
 - **Optimistic updates**: TanStack React DB patterns in `apps/web/src/` with optimistic/confirmed/error states
-- **Auth**: Better Auth with Convex adapter — server auth in `apps/web/src/lib/auth-server.ts`, client auth in `apps/web/src/lib/auth-client.ts`, Convex HTTP handler in `apps/convex/convex/http.ts` (Hono)
-- **Validation**: Zod schemas in `apps/convex/convex/schemas/` shared between client and server; Convex schema derived via `zodToConvexFields`
+- **Auth**: Better Auth with Convex adapter — server auth in `apps/web/src/lib/auth-server.ts`, client auth in `apps/web/src/lib/auth-client.ts`, Convex HTTP handler in `packages/backend/convex/http.ts` (Hono)
+- **Validation**: Zod schemas in `packages/backend/convex/schemas/` shared between client and server; Convex schema derived via `zodToConvexFields`
 - **Styling**: Tailwind CSS 4 via Vite plugin
 - **React Compiler**: Enabled via Babel plugin (`babel-plugin-react-compiler`)
 
@@ -39,11 +41,11 @@ bun run convex:env                   # Set Convex environment defaults
 - `apps/web/src/components/` — Shared React components
 - `apps/web/src/hooks/` — Custom hooks (prefixed `demo.` files are demo code, safe to delete)
 - `apps/web/src/lib/` — Auth client/server setup, middleware
-- `apps/convex/` — Convex workspace package
-- `apps/convex/convex/` — Convex backend source: mutations, queries, schema, HTTP routes, auth config
-- `apps/convex/convex/_generated/` — Auto-generated Convex types (do not edit)
-- `apps/convex/convex/betterAuth/` — Better Auth adapter and generated schema for Convex
-- `packages/` — Reserved for future shared packages
+- `packages/backend/` — Convex backend package (`@repo/backend`)
+- `packages/backend/convex/` — Convex backend source: mutations, queries, schema, HTTP routes, auth config
+- `packages/backend/convex/_generated/` — Auto-generated Convex types (do not edit)
+- `packages/backend/convex/betterAuth/` — Better Auth adapter and generated schema for Convex
+- `packages/typescript-config/` — Shared TypeScript configs (`@repo/typescript-config`)
 
 ### Server functions
 
@@ -52,13 +54,13 @@ Use `createServerFn()` from `@tanstack/react-start` for type-safe server functio
 ### Path aliases
 
 - In `apps/web`: `@/*` resolves to `./src/*`
-- In `apps/web`: `@convex/*` resolves to `../convex/convex/*`
+- In `apps/web`: `@repo/backend/*` resolves to `../../packages/backend/*` (via workspace dep + Vite alias)
 
 ## Code style
 
 - **Indentation**: Tabs (tab size 3 in editor)
 - **Formatting**: oxfmt handles Tailwind class sorting for `clsx`, `cn`, `cva`, `tw` functions
-- **Linting**: oxlint with plugins: react, react-perf, typescript, import, unicorn, jsx-a11y, vitest, promise, oxc. TanStack Query lint rules are also enabled
+- **Linting**: oxlint with layered configs — root `.oxlintrc.json` has base rules (typescript, import, unicorn, promise, oxc); `apps/web/.oxlintrc.json` extends with React, jsx-a11y, vitest, and TanStack Query rules; `packages/backend/.oxlintrc.json` extends root only (no React)
 - Files prefixed with `demo` are demo/example code and can be safely removed
 
 ## Error Handling with neverthrow
@@ -138,5 +140,5 @@ const validated = result
 ## Environment
 
 - Web app variables live in `apps/web/.env.local`
-- Convex variables live in `apps/convex/.env.local`
+- Convex variables live in `packages/backend/.env.local`
 - Minimum required variables: `VITE_CONVEX_URL` and `CONVEX_DEPLOYMENT`

@@ -6,12 +6,13 @@
 		"dev": "bun --bun vite dev --port 3000 --host",
 		"build": "bun --bun vite build",
 		"preview": "bun --bun run .output/server/index.mjs",
-		"lint": "oxlint --type-aware --type-check --fix",
+		"lint": "oxlint -c .oxlintrc.json --type-aware --type-check --fix",
 		"format": "oxfmt",
-		"check": "oxfmt && oxlint --type-aware --type-check --fix && tsgo --noEmit"
+		"check": "oxfmt && oxlint -c .oxlintrc.json --type-aware --type-check --fix && tsgo --noEmit"
 	},
 	"dependencies": {
 		"@convex-dev/better-auth": "0.10.11",
+		"@repo/backend": "workspace:*",
 		"@convex-dev/react-query": "0.1.0",
 		"@t3-oss/env-core": "^0.13.10",
 		"@tailwindcss/vite": "^4.2.1",
@@ -39,6 +40,7 @@
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
+		"@repo/typescript-config": "workspace:*",
 		"@tanstack/devtools-vite": "^0.5.1",
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",

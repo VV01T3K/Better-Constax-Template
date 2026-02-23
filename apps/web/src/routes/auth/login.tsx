@@ -1,6 +1,6 @@
 import { convexQuery } from "@convex-dev/react-query";
-import { api } from "@convex/_generated/api";
-import { signInSchema, signUpSchema } from "@convex/schemas";
+import { api } from "@repo/backend/convex/_generated/api";
+import { signInSchema, signUpSchema } from "@repo/backend/convex/schemas";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";

@@ -12,18 +12,18 @@ import { VitePWA } from "vite-plugin-pwa";
 // Simple env validation for vite config - only checks NITRO_PRESET
 const nitroPreset = process.env.NITRO_PRESET as NitroConfig["preset"] | undefined;
 const webDir = import.meta.dirname;
-const convexDir = path.resolve(webDir, "../convex/convex");
+const backendDir = path.resolve(webDir, "../../packages/backend");
 
 const config = defineConfig({
 	server: {
 		fs: {
-			allow: [webDir, convexDir],
+			allow: [webDir, backendDir],
 		},
 	},
 	resolve: {
 		alias: {
 			"@": path.resolve(webDir, "src"),
-			"@convex": convexDir,
+			"@repo/backend": backendDir,
 		},
 	},
 	build: {

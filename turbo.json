@@ -1,9 +1,7 @@
 {
 	"$schema": "https://turborepo.dev/schema.json",
+	"globalDependencies": [".env"],
 	"tasks": {
-		"transit": {
-			"dependsOn": ["^transit"]
-		},
 		"dev": {
 			"cache": false,
 			"persistent": true
@@ -19,15 +17,12 @@
 			"cache": false
 		},
 		"lint": {
-			"dependsOn": ["transit"],
 			"outputs": []
 		},
 		"format": {
-			"dependsOn": ["transit"],
 			"outputs": []
 		},
 		"check": {
-			"dependsOn": ["transit"],
 			"outputs": []
 		},
 		"auth:generate": {

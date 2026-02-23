@@ -1,6 +1,6 @@
 import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
-import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import { api } from "@repo/backend/convex/_generated/api";
+import type { Id } from "@repo/backend/convex/_generated/dataModel";
 import {
 	adminListUsersResponseSchema,
 	appRoles,
@@ -8,7 +8,7 @@ import {
 	normalizeRole,
 	type AuthUserId,
 	type AppRole,
-} from "@convex/schemas";
+} from "@repo/backend/convex/schemas";
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { flexRender, getCoreRowModel, type ColumnDef, useReactTable } from "@tanstack/react-table";

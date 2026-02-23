@@ -11,7 +11,7 @@ services:
       - "3001:8080"
     env_file:
       - ../apps/web/.env.local
-      - ../apps/convex/.env.local
+      - ../packages/backend/.env.local
     environment:
       - NODE_ENV=production
       - VITE_CONVEX_URL=${VITE_CONVEX_URL}

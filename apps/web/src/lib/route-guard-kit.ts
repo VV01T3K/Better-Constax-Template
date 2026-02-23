@@ -1,6 +1,6 @@
 import { convexQuery } from "@convex-dev/react-query";
-import { api } from "@convex/_generated/api";
-import type { AppPermission } from "@convex/schemas";
+import { api } from "@repo/backend/convex/_generated/api";
+import type { AppPermission } from "@repo/backend/convex/schemas";
 import type { QueryClient } from "@tanstack/react-query";
 import { redirect } from "@tanstack/react-router";
 

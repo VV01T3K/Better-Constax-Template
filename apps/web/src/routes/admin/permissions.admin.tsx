@@ -1,5 +1,5 @@
 import { convexQuery } from "@convex-dev/react-query";
-import { api } from "@convex/_generated/api";
+import { api } from "@repo/backend/convex/_generated/api";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { PermissionMatrixEditor } from "@/components/admin/PermissionMatrixEditor";

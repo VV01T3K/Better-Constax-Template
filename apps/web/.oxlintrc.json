@@ -1,0 +1,40 @@
+{
+	"$schema": "../../node_modules/oxlint/configuration_schema.json",
+	"extends": ["../../.oxlintrc.json"],
+	"plugins": [
+		"react",
+		"react-perf",
+		"jsx-a11y",
+		"vitest"
+	],
+	"jsPlugins": ["@tanstack/eslint-plugin-query"],
+	"rules": {
+		// TanStack Query recommended rules
+		"@tanstack/query/exhaustive-deps": "error",
+		"@tanstack/query/no-rest-destructuring": "warn",
+		"@tanstack/query/stable-query-client": "error",
+		"@tanstack/query/no-unstable-deps": "warn",
+		"@tanstack/query/infinite-query-property-order": "error",
+
+		// React 17+ JSX transform doesn't require React import
+		"react/react-in-jsx-scope": "off",
+
+		// TanStack Router Link uses "to" prop, not "href" - oxlint doesn't support this yet
+		"jsx-a11y/anchor-is-valid": "off",
+
+		// Warn when click handlers lack keyboard alternatives (accessibility)
+		"jsx-a11y/click-events-have-key-events": "warn",
+
+		// shadcn label pattern uses wrapping label element
+		"jsx-a11y/label-has-associated-control": "off"
+	},
+	"settings": {
+		"jsx-a11y": {
+			// Support polymorphic components (e.g., <Button as="a">)
+			"polymorphicPropName": "as"
+		},
+		"vitest": {
+			"typecheck": true
+		}
+	}
+}
