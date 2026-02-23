@@ -48,12 +48,16 @@ function getAdminEmailAllowlist() {
 
 export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
 	const adminEmailAllowlist = getAdminEmailAllowlist();
+	const siteUrl = process.env.SITE_URL;
+	const useSecureCookies = siteUrl
+		? siteUrl.startsWith("https://")
+		: process.env.NODE_ENV === "production";
 
 	return {
 		appName: "My TanStack App",
-		baseURL: process.env.SITE_URL,
+		baseURL: siteUrl,
 		trustedOrigins: [
-			process.env.SITE_URL,
+			siteUrl,
 			...(process.env.NODE_ENV !== "production"
 				? ["http://localhost:3000", "http://127.0.0.1:3000"]
 				: []),
@@ -132,13 +136,17 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
 				},
 			},
 		},
-		advanced: {
-			defaultCookieAttributes: {
-				sameSite: "none",
-				secure: true,
-				partitioned: true,
-			},
-		},
+		...(useSecureCookies
+			? {
+					advanced: {
+						defaultCookieAttributes: {
+							sameSite: "none" as const,
+							secure: true,
+							partitioned: true,
+						},
+					},
+				}
+			: {}),
 	} satisfies BetterAuthOptions;
 };
 
