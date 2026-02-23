@@ -10,14 +10,20 @@
 
 import type * as auth from "../auth.js";
 import type * as functions_addressForms from "../functions/addressForms.js";
+import type * as functions_authorization from "../functions/authorization.js";
 import type * as functions_files from "../functions/files.js";
+import type * as functions_impersonationAudit from "../functions/impersonationAudit.js";
 import type * as functions_massiveDataset from "../functions/massiveDataset.js";
 import type * as functions_tableDemo from "../functions/tableDemo.js";
 import type * as functions_todos from "../functions/todos.js";
 import type * as http from "../http.js";
+import type * as lib_authIdentity from "../lib/authIdentity.js";
+import type * as lib_authorization from "../lib/authorization.js";
 import type * as lib_functionHelpers from "../lib/functionHelpers.js";
+import type * as lib_guardKit from "../lib/guardKit.js";
 import type * as schemas_addressForms from "../schemas/addressForms.js";
 import type * as schemas_auth from "../schemas/auth.js";
+import type * as schemas_authorization from "../schemas/authorization.js";
 import type * as schemas_files from "../schemas/files.js";
 import type * as schemas_index from "../schemas/index.js";
 import type * as schemas_todos from "../schemas/todos.js";
@@ -31,14 +37,20 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   "functions/addressForms": typeof functions_addressForms;
+  "functions/authorization": typeof functions_authorization;
   "functions/files": typeof functions_files;
+  "functions/impersonationAudit": typeof functions_impersonationAudit;
   "functions/massiveDataset": typeof functions_massiveDataset;
   "functions/tableDemo": typeof functions_tableDemo;
   "functions/todos": typeof functions_todos;
   http: typeof http;
+  "lib/authIdentity": typeof lib_authIdentity;
+  "lib/authorization": typeof lib_authorization;
   "lib/functionHelpers": typeof lib_functionHelpers;
+  "lib/guardKit": typeof lib_guardKit;
   "schemas/addressForms": typeof schemas_addressForms;
   "schemas/auth": typeof schemas_auth;
+  "schemas/authorization": typeof schemas_authorization;
   "schemas/files": typeof schemas_files;
   "schemas/index": typeof schemas_index;
   "schemas/todos": typeof schemas_todos;
@@ -80,11 +92,15 @@ export declare const components: {
           input:
             | {
                 data: {
+                  banExpires?: null | number;
+                  banReason?: null | string;
+                  banned?: null | boolean;
                   createdAt: number;
                   email: string;
                   emailVerified: boolean;
                   image?: null | string;
                   name: string;
+                  role?: null | string;
                   updatedAt: number;
                   userId?: null | string;
                 };
@@ -94,6 +110,7 @@ export declare const components: {
                 data: {
                   createdAt: number;
                   expiresAt: number;
+                  impersonatedBy?: null | string;
                   ipAddress?: null | string;
                   token: string;
                   updatedAt: number;
@@ -159,6 +176,10 @@ export declare const components: {
                     | "image"
                     | "createdAt"
                     | "updatedAt"
+                    | "role"
+                    | "banned"
+                    | "banReason"
+                    | "banExpires"
                     | "userId"
                     | "_id";
                   operator?:
@@ -194,6 +215,7 @@ export declare const components: {
                     | "ipAddress"
                     | "userAgent"
                     | "userId"
+                    | "impersonatedBy"
                     | "_id";
                   operator?:
                     | "lt"
@@ -346,6 +368,10 @@ export declare const components: {
                     | "image"
                     | "createdAt"
                     | "updatedAt"
+                    | "role"
+                    | "banned"
+                    | "banReason"
+                    | "banExpires"
                     | "userId"
                     | "_id";
                   operator?:
@@ -381,6 +407,7 @@ export declare const components: {
                     | "ipAddress"
                     | "userAgent"
                     | "userId"
+                    | "impersonatedBy"
                     | "_id";
                   operator?:
                     | "lt"
@@ -593,11 +620,15 @@ export declare const components: {
             | {
                 model: "user";
                 update: {
+                  banExpires?: null | number;
+                  banReason?: null | string;
+                  banned?: null | boolean;
                   createdAt?: number;
                   email?: string;
                   emailVerified?: boolean;
                   image?: null | string;
                   name?: string;
+                  role?: null | string;
                   updatedAt?: number;
                   userId?: null | string;
                 };
@@ -610,6 +641,10 @@ export declare const components: {
                     | "image"
                     | "createdAt"
                     | "updatedAt"
+                    | "role"
+                    | "banned"
+                    | "banReason"
+                    | "banExpires"
                     | "userId"
                     | "_id";
                   operator?:
@@ -638,6 +673,7 @@ export declare const components: {
                 update: {
                   createdAt?: number;
                   expiresAt?: number;
+                  impersonatedBy?: null | string;
                   ipAddress?: null | string;
                   token?: string;
                   updatedAt?: number;
@@ -654,6 +690,7 @@ export declare const components: {
                     | "ipAddress"
                     | "userAgent"
                     | "userId"
+                    | "impersonatedBy"
                     | "_id";
                   operator?:
                     | "lt"
@@ -825,11 +862,15 @@ export declare const components: {
             | {
                 model: "user";
                 update: {
+                  banExpires?: null | number;
+                  banReason?: null | string;
+                  banned?: null | boolean;
                   createdAt?: number;
                   email?: string;
                   emailVerified?: boolean;
                   image?: null | string;
                   name?: string;
+                  role?: null | string;
                   updatedAt?: number;
                   userId?: null | string;
                 };
@@ -842,6 +883,10 @@ export declare const components: {
                     | "image"
                     | "createdAt"
                     | "updatedAt"
+                    | "role"
+                    | "banned"
+                    | "banReason"
+                    | "banExpires"
                     | "userId"
                     | "_id";
                   operator?:
@@ -870,6 +915,7 @@ export declare const components: {
                 update: {
                   createdAt?: number;
                   expiresAt?: number;
+                  impersonatedBy?: null | string;
                   ipAddress?: null | string;
                   token?: string;
                   updatedAt?: number;
@@ -886,6 +932,7 @@ export declare const components: {
                     | "ipAddress"
                     | "userAgent"
                     | "userId"
+                    | "impersonatedBy"
                     | "_id";
                   operator?:
                     | "lt"

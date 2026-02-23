@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ForbiddenRouteImport } from './routes/forbidden'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTanstackOptimisticRouteImport } from './routes/demo/tanstack-optimistic'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
@@ -16,8 +17,17 @@ import { Route as DemoMassiveDataRouteImport } from './routes/demo/massive-data'
 import { Route as DemoFileUploadRouteImport } from './routes/demo/file-upload'
 import { Route as DemoConvexQueryRouteImport } from './routes/demo/convex-query'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as AdminPermissionsRouteImport } from './routes/admin/permissions'
 import { Route as DemoFormAddressRouteImport } from './routes/demo/form.address'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as AdminPermissionsAdminRouteImport } from './routes/admin/permissions.admin'
 
+const ForbiddenRoute = ForbiddenRouteImport.update({
+  id: '/forbidden',
+  path: '/forbidden',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -53,89 +63,150 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPermissionsRoute = AdminPermissionsRouteImport.update({
+  id: '/admin/permissions',
+  path: '/admin/permissions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DemoFormAddressRoute = DemoFormAddressRouteImport.update({
   id: '/demo/form/address',
   path: '/demo/form/address',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPermissionsAdminRoute = AdminPermissionsAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AdminPermissionsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/forbidden': typeof ForbiddenRoute
+  '/admin/permissions': typeof AdminPermissionsRouteWithChildren
+  '/admin/users': typeof AdminUsersRoute
   '/auth/login': typeof AuthLoginRoute
   '/demo/convex-query': typeof DemoConvexQueryRoute
   '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/massive-data': typeof DemoMassiveDataRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
+  '/admin/permissions/admin': typeof AdminPermissionsAdminRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/form/address': typeof DemoFormAddressRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/forbidden': typeof ForbiddenRoute
+  '/admin/permissions': typeof AdminPermissionsRouteWithChildren
+  '/admin/users': typeof AdminUsersRoute
   '/auth/login': typeof AuthLoginRoute
   '/demo/convex-query': typeof DemoConvexQueryRoute
   '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/massive-data': typeof DemoMassiveDataRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
+  '/admin/permissions/admin': typeof AdminPermissionsAdminRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/form/address': typeof DemoFormAddressRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/forbidden': typeof ForbiddenRoute
+  '/admin/permissions': typeof AdminPermissionsRouteWithChildren
+  '/admin/users': typeof AdminUsersRoute
   '/auth/login': typeof AuthLoginRoute
   '/demo/convex-query': typeof DemoConvexQueryRoute
   '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/massive-data': typeof DemoMassiveDataRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
+  '/admin/permissions/admin': typeof AdminPermissionsAdminRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/form/address': typeof DemoFormAddressRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/forbidden'
+    | '/admin/permissions'
+    | '/admin/users'
     | '/auth/login'
     | '/demo/convex-query'
     | '/demo/file-upload'
     | '/demo/massive-data'
     | '/demo/table'
     | '/demo/tanstack-optimistic'
+    | '/admin/permissions/admin'
+    | '/api/auth/$'
     | '/demo/form/address'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/forbidden'
+    | '/admin/permissions'
+    | '/admin/users'
     | '/auth/login'
     | '/demo/convex-query'
     | '/demo/file-upload'
     | '/demo/massive-data'
     | '/demo/table'
     | '/demo/tanstack-optimistic'
+    | '/admin/permissions/admin'
+    | '/api/auth/$'
     | '/demo/form/address'
   id:
     | '__root__'
     | '/'
+    | '/forbidden'
+    | '/admin/permissions'
+    | '/admin/users'
     | '/auth/login'
     | '/demo/convex-query'
     | '/demo/file-upload'
     | '/demo/massive-data'
     | '/demo/table'
     | '/demo/tanstack-optimistic'
+    | '/admin/permissions/admin'
+    | '/api/auth/$'
     | '/demo/form/address'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ForbiddenRoute: typeof ForbiddenRoute
+  AdminPermissionsRoute: typeof AdminPermissionsRouteWithChildren
+  AdminUsersRoute: typeof AdminUsersRoute
   AuthLoginRoute: typeof AuthLoginRoute
   DemoConvexQueryRoute: typeof DemoConvexQueryRoute
   DemoFileUploadRoute: typeof DemoFileUploadRoute
   DemoMassiveDataRoute: typeof DemoMassiveDataRoute
   DemoTableRoute: typeof DemoTableRoute
   DemoTanstackOptimisticRoute: typeof DemoTanstackOptimisticRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   DemoFormAddressRoute: typeof DemoFormAddressRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/forbidden': {
+      id: '/forbidden'
+      path: '/forbidden'
+      fullPath: '/forbidden'
+      preLoaderRoute: typeof ForbiddenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -185,6 +256,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/permissions': {
+      id: '/admin/permissions'
+      path: '/admin/permissions'
+      fullPath: '/admin/permissions'
+      preLoaderRoute: typeof AdminPermissionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/demo/form/address': {
       id: '/demo/form/address'
       path: '/demo/form/address'
@@ -192,17 +277,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoFormAddressRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/permissions/admin': {
+      id: '/admin/permissions/admin'
+      path: '/admin'
+      fullPath: '/admin/permissions/admin'
+      preLoaderRoute: typeof AdminPermissionsAdminRouteImport
+      parentRoute: typeof AdminPermissionsRoute
+    }
   }
 }
 
+interface AdminPermissionsRouteChildren {
+  AdminPermissionsAdminRoute: typeof AdminPermissionsAdminRoute
+}
+
+const AdminPermissionsRouteChildren: AdminPermissionsRouteChildren = {
+  AdminPermissionsAdminRoute: AdminPermissionsAdminRoute,
+}
+
+const AdminPermissionsRouteWithChildren =
+  AdminPermissionsRoute._addFileChildren(AdminPermissionsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ForbiddenRoute: ForbiddenRoute,
+  AdminPermissionsRoute: AdminPermissionsRouteWithChildren,
+  AdminUsersRoute: AdminUsersRoute,
   AuthLoginRoute: AuthLoginRoute,
   DemoConvexQueryRoute: DemoConvexQueryRoute,
   DemoFileUploadRoute: DemoFileUploadRoute,
   DemoMassiveDataRoute: DemoMassiveDataRoute,
   DemoTableRoute: DemoTableRoute,
   DemoTanstackOptimisticRoute: DemoTanstackOptimisticRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
   DemoFormAddressRoute: DemoFormAddressRoute,
 }
 export const routeTree = rootRouteImport

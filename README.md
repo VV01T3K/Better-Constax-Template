@@ -17,6 +17,7 @@ mise exec -- bun install
 CONVEX_DEPLOYMENT=...
 VITE_CONVEX_URL=...
 VITE_CONVEX_SITE_URL=...
+BETTER_AUTH_ADMIN_EMAILS=admin@gmail.com
 ```
 
 3. Run app and Convex:
@@ -35,7 +36,6 @@ mise exec -- bun run preview
 mise exec -- bun run lint
 mise exec -- bun run format
 mise exec -- bun run check
-mise exec -- bun run test
 mise exec -- bun run auth:generate
 ```
 

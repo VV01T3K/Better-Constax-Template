@@ -2,29 +2,23 @@ import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import { submitAddressFormSchema } from "@convex/schemas";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { useAppForm } from "@/hooks/demo.form";
+import { protectedRouteLoaderWithPrefetch } from "@/lib/route-guard-kit";
 
 const currentUserQuery = convexQuery(api.auth.getCurrentUser, {});
 const submissionsQuery = convexQuery(api.functions.addressForms.listMine, { limit: 10 });
 
 export const Route = createFileRoute("/demo/form/address")({
 	loader: async ({ context, location }) => {
-		const currentUser = await context.queryClient.fetchQuery({
-			...currentUserQuery,
-			staleTime: 0,
+		await protectedRouteLoaderWithPrefetch({
+			queryClient: context.queryClient,
+			permission: "demo.address-form.access",
+			redirectHref: location.href,
+			prefetch: () => context.queryClient.ensureQueryData(submissionsQuery),
 		});
-
-		if (!currentUser) {
-			throw redirect({
-				to: "/auth/login",
-				search: { redirect: location.href },
-			});
-		}
-
-		await context.queryClient.ensureQueryData(submissionsQuery);
 	},
 	component: AddressForm,
 });

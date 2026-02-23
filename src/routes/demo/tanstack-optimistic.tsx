@@ -7,10 +7,17 @@ import { Check, Circle, Loader2, Plus, Trash2, Zap } from "lucide-react";
 import { useState } from "react";
 
 import { useTodosOptimisticTQ } from "@/hooks/useTodosOptimisticTQ";
+import { protectedRouteLoaderWithPrefetch } from "@/lib/route-guard-kit";
 
 export const Route = createFileRoute("/demo/tanstack-optimistic")({
-	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {}));
+	loader: async ({ context, location }) => {
+		await protectedRouteLoaderWithPrefetch({
+			queryClient: context.queryClient,
+			permission: "demo.todos.access",
+			redirectHref: location.href,
+			prefetch: () =>
+				context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {})),
+		});
 	},
 	component: TanStackOptimisticTodos,
 });

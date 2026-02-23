@@ -7,6 +7,8 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { BarChart3, Database, Rows3, Timer } from "lucide-react";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 
+import { protectedRouteLoaderWithPrefetch } from "@/lib/route-guard-kit";
+
 type MassiveMode = "paginated" | "infinite";
 
 type MassiveRow = {
@@ -33,15 +35,23 @@ const PAGE_SIZE_OPTIONS = [50, 100, 200, 500, 1000, 2000] as const;
 const VIRTUAL_ROW_HEIGHT = 52;
 const MIN_PREFETCH_AHEAD_ROWS = 50;
 const PREFETCH_LINEAR_SCALE = 0.3;
+const MASSIVE_DATA_GRID_COLUMNS =
+	"grid-cols-[minmax(80px,0.7fr)_minmax(220px,2.1fr)_minmax(90px,0.9fr)_minmax(110px,1fr)_minmax(110px,1fr)_minmax(130px,1.1fr)_minmax(110px,1fr)_minmax(130px,1.1fr)]";
 
 export const Route = createFileRoute("/demo/massive-data")({
-	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(
-			convexQuery(api.functions.massiveDataset.page, {
-				cursor: null,
-				limit: DEFAULT_PAGE_SIZE,
-			}),
-		);
+	loader: async ({ context, location }) => {
+		await protectedRouteLoaderWithPrefetch({
+			queryClient: context.queryClient,
+			permission: "demo.massive-data.access",
+			redirectHref: location.href,
+			prefetch: () =>
+				context.queryClient.ensureQueryData(
+					convexQuery(api.functions.massiveDataset.page, {
+						cursor: null,
+						limit: DEFAULT_PAGE_SIZE,
+					}),
+				),
+		});
 	},
 	component: MassiveDataPage,
 });
@@ -341,7 +351,9 @@ function StatsBar({
 function DatasetRowsTable({ rows }: { rows: MassiveRow[] }) {
 	return (
 		<div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-900/80">
-			<div className="grid grid-cols-[110px_180px_90px_90px_110px_120px_110px_130px] border-b border-slate-700 bg-slate-950/90 px-4 py-3 text-xs tracking-wide text-slate-400 uppercase">
+			<div
+				className={`grid ${MASSIVE_DATA_GRID_COLUMNS} border-b border-slate-700 bg-slate-950/90 px-4 py-3 text-xs tracking-wide text-slate-400 uppercase`}
+			>
 				<span>ID</span>
 				<span>Name</span>
 				<span>Region</span>
@@ -355,7 +367,7 @@ function DatasetRowsTable({ rows }: { rows: MassiveRow[] }) {
 				{rows.map((row) => (
 					<div
 						key={row.id}
-						className="grid w-full grid-cols-[110px_180px_90px_90px_110px_120px_110px_130px] items-center border-b border-slate-800 px-4 py-3 text-sm text-slate-100"
+						className={`grid w-full ${MASSIVE_DATA_GRID_COLUMNS} items-center border-b border-slate-800 px-4 py-3 text-sm text-slate-100`}
 					>
 						<span className="font-mono text-xs text-slate-300">{row.id}</span>
 						<span className="truncate">{row.name}</span>
@@ -411,7 +423,9 @@ function VirtualizedDatasetRowsTable({
 
 	return (
 		<div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-900/80">
-			<div className="grid grid-cols-[110px_180px_90px_90px_110px_120px_110px_130px] border-b border-slate-700 bg-slate-950/90 px-4 py-3 text-xs tracking-wide text-slate-400 uppercase">
+			<div
+				className={`grid ${MASSIVE_DATA_GRID_COLUMNS} border-b border-slate-700 bg-slate-950/90 px-4 py-3 text-xs tracking-wide text-slate-400 uppercase`}
+			>
 				<span>ID</span>
 				<span>Name</span>
 				<span>Region</span>
@@ -436,7 +450,7 @@ function VirtualizedDatasetRowsTable({
 						return (
 							<div
 								key={virtualRow.key}
-								className="grid w-full grid-cols-[110px_180px_90px_90px_110px_120px_110px_130px] items-center border-b border-slate-800 px-4 py-3 text-sm text-slate-100"
+								className={`grid w-full ${MASSIVE_DATA_GRID_COLUMNS} items-center border-b border-slate-800 px-4 py-3 text-sm text-slate-100`}
 								style={{
 									position: "absolute",
 									top: 0,

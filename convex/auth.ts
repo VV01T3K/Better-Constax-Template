@@ -3,12 +3,16 @@ import { createClient, type AuthFunctions } from "@convex-dev/better-auth";
 import { convex } from "@convex-dev/better-auth/plugins";
 import type { BetterAuthOptions } from "better-auth";
 import { betterAuth } from "better-auth/minimal";
+import { admin } from "better-auth/plugins/admin";
+import { adminAc, userAc } from "better-auth/plugins/admin/access";
 
 import { components, internal } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 import authConfig from "./auth.config";
 import schema from "./betterAuth/schema";
+import { getRoleClaimValue } from "./lib/authIdentity";
+import { normalizeRole } from "./schemas";
 
 const authFunctions: AuthFunctions = internal.auth;
 
@@ -25,7 +29,6 @@ export const authComponent = createClient<DataModel, typeof schema>(components.b
 					name: doc.name,
 					email: doc.email,
 					image: doc.image ?? null,
-					createdAt: Date.now(),
 				});
 			},
 		},
@@ -34,12 +37,27 @@ export const authComponent = createClient<DataModel, typeof schema>(components.b
 
 export const { onCreate, onUpdate, onDelete } = authComponent.triggersApi();
 
+function getAdminEmailAllowlist() {
+	return new Set(
+		(process.env.BETTER_AUTH_ADMIN_EMAILS ?? "")
+			.split(",")
+			.map((email) => email.trim().toLowerCase())
+			.filter((email) => email.length > 0),
+	);
+}
+
 export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
+	const adminEmailAllowlist = getAdminEmailAllowlist();
+	const siteUrl = process.env.SITE_URL;
+	const useSecureCookies = siteUrl
+		? siteUrl.startsWith("https://")
+		: process.env.NODE_ENV === "production";
+
 	return {
 		appName: "My TanStack App",
-		baseURL: process.env.SITE_URL,
+		baseURL: siteUrl,
 		trustedOrigins: [
-			process.env.SITE_URL,
+			siteUrl,
 			...(process.env.NODE_ENV !== "production"
 				? ["http://localhost:3000", "http://127.0.0.1:3000"]
 				: []),
@@ -59,14 +77,76 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
 		telemetry: {
 			enabled: false,
 		},
-		plugins: [convex({ authConfig })],
-		advanced: {
-			defaultCookieAttributes: {
-				sameSite: "none",
-				secure: true,
-				partitioned: true,
+		plugins: [
+			admin({
+				defaultRole: "user",
+				adminRoles: ["admin"],
+				roles: {
+					admin: adminAc,
+					manager: userAc,
+					user: userAc,
+				},
+				allowImpersonatingAdmins: false,
+				impersonationSessionDuration: 15 * 60,
+			}),
+			convex({ authConfig }),
+		],
+		databaseHooks: {
+			user: {
+				create: {
+					before: async (user) => {
+						const email = typeof user.email === "string" ? user.email.toLowerCase() : "";
+						const role = adminEmailAllowlist.has(email)
+							? "admin"
+							: normalizeRole("role" in user ? user.role : undefined);
+						return {
+							data: {
+								...user,
+								role,
+							},
+						};
+					},
+				},
+			},
+			session: {
+				create: {
+					before: async (session, hookCtx) => {
+						if (!hookCtx) {
+							return;
+						}
+
+						const user = await hookCtx.context.internalAdapter.findUserById(session.userId);
+						if (!user?.email) {
+							return;
+						}
+
+						const email = user.email.toLowerCase();
+						if (!adminEmailAllowlist.has(email)) {
+							return;
+						}
+
+						const existingRole = getRoleClaimValue(user);
+						const role = normalizeRole(existingRole);
+						if (role !== "admin") {
+							await hookCtx.context.internalAdapter.updateUser(session.userId, {
+								role: "admin",
+							});
+						}
+					},
+				},
 			},
 		},
+		...(useSecureCookies
+			? {
+					advanced: {
+						defaultCookieAttributes: {
+							sameSite: "none" as const,
+							secure: true,
+							partitioned: true,
+						},
+					},
+				}
+			: {}),
 	} satisfies BetterAuthOptions;
 };
 

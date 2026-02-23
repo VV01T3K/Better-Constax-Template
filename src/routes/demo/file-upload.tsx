@@ -2,7 +2,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
 import {
 	Archive,
@@ -22,21 +22,16 @@ import { err as resultErr, ok, type Result } from "neverthrow";
 import { useRef, useState } from "react";
 
 import { detectFileType } from "@/lib/file-type";
+import { protectedRouteLoaderWithPrefetch } from "@/lib/route-guard-kit";
 
 export const Route = createFileRoute("/demo/file-upload")({
 	loader: async ({ context, location }) => {
-		const currentUser = await context.queryClient.fetchQuery({
-			...convexQuery(api.auth.getCurrentUser, {}),
-			staleTime: 0,
+		await protectedRouteLoaderWithPrefetch({
+			queryClient: context.queryClient,
+			permission: "demo.files.access",
+			redirectHref: location.href,
+			prefetch: () => context.queryClient.fetchQuery(convexQuery(api.functions.files.list, {})),
 		});
-		if (!currentUser) {
-			throw redirect({
-				to: "/auth/login",
-				search: { redirect: location.href },
-			});
-		}
-
-		await context.queryClient.fetchQuery(convexQuery(api.functions.files.list, {}));
 	},
 	component: FileUploadDemo,
 });

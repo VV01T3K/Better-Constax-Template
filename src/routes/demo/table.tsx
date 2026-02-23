@@ -15,6 +15,8 @@ import {
 } from "@tanstack/react-table";
 import { type InputHTMLAttributes, useEffect, useRef, useState } from "react";
 
+import { protectedRouteLoaderWithPrefetch } from "@/lib/route-guard-kit";
+
 const DEFAULT_PAGE_SIZE = 20;
 const PAGE_SIZE_OPTIONS = [10, 20, 30, 40, 50] as const;
 const FILTER_DEBOUNCE_MS = 250;
@@ -49,16 +51,22 @@ const DEFAULT_SORTING: SortingState = [{ id: "id", desc: false }];
 const DEFAULT_PAGINATION: PaginationState = { pageIndex: 0, pageSize: DEFAULT_PAGE_SIZE };
 
 export const Route = createFileRoute("/demo/table")({
-	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(
-			convexQuery(api.functions.tableDemo.page, {
-				filter: "",
-				sortKey: "id",
-				sortDirection: "asc",
-				pageIndex: DEFAULT_PAGINATION.pageIndex,
-				pageSize: DEFAULT_PAGINATION.pageSize,
-			}),
-		);
+	loader: async ({ context, location }) => {
+		await protectedRouteLoaderWithPrefetch({
+			queryClient: context.queryClient,
+			permission: "demo.table.access",
+			redirectHref: location.href,
+			prefetch: () =>
+				context.queryClient.ensureQueryData(
+					convexQuery(api.functions.tableDemo.page, {
+						filter: "",
+						sortKey: "id",
+						sortDirection: "asc",
+						pageIndex: DEFAULT_PAGINATION.pageIndex,
+						pageSize: DEFAULT_PAGINATION.pageSize,
+					}),
+				),
+		});
 	},
 	component: TableDemo,
 });

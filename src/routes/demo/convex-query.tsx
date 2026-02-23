@@ -7,9 +7,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Check, Circle, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
+import { protectedRouteLoaderWithPrefetch } from "@/lib/route-guard-kit";
+
 export const Route = createFileRoute("/demo/convex-query")({
-	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {}));
+	loader: async ({ context, location }) => {
+		await protectedRouteLoaderWithPrefetch({
+			queryClient: context.queryClient,
+			permission: "demo.todos.access",
+			redirectHref: location.href,
+			prefetch: () =>
+				context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {})),
+		});
 	},
 	component: ConvexQueryTodos,
 });
