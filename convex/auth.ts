@@ -29,7 +29,6 @@ export const authComponent = createClient<DataModel, typeof schema>(components.b
 					name: doc.name,
 					email: doc.email,
 					image: doc.image ?? null,
-					createdAt: Date.now(),
 				});
 			},
 		},

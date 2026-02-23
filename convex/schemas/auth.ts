@@ -6,7 +6,6 @@ export const profileSchema = z.object({
 	name: z.string(),
 	email: z.email(),
 	image: z.union([z.string(), z.null()]),
-	createdAt: z.number(),
 });
 export type Profile = z.infer<typeof profileSchema>;
 
