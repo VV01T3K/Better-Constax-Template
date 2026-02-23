@@ -16,7 +16,7 @@ import { useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
 import { waitForImpersonationState } from "@/lib/impersonation-client";
-import { protectedRouteLoaderWithPrefetch } from "@/lib/route-guard-kit";
+import { protectedRouteLoader } from "@/lib/route-guard-kit";
 
 type AdminUserRow = {
 	id: string;
@@ -29,7 +29,7 @@ type AdminUserRow = {
 
 export const Route = createFileRoute("/admin/users")({
 	loader: async ({ context, location }) => {
-		await protectedRouteLoaderWithPrefetch({
+		await protectedRouteLoader({
 			queryClient: context.queryClient,
 			permission: "admin.users.access",
 			redirectHref: location.href,

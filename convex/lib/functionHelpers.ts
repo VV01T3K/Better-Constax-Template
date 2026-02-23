@@ -5,8 +5,7 @@ import { ConvexError } from "convex/values";
 
 import type { Doc, Id, TableNames } from "../_generated/dataModel";
 import { mutation, query, type MutationCtx, type QueryCtx } from "../_generated/server";
-import type { AppPermission, AppRole } from "../schemas";
-import { getRoleFromIdentity } from "./authIdentity";
+import type { AppPermission } from "../schemas";
 import { hasPermission } from "./authorization";
 
 export const zQuery = zCustomQuery(query, NoOp);
@@ -14,17 +13,8 @@ export const zMutation = zCustomMutation(mutation, NoOp);
 
 type ContextWithAuth = Pick<QueryCtx, "auth"> | Pick<MutationCtx, "auth">;
 type ContextWithDb = Pick<QueryCtx, "db"> | Pick<MutationCtx, "db">;
-type ContextWithAuthAndDb = Pick<QueryCtx, "auth" | "db"> | Pick<MutationCtx, "auth" | "db">;
 type ContextWithIdentity = { identity: UserIdentity };
 type MaybePromise<T> = T | Promise<T>;
-type StringKeys<T> = {
-	[K in keyof T]-?: T[K] extends string ? K : never;
-}[keyof T] &
-	string;
-type TablesWithAuthUserId = {
-	[T in TableNames]: Doc<T> extends { authUserId: string } ? T : never;
-}[TableNames];
-type TablesWithoutAuthUserId = Exclude<TableNames, TablesWithAuthUserId>;
 
 export function throwUnauthorized(message = "Authentication required"): never {
 	throw new ConvexError({
@@ -62,10 +52,6 @@ export function getAuthUserId(identity: UserIdentity): string {
 	return identity.subject;
 }
 
-export function getAuthUserRole(identity: UserIdentity): AppRole {
-	return getRoleFromIdentity(identity);
-}
-
 export const authedQuery = zCustomQuery(
 	query,
 	customCtx(async (ctx: QueryCtx) => ({
@@ -79,28 +65,6 @@ export const authedMutation = zCustomMutation(
 		identity: await requireAuth(ctx),
 	})),
 );
-
-export async function requireRole(
-	ctx: ContextWithAuth,
-	role: AppRole,
-	options?: { message?: string },
-): Promise<UserIdentity> {
-	const identity = await requireAuth(ctx, options);
-	if (getAuthUserRole(identity) !== role) {
-		throwForbidden(options?.message ?? "You do not have the required role");
-	}
-	return identity;
-}
-
-export async function requirePermission(
-	ctx: ContextWithAuthAndDb,
-	permission: AppPermission,
-	options?: { message?: string },
-): Promise<UserIdentity> {
-	const identity = await requireAuth(ctx, options);
-	await requirePermissionForIdentity(ctx, identity, permission, options);
-	return identity;
-}
 
 export async function requirePermissionForIdentity(
 	ctx: ContextWithDb,
@@ -126,40 +90,12 @@ export function withIdentity<TContext extends ContextWithIdentity, TArgs, TResul
 	};
 }
 
-export async function getOwnedDocOrThrow<TableName extends TablesWithAuthUserId>(
+export async function getOwnedDocOrThrow<TableName extends TableNames>(
 	ctx: ContextWithDb,
 	id: Id<TableName>,
 	options: {
 		ownerId: string;
-		ownerField?: "authUserId";
-		notFoundMessage?: string;
-		forbiddenMessage?: string;
-	},
-): Promise<Doc<TableName>>;
-
-export async function getOwnedDocOrThrow<
-	TableName extends TablesWithoutAuthUserId,
-	OwnerField extends StringKeys<Doc<TableName>>,
->(
-	ctx: ContextWithDb,
-	id: Id<TableName>,
-	options: {
-		ownerId: string;
-		ownerField: OwnerField;
-		notFoundMessage?: string;
-		forbiddenMessage?: string;
-	},
-): Promise<Doc<TableName>>;
-
-export async function getOwnedDocOrThrow<
-	TableName extends TableNames,
-	OwnerField extends StringKeys<Doc<TableName>>,
->(
-	ctx: ContextWithDb,
-	id: Id<TableName>,
-	options: {
-		ownerId: string;
-		ownerField?: OwnerField;
+		ownerField?: string;
 		notFoundMessage?: string;
 		forbiddenMessage?: string;
 	},

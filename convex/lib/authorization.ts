@@ -7,7 +7,6 @@ import {
 	appPermissions,
 	appRoles,
 	defaultRolePermissionMatrix,
-	permissionScopes,
 	normalizePermissionList,
 } from "../schemas";
 import { getRoleFromIdentity } from "./authIdentity";
@@ -41,25 +40,6 @@ export function getPermissionsForScope(scope: PermissionScope): AppPermission[] 
 	return appPermissions.filter((permission) => permissionScopeMap.get(permission) === scope);
 }
 
-export function splitPermissionsByScope(permissions: readonly AppPermission[]): {
-	app: AppPermission[];
-	admin: AppPermission[];
-} {
-	const result = {
-		app: [] as AppPermission[],
-		admin: [] as AppPermission[],
-	};
-
-	for (const permission of permissions) {
-		const scope = permissionScopeMap.get(permission);
-		if (scope) {
-			result[scope].push(permission);
-		}
-	}
-
-	return result;
-}
-
 export function keepScopePermissions(
 	permissions: readonly AppPermission[],
 	scope: PermissionScope,
@@ -72,14 +52,6 @@ export function dropScopePermissions(
 	scope: PermissionScope,
 ): AppPermission[] {
 	return permissions.filter((permission) => permissionScopeMap.get(permission) !== scope);
-}
-
-export function getPermissionScope(permission: AppPermission): PermissionScope {
-	return permissionScopeMap.get(permission) ?? "app";
-}
-
-export function isPermissionScope(value: unknown): value is PermissionScope {
-	return typeof value === "string" && permissionScopes.some((scope) => scope === value);
 }
 
 function buildDefaultMatrix(): RolePermissionMatrix {

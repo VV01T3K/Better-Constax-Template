@@ -7,7 +7,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { BarChart3, Database, Rows3, Timer } from "lucide-react";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 
-import { protectedRouteLoaderWithPrefetch } from "@/lib/route-guard-kit";
+import { protectedRouteLoader } from "@/lib/route-guard-kit";
 
 type MassiveMode = "paginated" | "infinite";
 
@@ -40,7 +40,7 @@ const MASSIVE_DATA_GRID_COLUMNS =
 
 export const Route = createFileRoute("/demo/massive-data")({
 	loader: async ({ context, location }) => {
-		await protectedRouteLoaderWithPrefetch({
+		await protectedRouteLoader({
 			queryClient: context.queryClient,
 			permission: "demo.massive-data.access",
 			redirectHref: location.href,

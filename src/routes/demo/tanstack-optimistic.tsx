@@ -7,11 +7,11 @@ import { Check, Circle, Loader2, Plus, Trash2, Zap } from "lucide-react";
 import { useState } from "react";
 
 import { useTodosOptimisticTQ } from "@/hooks/useTodosOptimisticTQ";
-import { protectedRouteLoaderWithPrefetch } from "@/lib/route-guard-kit";
+import { protectedRouteLoader } from "@/lib/route-guard-kit";
 
 export const Route = createFileRoute("/demo/tanstack-optimistic")({
 	loader: async ({ context, location }) => {
-		await protectedRouteLoaderWithPrefetch({
+		await protectedRouteLoader({
 			queryClient: context.queryClient,
 			permission: "demo.todos.access",
 			redirectHref: location.href,

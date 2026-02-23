@@ -3,7 +3,7 @@ import { api } from "@convex/_generated/api";
 import { Outlet, createFileRoute, useLocation } from "@tanstack/react-router";
 
 import { PermissionMatrixEditor } from "@/components/admin/PermissionMatrixEditor";
-import { protectedRouteLoaderWithPrefetch } from "@/lib/route-guard-kit";
+import { protectedRouteLoader } from "@/lib/route-guard-kit";
 
 export const Route = createFileRoute("/admin/permissions")({
 	loader: async ({ context, location }) => {
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/admin/permissions")({
 			: "admin.permissions.app.access";
 		const scope = isAdminPermissionsPath ? "admin" : "app";
 
-		await protectedRouteLoaderWithPrefetch({
+		await protectedRouteLoader({
 			queryClient: context.queryClient,
 			permission,
 			redirectHref: location.href,

@@ -50,19 +50,14 @@ Canonical auth/permission helpers for Convex handlers and TanStack route loaders
 
 ## Route helpers (`src/lib/route-guard-kit.ts`)
 
-### `protectedRouteLoader({ queryClient, redirectHref, permission?, onAuthorized? })`
+### `protectedRouteLoader({ queryClient, redirectHref, permission?, prefetch? })`
 
 - Enforces authentication.
 - If `permission` is provided, also enforces permission.
 - Redirect behavior:
   - Unauthenticated -> `/auth/login?redirect=<redirectHref>`
   - Unauthorized -> `/forbidden`
-- Runs `onAuthorized` when access passes.
-
-### `protectedRouteLoaderWithPrefetch({ queryClient, redirectHref, permission?, prefetch })`
-
-- Same checks as `protectedRouteLoader`.
-- Runs `prefetch` only after access is granted.
+- Runs optional `prefetch` after access is granted.
 
 ## Helper Selection Matrix
 
@@ -70,8 +65,7 @@ Canonical auth/permission helpers for Convex handlers and TanStack route loaders
 | -------------------------------------------------------- | --------------------------------------------------------------------------- |
 | Convex query/mutation requiring auth + permission gate   | `guardedQuery` / `guardedMutation`                                          |
 | Access checks inside business logic using existing actor | `requireAllPermissions`, `requireAnyPermission`, `requireRoleOrPermissions` |
-| Route auth guard only                                    | `protectedRouteLoader`                                                      |
-| Route auth guard plus prefetch                           | `protectedRouteLoaderWithPrefetch`                                          |
+| Route auth guard (with optional prefetch)                | `protectedRouteLoader`                                                      |
 
 ## Anti-Patterns
 
