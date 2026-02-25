@@ -17,6 +17,7 @@ import { Route as DemoTableRouteImport } from './routes/demo/table'
 import { Route as DemoMassiveDataRouteImport } from './routes/demo/massive-data'
 import { Route as DemoFileUploadRouteImport } from './routes/demo/file-upload'
 import { Route as DemoConvexQueryRouteImport } from './routes/demo/convex-query'
+import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminPermissionsRouteImport } from './routes/admin/permissions'
@@ -64,6 +65,11 @@ const DemoConvexQueryRoute = DemoConvexQueryRouteImport.update({
   path: '/demo/convex-query',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/auth/signup',
+  path: '/auth/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/auth/login',
   path: '/auth/login',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/admin/permissions': typeof AdminPermissionsRouteWithChildren
   '/admin/users': typeof AdminUsersRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/demo/convex-query': typeof DemoConvexQueryRoute
   '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/massive-data': typeof DemoMassiveDataRoute
@@ -118,6 +125,7 @@ export interface FileRoutesByTo {
   '/admin/permissions': typeof AdminPermissionsRouteWithChildren
   '/admin/users': typeof AdminUsersRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/demo/convex-query': typeof DemoConvexQueryRoute
   '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/massive-data': typeof DemoMassiveDataRoute
@@ -135,6 +143,7 @@ export interface FileRoutesById {
   '/admin/permissions': typeof AdminPermissionsRouteWithChildren
   '/admin/users': typeof AdminUsersRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/demo/convex-query': typeof DemoConvexQueryRoute
   '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/massive-data': typeof DemoMassiveDataRoute
@@ -153,6 +162,7 @@ export interface FileRouteTypes {
     | '/admin/permissions'
     | '/admin/users'
     | '/auth/login'
+    | '/auth/signup'
     | '/demo/convex-query'
     | '/demo/file-upload'
     | '/demo/massive-data'
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/admin/permissions'
     | '/admin/users'
     | '/auth/login'
+    | '/auth/signup'
     | '/demo/convex-query'
     | '/demo/file-upload'
     | '/demo/massive-data'
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/admin/permissions'
     | '/admin/users'
     | '/auth/login'
+    | '/auth/signup'
     | '/demo/convex-query'
     | '/demo/file-upload'
     | '/demo/massive-data'
@@ -202,6 +214,7 @@ export interface RootRouteChildren {
   AdminPermissionsRoute: typeof AdminPermissionsRouteWithChildren
   AdminUsersRoute: typeof AdminUsersRoute
   AuthLoginRoute: typeof AuthLoginRoute
+  AuthSignupRoute: typeof AuthSignupRoute
   DemoConvexQueryRoute: typeof DemoConvexQueryRoute
   DemoFileUploadRoute: typeof DemoFileUploadRoute
   DemoMassiveDataRoute: typeof DemoMassiveDataRoute
@@ -269,6 +282,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoConvexQueryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/auth/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/login': {
       id: '/auth/login'
       path: '/auth/login'
@@ -332,6 +352,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPermissionsRoute: AdminPermissionsRouteWithChildren,
   AdminUsersRoute: AdminUsersRoute,
   AuthLoginRoute: AuthLoginRoute,
+  AuthSignupRoute: AuthSignupRoute,
   DemoConvexQueryRoute: DemoConvexQueryRoute,
   DemoFileUploadRoute: DemoFileUploadRoute,
   DemoMassiveDataRoute: DemoMassiveDataRoute,

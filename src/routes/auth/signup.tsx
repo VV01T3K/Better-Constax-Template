@@ -4,18 +4,18 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { z } from "zod";
 
-import { LoginForm } from "@/components/login-form";
+import { SignupForm } from "@/components/signup-form";
 
-const loginSearchSchema = z.object({
+const signupSearchSchema = z.object({
 	redirect: z.string().optional(),
 });
 
-export const Route = createFileRoute("/auth/login")({
-	validateSearch: loginSearchSchema,
-	component: LoginPage,
+export const Route = createFileRoute("/auth/signup")({
+	validateSearch: signupSearchSchema,
+	component: SignupPage,
 });
 
-function LoginPage() {
+function SignupPage() {
 	const queryClient = useQueryClient();
 	const router = useRouter();
 	const search = Route.useSearch();
@@ -24,7 +24,7 @@ function LoginPage() {
 
 	return (
 		<div className="flex min-h-screen items-center justify-center p-4">
-			<LoginForm
+			<SignupForm
 				className="w-full max-w-md"
 				onSuccess={async () => {
 					await queryClient.invalidateQueries({ queryKey: currentUserQuery.queryKey });
