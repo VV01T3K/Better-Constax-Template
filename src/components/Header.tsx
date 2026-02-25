@@ -21,7 +21,7 @@ import {
 	Zap,
 	type LucideIcon,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
 import { waitForImpersonationState } from "@/lib/impersonation-client";
@@ -87,8 +87,17 @@ function hasAccess(
 export default function Header() {
 	const currentUserQuery = convexQuery(api.auth.getCurrentUser, {});
 	const accessQuery = convexQuery(api.functions.authorization.getMyAccess, {});
-	const { data: currentUser } = useSuspenseQuery(currentUserQuery);
-	const { data: myAccess } = useSuspenseQuery(accessQuery);
+	const { data: rawCurrentUser } = useSuspenseQuery(currentUserQuery);
+	const { data: rawMyAccess } = useSuspenseQuery(accessQuery);
+
+	// Keep the last valid values to avoid flashing during auth state churn
+	// (Convex briefly loses auth when sessionId changes, causing null results)
+	const lastUserRef = useRef(rawCurrentUser);
+	const lastAccessRef = useRef(rawMyAccess);
+	if (rawCurrentUser) lastUserRef.current = rawCurrentUser;
+	if (rawMyAccess) lastAccessRef.current = rawMyAccess;
+	const currentUser = rawCurrentUser ?? lastUserRef.current;
+	const myAccess = rawMyAccess ?? lastAccessRef.current;
 	const { data: sessionData, refetch: refetchSession } = authClient.useSession();
 	const [isOpen, setIsOpen] = useState(false);
 	const [impersonationError, setImpersonationError] = useState<string | null>(null);
