@@ -2,22 +2,24 @@ import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import { createTodoSchema } from "@convex/schemas";
 import { useMutationState } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Check, Circle, Loader2, Plus, Trash2, Zap } from "lucide-react";
 import { useState } from "react";
 
 import { useTodosOptimisticTQ } from "@/hooks/useTodosOptimisticTQ";
-import { protectedRouteLoader } from "@/lib/route-guard-kit";
 
-export const Route = createFileRoute("/demo/tanstack-optimistic")({
-	loader: async ({ context, location }) => {
-		await protectedRouteLoader({
-			queryClient: context.queryClient,
-			permission: "demo.todos.access",
-			redirectHref: location.href,
-			prefetch: () =>
-				context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {})),
+export const Route = createFileRoute("/_authenticated/demo/tanstack-optimistic")({
+	beforeLoad: async ({ context }) => {
+		const allowed = await context.queryClient.fetchQuery({
+			...convexQuery(api.functions.authorization.hasPermission, {
+				permission: "demo.todos.access",
+			}),
+			staleTime: 0,
 		});
+		if (!allowed) throw redirect({ to: "/forbidden" });
+	},
+	loader: async ({ context }) => {
+		await context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {}));
 	},
 	component: TanStackOptimisticTodos,
 });
