@@ -17,13 +17,11 @@ export const Route = createFileRoute("/_authenticated/admin/permissions")({
 		});
 		if (!allowed) throw redirect({ to: "/forbidden" });
 	},
-	loader: async ({ context, location }) => {
-		const isAdminPermissionsPath = location.pathname.startsWith("/admin/permissions/admin");
-		const scope = isAdminPermissionsPath ? "admin" : "app";
-
+	loader: async ({ context }) => {
 		await context.queryClient.ensureQueryData(
-			convexQuery(api.functions.authorization.getCatalogAndMatrix, { scope }),
+			convexQuery(api.functions.authorization.getCatalogAndMatrix, { scope: "app" }),
 		);
+	},
 	},
 	component: AppPermissionsPage,
 });
