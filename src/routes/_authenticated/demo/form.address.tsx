@@ -2,23 +2,26 @@ import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import { submitAddressFormSchema } from "@convex/schemas";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { useAppForm } from "@/hooks/demo.form";
-import { protectedRouteLoader } from "@/lib/route-guard-kit";
 
 const currentUserQuery = convexQuery(api.auth.getCurrentUser, {});
 const submissionsQuery = convexQuery(api.functions.addressForms.listMine, { limit: 10 });
 
-export const Route = createFileRoute("/demo/form/address")({
-	loader: async ({ context, location }) => {
-		await protectedRouteLoader({
-			queryClient: context.queryClient,
-			permission: "demo.address-form.access",
-			redirectHref: location.href,
-			prefetch: () => context.queryClient.ensureQueryData(submissionsQuery),
+export const Route = createFileRoute("/_authenticated/demo/form/address")({
+	beforeLoad: async ({ context }) => {
+		const allowed = await context.queryClient.fetchQuery({
+			...convexQuery(api.functions.authorization.hasPermission, {
+				permission: "demo.address-form.access",
+			}),
+			staleTime: 0,
 		});
+		if (!allowed) throw redirect({ to: "/forbidden" });
+	},
+	loader: async ({ context }) => {
+		await context.queryClient.ensureQueryData(submissionsQuery);
 	},
 	component: AddressForm,
 });

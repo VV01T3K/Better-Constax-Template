@@ -1,27 +1,29 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
-import { Outlet, createFileRoute, useLocation } from "@tanstack/react-router";
+import { Outlet, createFileRoute, redirect, useLocation } from "@tanstack/react-router";
 
 import { PermissionMatrixEditor } from "@/components/admin/PermissionMatrixEditor";
-import { protectedRouteLoader } from "@/lib/route-guard-kit";
 
-export const Route = createFileRoute("/admin/permissions")({
-	loader: async ({ context, location }) => {
+export const Route = createFileRoute("/_authenticated/admin/permissions")({
+	beforeLoad: async ({ context, location }) => {
 		const isAdminPermissionsPath = location.pathname.startsWith("/admin/permissions/admin");
 		const permission = isAdminPermissionsPath
 			? "admin.permissions.admin.access"
 			: "admin.permissions.app.access";
+
+		const allowed = await context.queryClient.fetchQuery({
+			...convexQuery(api.functions.authorization.hasPermission, { permission }),
+			staleTime: 0,
+		});
+		if (!allowed) throw redirect({ to: "/forbidden" });
+	},
+	loader: async ({ context, location }) => {
+		const isAdminPermissionsPath = location.pathname.startsWith("/admin/permissions/admin");
 		const scope = isAdminPermissionsPath ? "admin" : "app";
 
-		await protectedRouteLoader({
-			queryClient: context.queryClient,
-			permission,
-			redirectHref: location.href,
-			prefetch: () =>
-				context.queryClient.ensureQueryData(
-					convexQuery(api.functions.authorization.getCatalogAndMatrix, { scope }),
-				),
-		});
+		await context.queryClient.ensureQueryData(
+			convexQuery(api.functions.authorization.getCatalogAndMatrix, { scope }),
+		);
 	},
 	component: AppPermissionsPage,
 });
