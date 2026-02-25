@@ -21,7 +21,7 @@ import {
 	Zap,
 	type LucideIcon,
 } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
 import { waitForImpersonationState } from "@/lib/impersonation-client";
@@ -85,20 +85,24 @@ function hasAccess(
 }
 
 export default function Header() {
-	const currentUserQuery = convexQuery(api.auth.getCurrentUser, {});
 	const accessQuery = convexQuery(api.functions.authorization.getMyAccess, {});
-	const { data: rawCurrentUser } = useSuspenseQuery(currentUserQuery);
-	const { data: rawMyAccess } = useSuspenseQuery(accessQuery);
+	const { data: myAccess } = useSuspenseQuery(accessQuery);
+	// SSR-prefetched user — used as fallback while Better Auth session is loading
+	const { data: ssrUser } = useSuspenseQuery(convexQuery(api.auth.getCurrentUser, {}));
+	const {
+		data: sessionData,
+		isPending: isSessionPending,
+		refetch: refetchSession,
+	} = authClient.useSession();
 
-	// Keep the last valid values to avoid flashing during auth state churn
-	// (Convex briefly loses auth when sessionId changes, causing null results)
-	const lastUserRef = useRef(rawCurrentUser);
-	const lastAccessRef = useRef(rawMyAccess);
-	if (rawCurrentUser) lastUserRef.current = rawCurrentUser;
-	if (rawMyAccess) lastAccessRef.current = rawMyAccess;
-	const currentUser = rawCurrentUser ?? lastUserRef.current;
-	const myAccess = rawMyAccess ?? lastAccessRef.current;
-	const { data: sessionData, refetch: refetchSession } = authClient.useSession();
+	// Use sessionData as primary source of truth. While it's still pending
+	// (initial hydration), fall back to the SSR-prefetched Convex user so
+	// logged-in users see their name immediately without a flash.
+	const sessionUser = sessionData?.user ?? null;
+	// While session is pending (hydration), fall back to SSR-prefetched user
+	const isLoggedIn = sessionUser ?? (isSessionPending ? ssrUser : null);
+	const displayName =
+		sessionUser?.name || sessionUser?.email || ssrUser?.name || ssrUser?.email || "";
 	const [isOpen, setIsOpen] = useState(false);
 	const [impersonationError, setImpersonationError] = useState<string | null>(null);
 	const queryClient = useQueryClient();
@@ -221,11 +225,11 @@ export default function Header() {
 				</div>
 
 				<div className="flex items-center gap-3">
-					{currentUser ? (
+					{isLoggedIn ? (
 						<>
 							<span className="flex items-center gap-2 text-sm text-gray-300">
 								<User size={16} />
-								{currentUser.name || currentUser.email || currentUser.subject}
+								{displayName}
 							</span>
 							<button
 								onClick={() => {
@@ -309,7 +313,7 @@ export default function Header() {
 					) : null}
 
 					<div className="mt-2 border-t border-gray-700 pt-2">
-						{currentUser ? (
+						{isLoggedIn ? (
 							<button
 								type="button"
 								onClick={() => {
