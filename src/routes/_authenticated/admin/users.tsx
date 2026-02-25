@@ -6,15 +6,36 @@ import {
 	appRoles,
 	isAppRole,
 	normalizeRole,
-	type AuthUserId,
 	type AppRole,
+	type AuthUserId,
 } from "@convex/schemas";
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, useRouter, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { flexRender, getCoreRowModel, type ColumnDef, useReactTable } from "@tanstack/react-table";
 import { Loader2, ShieldCheck, UserCog } from "lucide-react";
 import { useState } from "react";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Select as UiSelect,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import { authClient } from "@/lib/auth-client";
 import { waitForImpersonationState } from "@/lib/impersonation-client";
 
@@ -26,6 +47,8 @@ type AdminUserRow = {
 	banned: boolean;
 	createdAt: Date | null;
 };
+
+const ROLE_ITEMS = appRoles.map((role) => ({ label: role, value: role }));
 
 export const Route = createFileRoute("/_authenticated/admin/users")({
 	beforeLoad: async ({ context }) => {
@@ -170,26 +193,32 @@ function AdminUsersPage() {
 			accessorKey: "name",
 			header: "User",
 			cell: ({ row }) => (
-				<div>
-					<p className="font-semibold text-slate-900">{row.original.name}</p>
-					<p className="text-xs text-slate-600">{row.original.email}</p>
+				<div className="min-w-52">
+					<p className="font-semibold text-foreground">{row.original.name}</p>
+					<p className="text-xs text-muted-foreground">{row.original.email}</p>
 				</div>
 			),
 		},
 		{
 			accessorKey: "role",
 			header: "Role",
-			cell: ({ row }) => (
-				<span className="rounded-full bg-slate-200 px-2 py-1 text-xs font-semibold text-slate-700">
-					{row.original.role}
-				</span>
-			),
+			cell: ({ row }) => {
+				const role = row.original.role;
+				const variant = role === "admin" ? "default" : role === "manager" ? "secondary" : "outline";
+				return <Badge variant={variant}>{role}</Badge>;
+			},
+		},
+		{
+			id: "status",
+			header: "Status",
+			cell: ({ row }) =>
+				row.original.banned ? <Badge variant="destructive">banned</Badge> : <Badge variant="secondary">active</Badge>,
 		},
 		{
 			accessorKey: "createdAt",
 			header: "Created",
 			cell: ({ row }) => (
-				<span className="text-xs text-slate-600">
+				<span className="text-xs text-muted-foreground">
 					{row.original.createdAt ? row.original.createdAt.toLocaleDateString() : "Unknown"}
 				</span>
 			),
@@ -203,12 +232,12 @@ function AdminUsersPage() {
 				const targetIsAdmin = user.role === "admin";
 				return (
 					<div className="flex flex-wrap items-center gap-2">
-						<select
+						<UiSelect
+							items={ROLE_ITEMS}
 							value={user.role}
 							disabled={!canEditRoles || busy}
-							onChange={(event) => {
-								const nextRoleValue = event.target.value;
-								if (!isAppRole(nextRoleValue)) {
+							onValueChange={(nextRoleValue) => {
+								if (!nextRoleValue || !isAppRole(nextRoleValue)) {
 									return;
 								}
 
@@ -220,24 +249,30 @@ function AdminUsersPage() {
 
 								void roleMutation.mutateAsync({ userId: user.id, role: nextRole });
 							}}
-							className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
 						>
-							{appRoles.map((role) => (
-								<option key={role} value={role}>
-									{role}
-								</option>
-							))}
-						</select>
-						<button
+							<SelectTrigger className="w-28">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectGroup>
+									{ROLE_ITEMS.map((roleItem) => (
+										<SelectItem key={roleItem.value} value={roleItem.value}>
+											{roleItem.label}
+										</SelectItem>
+									))}
+								</SelectGroup>
+							</SelectContent>
+						</UiSelect>
+						<Button
 							type="button"
+							size="sm"
 							disabled={!canImpersonate || targetIsAdmin || self || busy}
 							onClick={() => {
 								void impersonateMutation.mutateAsync({ userId: user.id });
 							}}
-							className="rounded-md bg-cyan-600 px-2 py-1 text-xs font-semibold text-white hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-40"
 						>
 							Impersonate
-						</button>
+						</Button>
 					</div>
 				);
 			},
@@ -251,107 +286,103 @@ function AdminUsersPage() {
 	});
 
 	return (
-		<div className="min-h-screen bg-slate-100 p-6">
+		<div className="p-6">
 			<div className="mx-auto flex w-full max-w-7xl flex-col gap-4">
-				<div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-					<div className="flex flex-wrap items-center justify-between gap-3">
-						<div>
-							<h1 className="flex items-center gap-2 text-2xl font-bold text-slate-900">
-								<UserCog className="h-6 w-6 text-cyan-700" />
-								Admin User Management
-							</h1>
-							<p className="mt-1 text-sm text-slate-600">
-								Assign roles and start guarded impersonation sessions for non-admin users.
-							</p>
+				<Card>
+					<CardHeader>
+						<div className="flex flex-wrap items-center justify-between gap-3">
+							<div>
+								<CardTitle className="flex items-center gap-2">
+									<UserCog className="size-5" />
+									Admin User Management
+								</CardTitle>
+								<CardDescription>
+									Assign roles and start guarded impersonation sessions for non-admin users.
+								</CardDescription>
+							</div>
+							<div className="text-sm text-muted-foreground">
+								{usersQuery.isFetching ? (
+									<span className="inline-flex items-center gap-2">
+										<Loader2 size={14} className="animate-spin" />
+										Refreshing users...
+									</span>
+								) : (
+									<span>{total} users</span>
+								)}
+							</div>
 						</div>
-						<div className="rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700">
-							{usersQuery.isFetching ? (
-								<span className="inline-flex items-center gap-2">
-									<Loader2 size={14} className="animate-spin" />
-									Refreshing users...
-								</span>
-							) : (
-								<span>{total} users</span>
-							)}
+					</CardHeader>
+					<CardContent>
+						<div className="flex flex-wrap gap-2">
+							<Badge variant="secondary">Role edits: {canEditRoles ? "on" : "off"}</Badge>
+							<Badge variant="secondary">Impersonation: {canImpersonate ? "on" : "off"}</Badge>
 						</div>
-					</div>
+					</CardContent>
+				</Card>
 
-					<div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-600">
-						<span className="rounded-full bg-slate-100 px-2 py-1">
-							Role edits: {canEditRoles ? "on" : "off"}
-						</span>
-						<span className="rounded-full bg-slate-100 px-2 py-1">
-							Impersonation: {canImpersonate ? "on" : "off"}
-						</span>
-					</div>
-
-					{actionError ? (
-						<div className="mt-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-							{actionError}
-						</div>
-					) : null}
-				</div>
+				{actionError ? (
+					<Alert variant="destructive">
+						<AlertDescription>{actionError}</AlertDescription>
+					</Alert>
+				) : null}
 
 				{usersQuery.isLoading ? (
-					<div className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-600">
-						Loading users...
-					</div>
+					<Card>
+						<CardContent className="space-y-2 pt-6">
+							<Skeleton className="h-8 w-full" />
+							<Skeleton className="h-8 w-full" />
+							<Skeleton className="h-8 w-full" />
+						</CardContent>
+					</Card>
 				) : usersQuery.isError ? (
-					<div className="rounded-xl border border-rose-200 bg-rose-50 p-6 text-sm text-rose-700">
-						Failed to load users:{" "}
-						{usersQuery.error instanceof Error ? usersQuery.error.message : "Unknown error"}
-					</div>
+					<Alert variant="destructive">
+						<AlertDescription>
+							Failed to load users: {usersQuery.error instanceof Error ? usersQuery.error.message : "Unknown error"}
+						</AlertDescription>
+					</Alert>
 				) : (
-					<div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-						<table className="w-full text-sm">
-							<thead className="bg-slate-50">
-								{table.getHeaderGroups().map((headerGroup) => (
-									<tr key={headerGroup.id}>
-										{headerGroup.headers.map((header) => (
-											<th
-												key={header.id}
-												className="px-4 py-3 text-left font-semibold text-slate-700"
-											>
-												{header.isPlaceholder
-													? null
-													: flexRender(header.column.columnDef.header, header.getContext())}
-											</th>
+					<Table>
+						<TableHeader>
+							{table.getHeaderGroups().map((headerGroup) => (
+								<TableRow key={headerGroup.id}>
+									{headerGroup.headers.map((header) => (
+										<TableHead key={header.id}>
+											{header.isPlaceholder
+												? null
+												: flexRender(header.column.columnDef.header, header.getContext())}
+										</TableHead>
+									))}
+								</TableRow>
+							))}
+						</TableHeader>
+						<TableBody>
+							{table.getRowModel().rows.length === 0 ? (
+								<TableRow>
+									<TableCell colSpan={columns.length} className="text-center text-muted-foreground">
+										No users found.
+									</TableCell>
+								</TableRow>
+							) : (
+								table.getRowModel().rows.map((row) => (
+									<TableRow key={row.id}>
+										{row.getVisibleCells().map((cell) => (
+											<TableCell key={cell.id} className="align-top">
+												{flexRender(cell.column.columnDef.cell, cell.getContext())}
+											</TableCell>
 										))}
-									</tr>
-								))}
-							</thead>
-							<tbody>
-								{table.getRowModel().rows.length === 0 ? (
-									<tr>
-										<td
-											colSpan={columns.length}
-											className="px-4 py-8 text-center text-sm text-slate-500"
-										>
-											No users found.
-										</td>
-									</tr>
-								) : (
-									table.getRowModel().rows.map((row) => (
-										<tr key={row.id} className="border-t border-slate-100">
-											{row.getVisibleCells().map((cell) => (
-												<td key={cell.id} className="px-4 py-3 align-top text-slate-700">
-													{flexRender(cell.column.columnDef.cell, cell.getContext())}
-												</td>
-											))}
-										</tr>
-									))
-								)}
-							</tbody>
-						</table>
-					</div>
+									</TableRow>
+								))
+							)}
+						</TableBody>
+					</Table>
 				)}
 
-				<div className="rounded-xl border border-slate-200 bg-white p-4 text-xs text-slate-600 shadow-sm">
-					<p className="flex items-center gap-2">
-						<ShieldCheck size={14} className="text-cyan-700" />
+				<Alert>
+					<ShieldCheck className="size-4" />
+					<AlertDescription>
 						Impersonation is blocked for admin targets and sessions expire after 15 minutes.
-					</p>
-				</div>
+					</AlertDescription>
+				</Alert>
 			</div>
 		</div>
 	);

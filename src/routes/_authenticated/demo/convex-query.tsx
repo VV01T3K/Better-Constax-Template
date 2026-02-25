@@ -4,11 +4,12 @@ import type { Id } from "@convex/_generated/dataModel";
 import { createTodoSchema } from "@convex/schemas";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { Check, Circle, Plus, Trash2 } from "lucide-react";
+import { Circle, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/_authenticated/demo/convex-query")({
@@ -123,17 +124,12 @@ function ConvexQueryTodos() {
 										todo.completed ? "opacity-60" : ""
 									}`}
 								>
-									<button
-										type="button"
-										onClick={() => handleToggleTodo(todo._id)}
-										className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
-											todo.completed
-												? "border-primary bg-primary text-primary-foreground"
-												: "border-muted-foreground/40 text-transparent hover:border-primary hover:text-primary"
-										}`}
-									>
-										<Check className="size-3.5" />
-									</button>
+									<Checkbox
+										checked={todo.completed}
+										onCheckedChange={() => handleToggleTodo(todo._id)}
+										aria-label={`Toggle ${todo.text}`}
+										className="rounded-full"
+									/>
 									<span
 										className={`flex-1 text-base ${
 											todo.completed

@@ -1,7 +1,7 @@
 import type { ConvexQueryClient } from "@convex-dev/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
-import { useInfiniteQuery, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { BarChart3, Database, Rows3, Timer } from "lucide-react";
@@ -10,6 +10,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Select as UiSelect,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type MassiveMode = "paginated" | "infinite";
 
@@ -34,6 +43,10 @@ type MassivePageResult = {
 
 const DEFAULT_PAGE_SIZE = 200;
 const PAGE_SIZE_OPTIONS = [50, 100, 200, 500, 1000, 2000] as const;
+const PAGE_SIZE_ITEMS = PAGE_SIZE_OPTIONS.map((option) => ({
+	label: String(option),
+	value: String(option),
+}));
 const VIRTUAL_ROW_HEIGHT = 52;
 const MIN_PREFETCH_AHEAD_ROWS = 50;
 const PREFETCH_LINEAR_SCALE = 0.3;
@@ -78,31 +91,29 @@ function MassiveDataPage() {
 									infinite loading modes.
 								</CardDescription>
 							</div>
-							<div className="inline-flex rounded-lg border p-1">
-								<Button
-									variant={mode === "paginated" ? "default" : "ghost"}
-									size="sm"
-									onClick={() => setMode("paginated")}
-								>
-									Paginated
-								</Button>
-								<Button
-									variant={mode === "infinite" ? "default" : "ghost"}
-									size="sm"
-									onClick={() => setMode("infinite")}
-								>
-									Infinite
-								</Button>
-							</div>
 						</div>
 					</CardHeader>
 				</Card>
 
-				{mode === "paginated" ? (
-					<PaginatedDatasetView />
-				) : (
-					<InfiniteDatasetView convexQueryClient={convexQueryClient} />
-				)}
+				<Tabs
+					value={mode}
+					onValueChange={(value) => {
+						if (value === "paginated" || value === "infinite") {
+							setMode(value);
+						}
+					}}
+				>
+					<TabsList className="w-fit">
+						<TabsTrigger value="paginated">Paginated</TabsTrigger>
+						<TabsTrigger value="infinite">Infinite</TabsTrigger>
+					</TabsList>
+					<TabsContent value="paginated">
+						<PaginatedDatasetView />
+					</TabsContent>
+					<TabsContent value="infinite">
+						<InfiniteDatasetView convexQueryClient={convexQueryClient} />
+					</TabsContent>
+				</Tabs>
 			</div>
 		</div>
 	);
@@ -146,25 +157,29 @@ function PaginatedDatasetView() {
 
 			<Card>
 				<CardContent className="flex flex-wrap items-center gap-3 pt-6">
-					<label className="text-sm text-muted-foreground" htmlFor="page-size">
-						Page size
-					</label>
-					<select
-						id="page-size"
-						value={pageSize}
-						onChange={(event) => {
-							const nextPageSize = Number(event.target.value);
-							setPageSize(nextPageSize);
+					<span className="text-sm text-muted-foreground">Page size</span>
+					<UiSelect
+						items={PAGE_SIZE_ITEMS}
+						value={String(pageSize)}
+						onValueChange={(value) => {
+							if (!value) return;
+							setPageSize(Number(value));
 							setPageIndex(0);
 						}}
-						className="flex h-8 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 					>
-						{PAGE_SIZE_OPTIONS.map((option) => (
-							<option key={option} value={option}>
-								{option}
-							</option>
-						))}
-					</select>
+						<SelectTrigger className="w-28">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								{PAGE_SIZE_ITEMS.map((option) => (
+									<SelectItem key={option.value} value={option.value}>
+										{option.label}
+									</SelectItem>
+								))}
+							</SelectGroup>
+						</SelectContent>
+					</UiSelect>
 
 					<div className="ml-auto flex items-center gap-2">
 						<Button
@@ -261,21 +276,28 @@ function InfiniteDatasetView({ convexQueryClient }: { convexQueryClient: ConvexQ
 
 			<Card>
 				<CardContent className="flex flex-wrap items-center gap-3 pt-6">
-					<label className="text-sm text-muted-foreground" htmlFor="infinite-page-size">
-						Page size
-					</label>
-					<select
-						id="infinite-page-size"
-						value={pageSize}
-						onChange={(event) => setPageSize(Number(event.target.value))}
-						className="flex h-8 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+					<span className="text-sm text-muted-foreground">Page size</span>
+					<UiSelect
+						items={PAGE_SIZE_ITEMS}
+						value={String(pageSize)}
+						onValueChange={(value) => {
+							if (!value) return;
+							setPageSize(Number(value));
+						}}
 					>
-						{PAGE_SIZE_OPTIONS.map((option) => (
-							<option key={option} value={option}>
-								{option}
-							</option>
-						))}
-					</select>
+						<SelectTrigger className="w-28">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								{PAGE_SIZE_ITEMS.map((option) => (
+									<SelectItem key={option.value} value={option.value}>
+										{option.label}
+									</SelectItem>
+								))}
+							</SelectGroup>
+						</SelectContent>
+					</UiSelect>
 
 					<p className="ml-auto text-sm text-muted-foreground">
 						{hasMore

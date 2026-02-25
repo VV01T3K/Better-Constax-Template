@@ -3,13 +3,14 @@ import { api } from "@convex/_generated/api";
 import { createTodoSchema } from "@convex/schemas";
 import { useMutationState } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { Check, Circle, Loader2, Plus, Trash2, Zap } from "lucide-react";
+import { Circle, Loader2, Plus, Trash2, Zap } from "lucide-react";
 import { useState } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useTodosOptimisticTQ } from "@/hooks/useTodosOptimisticTQ";
 
@@ -157,18 +158,13 @@ function TanStackOptimisticTodos() {
 										todo.completed ? "opacity-60" : ""
 									} ${todo.status === "pending" ? "opacity-40" : ""}`}
 								>
-									<button
-										type="button"
-										onClick={() => handleToggleTodo(todo.id)}
+									<Checkbox
+										checked={todo.completed}
+										onCheckedChange={() => handleToggleTodo(todo.id)}
 										disabled={todo.status === "pending"}
-										className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
-											todo.completed
-												? "border-primary bg-primary text-primary-foreground"
-												: "border-muted-foreground/40 text-transparent hover:border-primary hover:text-primary"
-										} ${todo.status === "pending" ? "cursor-not-allowed" : ""}`}
-									>
-										<Check className="size-3.5" />
-									</button>
+										aria-label={`Toggle ${todo.text}`}
+										className="rounded-full"
+									/>
 									<span
 										className={`flex-1 text-base ${
 											todo.completed

@@ -5,10 +5,12 @@ import {
 	Globe,
 	Home,
 	Layers,
+	LogIn,
 	ShieldCheck,
 	Table,
 	Upload,
 	UserCog,
+	UserPlus,
 	Zap,
 	type LucideIcon,
 } from "lucide-react";
@@ -38,6 +40,11 @@ type NavLinkDef = {
 const generalLinks: NavItem[] = [
 	{ to: "/", label: "Home", icon: Home },
 	{ to: "/shadcn", label: "shadcn UI", icon: Layers },
+];
+
+const authLinks: NavItem[] = [
+	{ to: "/auth/login", label: "Login", icon: LogIn },
+	{ to: "/auth/signup", label: "Sign Up", icon: UserPlus },
 ];
 
 const demoLinkDefs: NavLinkDef[] = [
@@ -125,10 +132,7 @@ export function AppSidebar({
 			<SidebarHeader>
 				<SidebarMenu>
 					<SidebarMenuItem>
-						<SidebarMenuButton
-							size="lg"
-							render={<Link to="/" aria-label="Home" />}
-						>
+						<SidebarMenuButton size="lg" render={<Link to="/" aria-label="Home" />}>
 							<div className="flex aspect-square size-8 items-center justify-center">
 								<picture>
 									<source srcSet="/tanstack-circle-logo.avif" type="image/avif" />
@@ -171,6 +175,7 @@ export function AppSidebar({
 						))}
 					</SidebarMenu>
 				</SidebarGroup>
+				{!isLoggedIn ? <NavMain label="Auth" items={authLinks} /> : null}
 				<NavMain label="Demos" items={visibleDemoLinks} />
 				<NavMain label="Admin" items={visibleAdminLinks} />
 			</SidebarContent>

@@ -3,6 +3,14 @@ import { useStore } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+	Select as UiSelect,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useFieldContext, useFormContext } from "@/hooks/demo.form-context";
 
@@ -82,20 +90,25 @@ export function Select({
 	return (
 		<div className="space-y-2">
 			<Label htmlFor={label}>{label}</Label>
-			<select
-				id={label}
+			<UiSelect
 				name={field.name}
-				value={field.state.value}
-				onBlur={field.handleBlur}
-				onChange={(e) => field.handleChange(e.target.value)}
-				className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+				items={values}
+				value={field.state.value || null}
+				onValueChange={(value) => field.handleChange(value ?? "")}
 			>
-				{values.map((value) => (
-					<option key={value.value} value={value.value}>
-						{value.label}
-					</option>
-				))}
-			</select>
+				<SelectTrigger id={label} onBlur={field.handleBlur}>
+					<SelectValue />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectGroup>
+						{values.map((value) => (
+							<SelectItem key={value.value} value={value.value}>
+								{value.label}
+							</SelectItem>
+						))}
+					</SelectGroup>
+				</SelectContent>
+			</UiSelect>
 			{field.state.meta.isTouched && <ErrorMessages errors={errors} />}
 		</div>
 	);

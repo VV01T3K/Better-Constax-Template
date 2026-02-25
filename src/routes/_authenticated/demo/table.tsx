@@ -13,7 +13,7 @@ import {
 	useReactTable,
 	type VisibilityState,
 } from "@tanstack/react-table";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import {
+	Select as UiSelect,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import {
 	Table,
 	TableBody,
@@ -32,6 +40,10 @@ import {
 
 const DEFAULT_PAGE_SIZE = 20;
 const PAGE_SIZE_OPTIONS = [10, 20, 30, 40, 50] as const;
+const PAGE_SIZE_ITEMS = PAGE_SIZE_OPTIONS.map((option) => ({
+	label: `Show ${option}`,
+	value: String(option),
+}));
 const FILTER_DEBOUNCE_MS = 250;
 
 const SORT_KEYS = [
@@ -284,17 +296,18 @@ function TableDemo() {
 									return (
 										<TableHead key={header.id}>
 											{header.isPlaceholder ? null : header.column.getCanSort() ? (
-												<button
-													type="button"
+												<Button
+													variant="ghost"
+													size="xs"
 													onClick={header.column.getToggleSortingHandler()}
-													className="cursor-pointer font-semibold transition-colors select-none hover:text-primary"
+													className="h-auto px-0 py-0 font-semibold hover:bg-transparent"
 												>
 													{flexRender(
 														header.column.columnDef.header,
 														header.getContext(),
 													)}
 													{sortIndicator}
-												</button>
+												</Button>
 											) : (
 												flexRender(
 													header.column.columnDef.header,
@@ -407,23 +420,31 @@ function TableDemo() {
 						/>
 					</span>
 
-					<select
-						value={pagination.pageSize}
-						onChange={(event) => {
+					<UiSelect
+						items={PAGE_SIZE_ITEMS}
+						value={String(pagination.pageSize)}
+						onValueChange={(value) => {
+							if (!value) return;
 							setPagination((previous) => ({
 								...previous,
-								pageSize: Number(event.target.value),
+								pageSize: Number(value),
 								pageIndex: 0,
 							}));
 						}}
-						className="flex h-8 rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 					>
-						{PAGE_SIZE_OPTIONS.map((option) => (
-							<option key={option} value={option}>
-								Show {option}
-							</option>
-						))}
-					</select>
+						<SelectTrigger className="w-28">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								{PAGE_SIZE_ITEMS.map((item) => (
+									<SelectItem key={item.value} value={item.value}>
+										{item.label}
+									</SelectItem>
+								))}
+							</SelectGroup>
+						</SelectContent>
+					</UiSelect>
 				</div>
 
 				<div className="flex flex-wrap gap-2">
