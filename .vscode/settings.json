@@ -25,10 +25,7 @@
 		"**/routeTree.gen.ts": true,
 		"**/bun.lock": true,
 		"**/_generated/**": true,
-		"**/betterAuth/generatedSchema.ts": true,
-		".claude/**": true,
-		".agents/**": true,
-		".cursor/**": true
+		"**/betterAuth/generatedSchema.ts": true
 	},
 	"editor.formatOnSave": true,
 	"[javascript]": {
