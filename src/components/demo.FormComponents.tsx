@@ -1,17 +1,17 @@
 import { useStore } from "@tanstack/react-form";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useFieldContext, useFormContext } from "@/hooks/demo.form-context";
 
 export function SubscribeButton({ label }: { label: string }) {
 	const form = useFormContext();
 	return (
-		<button
-			type="submit"
-			disabled={form.state.isSubmitting}
-			className="rounded-md bg-indigo-600 px-6 py-2 text-white transition-colors hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50"
-		>
+		<Button type="submit" disabled={form.state.isSubmitting}>
 			{label}
-		</button>
+		</Button>
 	);
 }
 
@@ -19,12 +19,12 @@ function ErrorMessages({ errors }: { errors: Array<string | { message: string }>
 	return (
 		<>
 			{errors.map((error) => (
-				<div
+				<p
 					key={typeof error === "string" ? error : error.message}
-					className="mt-1 font-bold text-red-500"
+					className="mt-1 text-sm font-medium text-destructive"
 				>
 					{typeof error === "string" ? error : error.message}
-				</div>
+				</p>
 			))}
 		</>
 	);
@@ -35,17 +35,15 @@ export function TextField({ label, placeholder }: { label: string; placeholder?:
 	const errors = useStore(field.store, (state) => state.meta.errors);
 
 	return (
-		<div>
-			<label htmlFor={label} className="mb-1 block text-xl font-bold">
-				{label}
-				<input
-					value={field.state.value}
-					placeholder={placeholder}
-					onBlur={field.handleBlur}
-					onChange={(e) => field.handleChange(e.target.value)}
-					className="w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-				/>
-			</label>
+		<div className="space-y-2">
+			<Label htmlFor={label}>{label}</Label>
+			<Input
+				id={label}
+				value={field.state.value}
+				placeholder={placeholder}
+				onBlur={field.handleBlur}
+				onChange={(e) => field.handleChange(e.target.value)}
+			/>
 			{field.state.meta.isTouched && <ErrorMessages errors={errors} />}
 		</div>
 	);
@@ -56,17 +54,15 @@ export function TextArea({ label, rows = 3 }: { label: string; rows?: number }) 
 	const errors = useStore(field.store, (state) => state.meta.errors);
 
 	return (
-		<div>
-			<label htmlFor={label} className="mb-1 block text-xl font-bold">
-				{label}
-				<textarea
-					value={field.state.value}
-					onBlur={field.handleBlur}
-					rows={rows}
-					onChange={(e) => field.handleChange(e.target.value)}
-					className="w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-				/>
-			</label>
+		<div className="space-y-2">
+			<Label htmlFor={label}>{label}</Label>
+			<Textarea
+				id={label}
+				value={field.state.value}
+				onBlur={field.handleBlur}
+				rows={rows}
+				onChange={(e) => field.handleChange(e.target.value)}
+			/>
 			{field.state.meta.isTouched && <ErrorMessages errors={errors} />}
 		</div>
 	);
@@ -84,16 +80,15 @@ export function Select({
 	const errors = useStore(field.store, (state) => state.meta.errors);
 
 	return (
-		<div>
-			<label htmlFor={label} className="mb-1 block text-xl font-bold">
-				{label}
-			</label>
+		<div className="space-y-2">
+			<Label htmlFor={label}>{label}</Label>
 			<select
+				id={label}
 				name={field.name}
 				value={field.state.value}
 				onBlur={field.handleBlur}
 				onChange={(e) => field.handleChange(e.target.value)}
-				className="w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+				className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 			>
 				{values.map((value) => (
 					<option key={value.value} value={value.value}>

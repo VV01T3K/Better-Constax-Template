@@ -1,15 +1,12 @@
-"use client";
-
+import { Link } from "@tanstack/react-router";
 import {
 	ChevronsUpDownIcon,
-	SparklesIcon,
-	BadgeCheckIcon,
-	CreditCardIcon,
-	BellIcon,
+	LogInIcon,
 	LogOutIcon,
+	UserRoundCheckIcon,
 } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -26,16 +23,50 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 
+function getInitials(name: string) {
+	return name
+		.split(" ")
+		.map((part) => part[0])
+		.filter(Boolean)
+		.slice(0, 2)
+		.join("")
+		.toUpperCase();
+}
+
 export function NavUser({
 	user,
+	isLoggedIn,
+	isImpersonating,
+	onSignOut,
+	onStopImpersonation,
 }: {
-	user: {
-		name: string;
-		email: string;
-		avatar: string;
-	};
+	user: { name: string; email: string } | null;
+	isLoggedIn: boolean;
+	isImpersonating: boolean;
+	onSignOut: () => void;
+	onStopImpersonation: () => void;
 }) {
 	const { isMobile } = useSidebar();
+
+	if (!isLoggedIn || !user) {
+		return (
+			<SidebarMenu>
+				<SidebarMenuItem>
+					<SidebarMenuButton
+						size="lg"
+						tooltip="Sign In"
+						render={<Link to="/auth/login" aria-label="Sign In" />}
+					>
+						<LogInIcon className="size-4" />
+						<span>Sign In</span>
+					</SidebarMenuButton>
+				</SidebarMenuItem>
+			</SidebarMenu>
+		);
+	}
+
+	const initials = getInitials(user.name || user.email);
+
 	return (
 		<SidebarMenu>
 			<SidebarMenuItem>
@@ -44,12 +75,11 @@ export function NavUser({
 						render={<SidebarMenuButton size="lg" className="aria-expanded:bg-muted" />}
 					>
 						<Avatar>
-							<AvatarImage src={user.avatar} alt={user.name} />
-							<AvatarFallback>CN</AvatarFallback>
+							<AvatarFallback>{initials}</AvatarFallback>
 						</Avatar>
 						<div className="grid flex-1 text-left text-sm leading-tight">
 							<span className="truncate font-medium">{user.name}</span>
-							<span className="truncate text-xs">{user.email}</span>
+							<span className="truncate text-xs text-muted-foreground">{user.email}</span>
 						</div>
 						<ChevronsUpDownIcon className="ml-auto size-4" />
 					</DropdownMenuTrigger>
@@ -63,42 +93,28 @@ export function NavUser({
 							<DropdownMenuLabel className="p-0 font-normal">
 								<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
 									<Avatar>
-										<AvatarImage src={user.avatar} alt={user.name} />
-										<AvatarFallback>CN</AvatarFallback>
+										<AvatarFallback>{initials}</AvatarFallback>
 									</Avatar>
 									<div className="grid flex-1 text-left text-sm leading-tight">
 										<span className="truncate font-medium">{user.name}</span>
-										<span className="truncate text-xs">{user.email}</span>
+										<span className="truncate text-xs text-muted-foreground">{user.email}</span>
 									</div>
 								</div>
 							</DropdownMenuLabel>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
-						<DropdownMenuGroup>
-							<DropdownMenuItem>
-								<SparklesIcon />
-								Upgrade to Pro
-							</DropdownMenuItem>
-						</DropdownMenuGroup>
-						<DropdownMenuSeparator />
-						<DropdownMenuGroup>
-							<DropdownMenuItem>
-								<BadgeCheckIcon />
-								Account
-							</DropdownMenuItem>
-							<DropdownMenuItem>
-								<CreditCardIcon />
-								Billing
-							</DropdownMenuItem>
-							<DropdownMenuItem>
-								<BellIcon />
-								Notifications
-							</DropdownMenuItem>
-						</DropdownMenuGroup>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem>
+						{isImpersonating ? (
+							<>
+								<DropdownMenuItem onClick={onStopImpersonation}>
+									<UserRoundCheckIcon />
+									Stop Impersonation
+								</DropdownMenuItem>
+								<DropdownMenuSeparator />
+							</>
+						) : null}
+						<DropdownMenuItem onClick={onSignOut}>
 							<LogOutIcon />
-							Log out
+							Sign Out
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>

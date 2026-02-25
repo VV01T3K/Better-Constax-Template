@@ -1,63 +1,49 @@
-"use client";
+import { Link } from "@tanstack/react-router";
+import type { LucideIcon } from "lucide-react";
 
-import { ChevronRightIcon } from "lucide-react";
-
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
 	SidebarGroup,
 	SidebarGroupLabel,
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
-	SidebarMenuSub,
-	SidebarMenuSubButton,
-	SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 
+export type NavItem = {
+	to: string;
+	label: string;
+	icon: LucideIcon;
+};
+
 export function NavMain({
+	label,
 	items,
 }: {
-	items: {
-		title: string;
-		url: string;
-		icon?: React.ReactNode;
-		isActive?: boolean;
-		items?: {
-			title: string;
-			url: string;
-		}[];
-	}[];
+	label: string;
+	items: NavItem[];
 }) {
+	if (items.length === 0) return null;
+
 	return (
 		<SidebarGroup>
-			<SidebarGroupLabel>Platform</SidebarGroupLabel>
+			<SidebarGroupLabel>{label}</SidebarGroupLabel>
 			<SidebarMenu>
 				{items.map((item) => (
-					<Collapsible
-						key={item.title}
-						defaultOpen={item.isActive}
-						className="group/collapsible"
-						render={<SidebarMenuItem />}
-					>
-						<CollapsibleTrigger render={<SidebarMenuButton tooltip={item.title} />}>
-							{item.icon}
-							<span>{item.title}</span>
-							<ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-open/collapsible:rotate-90" />
-						</CollapsibleTrigger>
-						<CollapsibleContent>
-							<SidebarMenuSub>
-								{item.items?.map((subItem) => (
-									<SidebarMenuSubItem key={subItem.title}>
-										<SidebarMenuSubButton
-											render={<a href={subItem.url} aria-label={subItem.title} />}
-										>
-											<span>{subItem.title}</span>
-										</SidebarMenuSubButton>
-									</SidebarMenuSubItem>
-								))}
-							</SidebarMenuSub>
-						</CollapsibleContent>
-					</Collapsible>
+					<SidebarMenuItem key={item.to}>
+						<SidebarMenuButton
+							tooltip={item.label}
+							render={
+								<Link
+									to={item.to}
+									activeProps={{ "data-active": true }}
+									aria-label={item.label}
+								/>
+							}
+						>
+							<item.icon />
+							<span>{item.label}</span>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
 				))}
 			</SidebarMenu>
 		</SidebarGroup>

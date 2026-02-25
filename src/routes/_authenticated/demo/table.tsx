@@ -13,7 +13,22 @@ import {
 	useReactTable,
 	type VisibilityState,
 } from "@tanstack/react-table";
-import { type InputHTMLAttributes, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 
 const DEFAULT_PAGE_SIZE = 20;
 const PAGE_SIZE_OPTIONS = [10, 20, 30, 40, 50] as const;
@@ -34,7 +49,7 @@ const SORT_KEY_SET = new Set<string>(SORT_KEYS);
 type SortKey = (typeof SORT_KEYS)[number];
 type SortDirection = "asc" | "desc";
 
-type TableRow = {
+type TableRow_ = {
 	id: number;
 	firstName: string;
 	lastName: string;
@@ -151,30 +166,33 @@ function TableDemo() {
 
 	if (!data && isPending) {
 		return (
-			<div className="min-h-screen bg-gray-900 p-6 text-gray-200">
-				<div className="rounded-lg border border-gray-700 bg-gray-800 p-4">
-					Loading table data...
-				</div>
+			<div className="p-6">
+				<Card>
+					<CardContent className="p-6 text-muted-foreground">Loading table data...</CardContent>
+				</Card>
 			</div>
 		);
 	}
 
 	if (!data && isError) {
 		return (
-			<div className="min-h-screen bg-gray-900 p-6 text-gray-200">
-				<div className="rounded-lg border border-rose-700 bg-rose-950/40 p-4">
-					<p className="font-semibold">Failed to load table data.</p>
-					<p className="mt-1 text-sm text-gray-300">{formatUnknownError(error)}</p>
-					<button
-						type="button"
-						onClick={() => {
-							void refetch();
-						}}
-						className="mt-3 rounded-md bg-rose-600 px-3 py-2 text-sm text-white hover:bg-rose-700"
-					>
-						Retry
-					</button>
-				</div>
+			<div className="p-6">
+				<Card className="border-destructive">
+					<CardContent className="p-6">
+						<p className="font-semibold">Failed to load table data.</p>
+						<p className="mt-1 text-sm text-muted-foreground">{formatUnknownError(error)}</p>
+						<Button
+							variant="destructive"
+							size="sm"
+							className="mt-3"
+							onClick={() => {
+								void refetch();
+							}}
+						>
+							Retry
+						</Button>
+					</CardContent>
+				</Card>
 			</div>
 		);
 	}
@@ -188,134 +206,146 @@ function TableDemo() {
 	const selectedCount = Object.keys(rowSelection).length;
 
 	return (
-		<div className="min-h-screen bg-gray-900 p-6 text-gray-200">
+		<div className="p-6">
 			<div className="mx-auto flex w-full max-w-7xl flex-col gap-4">
-				<div className="rounded-lg border border-gray-700 bg-gray-800 p-4">
-					<div className="flex flex-wrap items-center gap-3">
-						<input
-							type="text"
-							value={globalFilterInput}
-							onChange={(event) => {
-								setGlobalFilterInput(event.target.value);
-								setPagination((previous) => ({ ...previous, pageIndex: 0 }));
-							}}
-							className="w-full min-w-60 flex-1 rounded-lg border border-gray-700 bg-gray-900 p-3 text-white outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
-							placeholder="Search all columns..."
-						/>
-						<button
-							type="button"
-							onClick={() => {
-								setGlobalFilterInput("");
-								setPagination((previous) => ({ ...previous, pageIndex: 0 }));
-							}}
-							className="rounded-md bg-gray-700 px-3 py-2 text-sm hover:bg-gray-600"
-						>
-							Clear search
-						</button>
-					</div>
-
-					<div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-gray-300">
-						<div>{data.totalRows} rows total</div>
-						<div>{selectedCount} selected</div>
-						<div>{isFetching ? "Refreshing..." : "Up to date"}</div>
-					</div>
-
-					<details className="mt-3">
-						<summary className="cursor-pointer text-sm text-gray-300">Columns</summary>
-						<div className="mt-2 flex flex-wrap gap-3 rounded-md border border-gray-700 bg-gray-900 p-3">
-							{table
-								.getAllLeafColumns()
-								.filter((column) => column.getCanHide())
-								.map((column) => (
-									<label key={column.id} className="inline-flex items-center gap-2 text-sm">
-										<input
-											type="checkbox"
-											checked={column.getIsVisible()}
-											onChange={column.getToggleVisibilityHandler()}
-											className="h-4 w-4"
-										/>
-										<span>{getColumnLabel(column.id)}</span>
-									</label>
-								))}
+				<Card>
+					<CardContent className="space-y-3 pt-6">
+						<div className="flex flex-wrap items-center gap-3">
+							<Input
+								value={globalFilterInput}
+								onChange={(event) => {
+									setGlobalFilterInput(event.target.value);
+									setPagination((previous) => ({ ...previous, pageIndex: 0 }));
+								}}
+								className="min-w-60 flex-1"
+								placeholder="Search all columns..."
+							/>
+							<Button
+								variant="outline"
+								onClick={() => {
+									setGlobalFilterInput("");
+									setPagination((previous) => ({ ...previous, pageIndex: 0 }));
+								}}
+							>
+								Clear search
+							</Button>
 						</div>
-					</details>
-				</div>
+
+						<div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+							<span>{data.totalRows} rows total</span>
+							<span>{selectedCount} selected</span>
+							<span>{isFetching ? "Refreshing..." : "Up to date"}</span>
+						</div>
+
+						<details>
+							<summary className="cursor-pointer text-sm text-muted-foreground">
+								Columns
+							</summary>
+							<div className="mt-2 flex flex-wrap gap-3 rounded-md border p-3">
+								{table
+									.getAllLeafColumns()
+									.filter((column) => column.getCanHide())
+									.map((column) => (
+										<label
+											key={column.id}
+											className="inline-flex items-center gap-2 text-sm"
+										>
+											<Checkbox
+												checked={column.getIsVisible()}
+												onCheckedChange={() =>
+													column.toggleVisibility(!column.getIsVisible())
+												}
+											/>
+											<span>{getColumnLabel(column.id)}</span>
+										</label>
+									))}
+							</div>
+						</details>
+					</CardContent>
+				</Card>
 
 				{isError ? (
-					<p className="rounded-md border border-rose-700 bg-rose-950/30 px-3 py-2 text-sm text-rose-200">
-						Refresh failed: {formatUnknownError(error)}
-					</p>
+					<Card className="border-destructive">
+						<CardContent className="p-3 text-sm text-destructive">
+							Refresh failed: {formatUnknownError(error)}
+						</CardContent>
+					</Card>
 				) : null}
 
-				<div className="overflow-x-auto rounded-lg border border-gray-700">
-					<table className="w-full text-sm text-gray-200">
-						<thead className="bg-gray-800 text-gray-100">
-							{table.getHeaderGroups().map((headerGroup) => (
-								<tr key={headerGroup.id}>
-									{headerGroup.headers.map((header) => {
-										const isSorted = header.column.getIsSorted();
-										const sortIndicator =
-											isSorted === "asc" ? " ▲" : isSorted === "desc" ? " ▼" : "";
+				<Table className="text-sm">
+					<TableHeader>
+						{table.getHeaderGroups().map((headerGroup) => (
+							<TableRow key={headerGroup.id}>
+								{headerGroup.headers.map((header) => {
+									const isSorted = header.column.getIsSorted();
+									const sortIndicator =
+										isSorted === "asc" ? " ▲" : isSorted === "desc" ? " ▼" : "";
 
-										return (
-											<th key={header.id} className="px-4 py-3 text-left">
-												{header.isPlaceholder ? null : header.column.getCanSort() ? (
-													<button
-														type="button"
-														onClick={header.column.getToggleSortingHandler()}
-														className="cursor-pointer font-semibold transition-colors select-none hover:text-blue-400"
-													>
-														{flexRender(header.column.columnDef.header, header.getContext())}
-														{sortIndicator}
-													</button>
-												) : (
-													flexRender(header.column.columnDef.header, header.getContext())
-												)}
-											</th>
-										);
-									})}
-								</tr>
-							))}
-						</thead>
-						<tbody className="divide-y divide-gray-700">
-							{table.getRowModel().rows.length === 0 ? (
-								<tr>
-									<td
-										className="px-4 py-8 text-center text-gray-400"
-										colSpan={table.getAllLeafColumns().length}
-									>
-										No results for the current filter.
-									</td>
-								</tr>
-							) : (
-								table.getRowModel().rows.map((row) => (
-									<tr
-										key={row.id}
-										className={`transition-colors hover:bg-gray-800 ${row.getIsSelected() ? "bg-blue-950/20" : ""}`}
-									>
-										{row.getVisibleCells().map((cell) => (
-											<td key={cell.id} className="px-4 py-3 align-middle">
-												{flexRender(cell.column.columnDef.cell, cell.getContext())}
-											</td>
-										))}
-									</tr>
-								))
-							)}
-						</tbody>
-					</table>
-				</div>
+									return (
+										<TableHead key={header.id}>
+											{header.isPlaceholder ? null : header.column.getCanSort() ? (
+												<button
+													type="button"
+													onClick={header.column.getToggleSortingHandler()}
+													className="cursor-pointer font-semibold transition-colors select-none hover:text-primary"
+												>
+													{flexRender(
+														header.column.columnDef.header,
+														header.getContext(),
+													)}
+													{sortIndicator}
+												</button>
+											) : (
+												flexRender(
+													header.column.columnDef.header,
+													header.getContext(),
+												)
+											)}
+										</TableHead>
+									);
+								})}
+							</TableRow>
+						))}
+					</TableHeader>
+					<TableBody>
+						{table.getRowModel().rows.length === 0 ? (
+							<TableRow>
+								<TableCell
+									className="text-center text-muted-foreground"
+									colSpan={table.getAllLeafColumns().length}
+								>
+									No results for the current filter.
+								</TableCell>
+							</TableRow>
+						) : (
+							table.getRowModel().rows.map((row) => (
+								<TableRow
+									key={row.id}
+									data-state={row.getIsSelected() ? "selected" : undefined}
+								>
+									{row.getVisibleCells().map((cell) => (
+										<TableCell key={cell.id}>
+											{flexRender(cell.column.columnDef.cell, cell.getContext())}
+										</TableCell>
+									))}
+								</TableRow>
+							))
+						)}
+					</TableBody>
+				</Table>
 
 				<div className="flex flex-wrap items-center gap-2">
-					<button
-						type="button"
+					<Button
+						variant="outline"
+						size="sm"
 						onClick={() => setPagination((previous) => ({ ...previous, pageIndex: 0 }))}
 						disabled={pageIndexForView === 0}
-						className="rounded-md bg-gray-800 px-3 py-1 hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						{"<<"}
-					</button>
-					<button
-						type="button"
+					</Button>
+					<Button
+						variant="outline"
+						size="sm"
 						onClick={() => {
 							setPagination((previous) => ({
 								...previous,
@@ -323,12 +353,12 @@ function TableDemo() {
 							}));
 						}}
 						disabled={pageIndexForView === 0}
-						className="rounded-md bg-gray-800 px-3 py-1 hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						{"<"}
-					</button>
-					<button
-						type="button"
+					</Button>
+					<Button
+						variant="outline"
+						size="sm"
 						onClick={() => {
 							setPagination((previous) => ({
 								...previous,
@@ -336,28 +366,31 @@ function TableDemo() {
 							}));
 						}}
 						disabled={pageIndexForView >= pageCount - 1}
-						className="rounded-md bg-gray-800 px-3 py-1 hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						{">"}
-					</button>
-					<button
-						type="button"
+					</Button>
+					<Button
+						variant="outline"
+						size="sm"
 						onClick={() =>
-							setPagination((previous) => ({ ...previous, pageIndex: Math.max(0, pageCount - 1) }))
+							setPagination((previous) => ({
+								...previous,
+								pageIndex: Math.max(0, pageCount - 1),
+							}))
 						}
 						disabled={pageIndexForView >= pageCount - 1}
-						className="rounded-md bg-gray-800 px-3 py-1 hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						{">>"}
-					</button>
+					</Button>
 
-					<span className="ml-2 text-sm">
-						Page <strong>{pageIndexForView + 1}</strong> of <strong>{pageCount}</strong>
+					<span className="ml-2 text-sm text-muted-foreground">
+						Page <strong className="text-foreground">{pageIndexForView + 1}</strong> of{" "}
+						<strong className="text-foreground">{pageCount}</strong>
 					</span>
 
-					<span className="text-sm">
-						| Go to page:
-						<input
+					<span className="text-sm text-muted-foreground">
+						| Go to:
+						<Input
 							type="number"
 							min={1}
 							max={pageCount}
@@ -370,7 +403,7 @@ function TableDemo() {
 									pageIndex: Math.min(pageCount - 1, Math.max(0, nextPage)),
 								}));
 							}}
-							className="ml-2 w-16 rounded-md border border-gray-700 bg-gray-800 px-2 py-1 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
+							className="ml-2 inline-block w-16"
 						/>
 					</span>
 
@@ -383,7 +416,7 @@ function TableDemo() {
 								pageIndex: 0,
 							}));
 						}}
-						className="rounded-md border border-gray-700 bg-gray-800 px-2 py-1 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500"
+						className="flex h-8 rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 					>
 						{PAGE_SIZE_OPTIONS.map((option) => (
 							<option key={option} value={option}>
@@ -394,66 +427,71 @@ function TableDemo() {
 				</div>
 
 				<div className="flex flex-wrap gap-2">
-					<button
-						type="button"
+					<Button
 						onClick={() => {
 							void queryClient.invalidateQueries({ queryKey: pageQuery.queryKey });
 						}}
-						className="rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
 					>
 						Refetch from Convex
-					</button>
-					<button
-						type="button"
+					</Button>
+					<Button
+						variant="outline"
 						onClick={() => setRowSelection({})}
 						disabled={selectedCount === 0}
-						className="rounded-md bg-gray-700 px-4 py-2 transition-colors hover:bg-gray-600 disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						Clear selection
-					</button>
+					</Button>
 				</div>
 
-				<pre className="overflow-auto rounded-lg bg-gray-800 p-4 text-gray-300">
-					{JSON.stringify(
-						{
-							globalFilterInput,
-							debouncedFilter,
-							sortKey,
-							sortDirection,
-							pageIndex: pageIndexForView,
-							pageSize: pagination.pageSize,
-							prefetchedNextPage: pageIndexForView + 1 < pageCount,
-							totalRows: data.totalRows,
-							selectedCount,
-						},
-						null,
-						2,
-					)}
-				</pre>
+				<Card>
+					<CardContent className="p-4">
+						<pre className="overflow-auto text-xs text-muted-foreground">
+							{JSON.stringify(
+								{
+									globalFilterInput,
+									debouncedFilter,
+									sortKey,
+									sortDirection,
+									pageIndex: pageIndexForView,
+									pageSize: pagination.pageSize,
+									prefetchedNextPage: pageIndexForView + 1 < pageCount,
+									totalRows: data.totalRows,
+									selectedCount,
+								},
+								null,
+								2,
+							)}
+						</pre>
+					</CardContent>
+				</Card>
 			</div>
 		</div>
 	);
 }
 
-const TABLE_COLUMNS: ColumnDef<TableRow>[] = [
+const TABLE_COLUMNS: ColumnDef<TableRow_>[] = [
 	{
 		id: "select",
 		header: ({ table }) => (
 			<div className="flex items-center justify-center">
-				<IndeterminateCheckbox
-					checked={table.getIsAllPageRowsSelected()}
-					indeterminate={table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()}
-					onChange={table.getToggleAllPageRowsSelectedHandler()}
+				<Checkbox
+					checked={
+						table.getIsAllPageRowsSelected()
+							? true
+							: table.getIsSomePageRowsSelected()
+								? "mixed"
+								: false
+					}
+					onCheckedChange={() => table.toggleAllPageRowsSelected()}
 					aria-label="Select all rows"
 				/>
 			</div>
 		),
 		cell: ({ row }) => (
 			<div className="flex items-center justify-center">
-				<IndeterminateCheckbox
+				<Checkbox
 					checked={row.getIsSelected()}
-					indeterminate={row.getIsSomeSelected() && !row.getIsSelected()}
-					onChange={row.getToggleSelectedHandler()}
+					onCheckedChange={() => row.toggleSelected()}
 					aria-label={`Select row ${row.original.id}`}
 				/>
 			</div>
@@ -492,10 +530,8 @@ const TABLE_COLUMNS: ColumnDef<TableRow>[] = [
 			const value = row.original.progress;
 			return (
 				<div className="flex min-w-28 items-center gap-2">
-					<div className="h-2 flex-1 rounded bg-gray-700">
-						<div className="h-2 rounded bg-blue-500" style={{ width: `${value}%` }} />
-					</div>
-					<span>{value}%</span>
+					<Progress value={value} className="flex-1" />
+					<span className="text-xs text-muted-foreground">{value}%</span>
 				</div>
 			);
 		},
@@ -505,14 +541,14 @@ const TABLE_COLUMNS: ColumnDef<TableRow>[] = [
 		header: "Status",
 		cell: ({ row }) => {
 			const value = row.original.status;
-			const colorClass =
+			const variant =
 				value === "single"
-					? "text-emerald-300"
+					? "default"
 					: value === "relationship"
-						? "text-blue-300"
-						: "text-amber-300";
+						? "secondary"
+						: "outline";
 
-			return <span className={colorClass}>{value}</span>;
+			return <Badge variant={variant}>{value}</Badge>;
 		},
 	},
 ];
@@ -549,27 +585,6 @@ function isSortKey(value: string): value is SortKey {
 function formatUnknownError(error: unknown) {
 	if (error instanceof Error) return error.message;
 	return "Unknown error";
-}
-
-function IndeterminateCheckbox({
-	indeterminate = false,
-	...props
-}: { indeterminate?: boolean } & InputHTMLAttributes<HTMLInputElement>) {
-	const ref = useRef<HTMLInputElement>(null);
-
-	useEffect(() => {
-		if (!ref.current) return;
-		ref.current.indeterminate = indeterminate;
-	}, [indeterminate]);
-
-	return (
-		<input
-			ref={ref}
-			type="checkbox"
-			className="h-4 w-4 rounded border-gray-600 bg-gray-800"
-			{...props}
-		/>
-	);
 }
 
 function getColumnLabel(columnId: string) {

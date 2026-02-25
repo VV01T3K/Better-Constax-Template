@@ -6,6 +6,11 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Check, Circle, Loader2, Plus, Trash2, Zap } from "lucide-react";
 import { useState } from "react";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { useTodosOptimisticTQ } from "@/hooks/useTodosOptimisticTQ";
 
 export const Route = createFileRoute("/_authenticated/demo/tanstack-optimistic")({
@@ -41,9 +46,12 @@ function GlobalPendingIndicator() {
 	if (pendingMutations.length === 0) return null;
 
 	return (
-		<div className="fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-lg">
-			<Loader2 size={16} className="animate-spin" />
-			{pendingMutations.length} {pendingMutations.length === 1 ? "change" : "changes"} syncing...
+		<div className="fixed right-4 bottom-4 z-50">
+			<Badge className="flex items-center gap-2 px-4 py-2">
+				<Loader2 className="size-4 animate-spin" />
+				{pendingMutations.length} {pendingMutations.length === 1 ? "change" : "changes"}{" "}
+				syncing...
+			</Badge>
 		</div>
 	);
 }
@@ -78,49 +86,38 @@ function TanStackOptimisticTodos() {
 	const totalCount = todos.length;
 
 	return (
-		<div
-			className="flex min-h-screen items-center justify-center p-4"
-			style={{
-				background:
-					"linear-gradient(135deg, #4f46e5 0%, #7c3aed 25%, #a855f7 50%, #c084fc 75%, #e9d5ff 100%)",
-			}}
-		>
-			<div className="w-full max-w-2xl">
-				<div className="mb-6 rounded-2xl border border-purple-200/50 bg-white p-8 shadow-2xl">
-					<div className="text-center">
-						<h1 className="mb-2 text-4xl font-bold text-purple-800">
-							TanStack Query - Optimistic Todos
-						</h1>
-						<p className="text-lg text-purple-600">useMutationState for visual optimism</p>
-						{totalCount > 0 && (
-							<div className="mt-4 flex justify-center space-x-6 text-sm">
-								<span className="font-medium text-purple-700">{completedCount} completed</span>
-								<span className="text-gray-600">{totalCount - completedCount} remaining</span>
-								{pendingCount > 0 && (
-									<span className="animate-pulse font-medium text-purple-500">
-										{pendingCount} syncing...
-									</span>
-								)}
-							</div>
-						)}
-					</div>
-				</div>
+		<div className="mx-auto w-full max-w-2xl space-y-6 p-6">
+			<Card>
+				<CardHeader className="text-center">
+					<CardTitle className="text-3xl">TanStack Query - Optimistic Todos</CardTitle>
+					<CardDescription>useMutationState for visual optimism</CardDescription>
+					{totalCount > 0 && (
+						<div className="mt-2 flex justify-center gap-6 text-sm text-muted-foreground">
+							<span>{completedCount} completed</span>
+							<span>{totalCount - completedCount} remaining</span>
+							{pendingCount > 0 && (
+								<span className="animate-pulse text-primary">
+									{pendingCount} syncing...
+								</span>
+							)}
+						</div>
+					)}
+				</CardHeader>
+			</Card>
 
-				<div className="mb-6 flex items-start gap-3 rounded-xl border border-purple-300/60 bg-purple-50 p-4">
-					<Zap size={20} className="mt-0.5 shrink-0 text-purple-600" />
-					<div className="text-sm">
-						<p className="font-semibold text-purple-800">Zero cache manipulation</p>
-						<p className="text-purple-700">
-							Uses useMutationState to track pending mutations. No onMutate/onError callbacks
-							needed.
-						</p>
-					</div>
-				</div>
+			<Alert>
+				<Zap className="size-4" />
+				<AlertTitle>Zero cache manipulation</AlertTitle>
+				<AlertDescription>
+					Uses useMutationState to track pending mutations. No onMutate/onError callbacks
+					needed.
+				</AlertDescription>
+			</Alert>
 
-				<div className="mb-6 rounded-2xl border border-purple-200/50 bg-white p-6 shadow-xl">
+			<Card>
+				<CardContent className="pt-6">
 					<div className="flex gap-3">
-						<input
-							type="text"
+						<Input
 							value={newTodo}
 							onChange={(e) => setNewTodo(e.target.value)}
 							onKeyDown={(e) => {
@@ -129,88 +126,83 @@ function TanStackOptimisticTodos() {
 								}
 							}}
 							placeholder="What needs to be done?"
-							className="flex-1 rounded-xl border-2 border-purple-200 bg-white/80 px-4 py-3 text-gray-800 placeholder-gray-500 transition-colors focus:border-purple-400 focus:outline-none"
 						/>
-						<button
-							type="button"
-							onClick={handleAddTodo}
-							disabled={!newTodo.trim()}
-							className="flex items-center gap-2 rounded-xl bg-linear-to-r from-purple-500 to-indigo-500 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:from-purple-600 hover:to-indigo-600 hover:shadow-xl disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400"
-						>
-							<Plus size={20} />
+						<Button onClick={handleAddTodo} disabled={!newTodo.trim()}>
+							<Plus className="size-4" />
 							Add
-						</button>
+						</Button>
 					</div>
-					{validationError && <p className="mt-2 text-sm text-red-600">{validationError}</p>}
-				</div>
+					{validationError && (
+						<p className="mt-2 text-sm text-destructive">{validationError}</p>
+					)}
+				</CardContent>
+			</Card>
 
-				<div className="overflow-hidden rounded-2xl border border-purple-200/50 bg-white shadow-xl">
+			<Card>
+				<CardContent className="p-0">
 					{todos.length === 0 ? (
 						<div className="p-12 text-center">
-							<Circle size={48} className="mx-auto mb-4 text-purple-300" />
-							<h3 className="mb-2 text-xl font-semibold text-purple-800">No todos yet</h3>
-							<p className="text-purple-600">Add your first todo above to get started!</p>
+							<Circle className="mx-auto mb-4 size-12 text-muted-foreground/40" />
+							<h3 className="mb-2 text-xl font-semibold">No todos yet</h3>
+							<p className="text-muted-foreground">
+								Add your first todo above to get started!
+							</p>
 						</div>
 					) : (
-						<div className="divide-y divide-purple-100">
-							{todos.map((todo, index) => (
+						<div className="divide-y divide-border">
+							{todos.map((todo) => (
 								<div
 									key={todo.id}
-									className={`flex items-center gap-4 p-4 transition-all duration-200 hover:bg-purple-50/50 ${
-										todo.completed ? "opacity-75" : ""
-									} ${todo.status === "pending" ? "opacity-60" : ""}`}
-									style={{
-										animationDelay: `${index * 50}ms`,
-									}}
+									className={`flex items-center gap-4 p-4 transition-all hover:bg-muted/50 ${
+										todo.completed ? "opacity-60" : ""
+									} ${todo.status === "pending" ? "opacity-40" : ""}`}
 								>
 									<button
 										type="button"
 										onClick={() => handleToggleTodo(todo.id)}
 										disabled={todo.status === "pending"}
-										className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 ${
+										className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
 											todo.completed
-												? "border-purple-500 bg-purple-500 text-white"
-												: "border-purple-300 text-transparent hover:border-purple-400 hover:text-purple-400"
+												? "border-primary bg-primary text-primary-foreground"
+												: "border-muted-foreground/40 text-transparent hover:border-primary hover:text-primary"
 										} ${todo.status === "pending" ? "cursor-not-allowed" : ""}`}
 									>
-										<Check size={14} />
+										<Check className="size-3.5" />
 									</button>
-
 									<span
-										className={`flex-1 text-lg transition-all duration-200 ${
-											todo.completed ? "text-gray-500 line-through" : "text-gray-800"
+										className={`flex-1 text-base ${
+											todo.completed
+												? "text-muted-foreground line-through"
+												: "text-foreground"
 										}`}
 									>
 										{todo.text}
 									</span>
-
 									{todo.status === "pending" && (
-										<div className="flex items-center gap-1 text-xs font-medium text-purple-500">
-											<Loader2 size={12} className="animate-spin" />
-											<span>Syncing...</span>
-										</div>
+										<Badge variant="secondary" className="gap-1 text-xs">
+											<Loader2 className="size-3 animate-spin" />
+											Syncing
+										</Badge>
 									)}
-
-									<button
-										type="button"
+									<Button
+										variant="ghost"
+										size="icon"
 										onClick={() => handleRemoveTodo(todo.id)}
 										disabled={todo.status === "pending"}
-										className="shrink-0 rounded-lg p-2 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+										className="text-destructive hover:bg-destructive/10 hover:text-destructive"
 									>
-										<Trash2 size={18} />
-									</button>
+										<Trash2 className="size-4" />
+									</Button>
 								</div>
 							))}
 						</div>
 					)}
-				</div>
+				</CardContent>
+			</Card>
 
-				<div className="mt-6 text-center">
-					<p className="text-sm text-purple-700/80">
-						Built with TanStack Query v5 &bull; useMutationState + Optimistic UI
-					</p>
-				</div>
-			</div>
+			<p className="text-center text-sm text-muted-foreground">
+				Built with TanStack Query v5 &bull; useMutationState + Optimistic UI
+			</p>
 
 			<GlobalPendingIndicator />
 		</div>
