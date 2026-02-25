@@ -151,8 +151,7 @@ export function SignupForm({
 										}}
 									>
 										{(field) => {
-											const invalid =
-												field.state.meta.isTouched && !field.state.meta.isValid;
+											const invalid = field.state.meta.isTouched && !field.state.meta.isValid;
 											return (
 												<Field data-invalid={invalid || undefined}>
 													<FieldLabel htmlFor="password">Password</FieldLabel>
@@ -165,9 +164,7 @@ export function SignupForm({
 														onBlur={field.handleBlur}
 														aria-invalid={invalid || undefined}
 													/>
-													{invalid && (
-														<FieldError>{field.state.meta.errors[0]}</FieldError>
-													)}
+													{invalid && <FieldError>{field.state.meta.errors[0]}</FieldError>}
 												</Field>
 											);
 										}}
@@ -184,13 +181,10 @@ export function SignupForm({
 										}}
 									>
 										{(field) => {
-											const invalid =
-												field.state.meta.isTouched && !field.state.meta.isValid;
+											const invalid = field.state.meta.isTouched && !field.state.meta.isValid;
 											return (
 												<Field data-invalid={invalid || undefined}>
-													<FieldLabel htmlFor="confirm-password">
-														Confirm Password
-													</FieldLabel>
+													<FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
 													<Input
 														id="confirm-password"
 														type="password"
@@ -200,9 +194,7 @@ export function SignupForm({
 														onBlur={field.handleBlur}
 														aria-invalid={invalid || undefined}
 													/>
-													{invalid && (
-														<FieldError>{field.state.meta.errors[0]}</FieldError>
-													)}
+													{invalid && <FieldError>{field.state.meta.errors[0]}</FieldError>}
 												</Field>
 											);
 										}}
@@ -217,7 +209,10 @@ export function SignupForm({
 								</Button>
 								<FieldDescription className="text-center">
 									Already have an account?{" "}
-									<Link to="/auth/login" className="underline underline-offset-4 hover:text-primary">
+									<Link
+										to="/auth/login"
+										className="hover:text-primary underline underline-offset-4"
+									>
 										Sign in
 									</Link>
 								</FieldDescription>

@@ -37,13 +37,7 @@ export function TextField({
 	);
 }
 
-export function SubmitButton({
-	label,
-	loadingLabel,
-}: {
-	label: string;
-	loadingLabel?: string;
-}) {
+export function SubmitButton({ label, loadingLabel }: { label: string; loadingLabel?: string }) {
 	const form = useFormContext();
 	return (
 		<form.Subscribe selector={(state) => state.isSubmitting}>

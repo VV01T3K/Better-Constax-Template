@@ -23,7 +23,6 @@ export const Route = createFileRoute("/_authenticated/admin/permissions")({
 		);
 	},
 	component: AppPermissionsPage,
-	component: AppPermissionsPage,
 });
 
 function AppPermissionsPage() {

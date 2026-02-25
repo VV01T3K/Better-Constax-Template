@@ -144,10 +144,7 @@ export function LoginForm({
 										<Field data-invalid={invalid || undefined}>
 											<div className="flex items-center">
 												<FieldLabel htmlFor="password">Password</FieldLabel>
-												<a
-													href="#"
-													className="ml-auto text-sm underline-offset-4 hover:underline"
-												>
+												<a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
 													Forgot your password?
 												</a>
 											</div>
@@ -172,7 +169,10 @@ export function LoginForm({
 								</Button>
 								<FieldDescription className="text-center">
 									Don&apos;t have an account?{" "}
-									<Link to="/auth/signup" className="underline underline-offset-4 hover:text-primary">
+									<Link
+										to="/auth/signup"
+										className="hover:text-primary underline underline-offset-4"
+									>
 										Sign up
 									</Link>
 								</FieldDescription>
