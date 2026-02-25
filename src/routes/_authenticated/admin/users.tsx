@@ -10,14 +10,13 @@ import {
 	type AppRole,
 } from "@convex/schemas";
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter, redirect } from "@tanstack/react-router";
 import { flexRender, getCoreRowModel, type ColumnDef, useReactTable } from "@tanstack/react-table";
 import { Loader2, ShieldCheck, UserCog } from "lucide-react";
 import { useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
 import { waitForImpersonationState } from "@/lib/impersonation-client";
-import { protectedRouteLoader } from "@/lib/route-guard-kit";
 
 type AdminUserRow = {
 	id: AuthUserId;
@@ -28,17 +27,20 @@ type AdminUserRow = {
 	createdAt: Date | null;
 };
 
-export const Route = createFileRoute("/admin/users")({
-	loader: async ({ context, location }) => {
-		await protectedRouteLoader({
-			queryClient: context.queryClient,
-			permission: "admin.users.access",
-			redirectHref: location.href,
-			prefetch: () =>
-				context.queryClient.ensureQueryData(
-					convexQuery(api.functions.authorization.getMyAccess, {}),
-				),
+export const Route = createFileRoute("/_authenticated/admin/users")({
+	beforeLoad: async ({ context }) => {
+		const allowed = await context.queryClient.fetchQuery({
+			...convexQuery(api.functions.authorization.hasPermission, {
+				permission: "admin.users.access",
+			}),
+			staleTime: 0,
 		});
+		if (!allowed) throw redirect({ to: "/forbidden" });
+	},
+	loader: async ({ context }) => {
+		await context.queryClient.ensureQueryData(
+			convexQuery(api.functions.authorization.getMyAccess, {}),
+		);
 	},
 	component: AdminUsersPage,
 });

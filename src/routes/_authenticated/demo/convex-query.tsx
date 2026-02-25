@@ -3,21 +3,22 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { createTodoSchema } from "@convex/schemas";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Check, Circle, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-import { protectedRouteLoader } from "@/lib/route-guard-kit";
-
-export const Route = createFileRoute("/demo/convex-query")({
-	loader: async ({ context, location }) => {
-		await protectedRouteLoader({
-			queryClient: context.queryClient,
-			permission: "demo.todos.access",
-			redirectHref: location.href,
-			prefetch: () =>
-				context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {})),
+export const Route = createFileRoute("/_authenticated/demo/convex-query")({
+	beforeLoad: async ({ context }) => {
+		const allowed = await context.queryClient.fetchQuery({
+			...convexQuery(api.functions.authorization.hasPermission, {
+				permission: "demo.todos.access",
+			}),
+			staleTime: 0,
 		});
+		if (!allowed) throw redirect({ to: "/forbidden" });
+	},
+	loader: async ({ context }) => {
+		await context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {}));
 	},
 	component: ConvexQueryTodos,
 });

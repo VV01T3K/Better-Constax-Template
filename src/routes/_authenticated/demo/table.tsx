@@ -1,7 +1,7 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import {
 	flexRender,
 	functionalUpdate,
@@ -14,8 +14,6 @@ import {
 	type VisibilityState,
 } from "@tanstack/react-table";
 import { type InputHTMLAttributes, useEffect, useRef, useState } from "react";
-
-import { protectedRouteLoader } from "@/lib/route-guard-kit";
 
 const DEFAULT_PAGE_SIZE = 20;
 const PAGE_SIZE_OPTIONS = [10, 20, 30, 40, 50] as const;
@@ -50,23 +48,26 @@ type TableRow = {
 const DEFAULT_SORTING: SortingState = [{ id: "id", desc: false }];
 const DEFAULT_PAGINATION: PaginationState = { pageIndex: 0, pageSize: DEFAULT_PAGE_SIZE };
 
-export const Route = createFileRoute("/demo/table")({
-	loader: async ({ context, location }) => {
-		await protectedRouteLoader({
-			queryClient: context.queryClient,
-			permission: "demo.table.access",
-			redirectHref: location.href,
-			prefetch: () =>
-				context.queryClient.ensureQueryData(
-					convexQuery(api.functions.tableDemo.page, {
-						filter: "",
-						sortKey: "id",
-						sortDirection: "asc",
-						pageIndex: DEFAULT_PAGINATION.pageIndex,
-						pageSize: DEFAULT_PAGINATION.pageSize,
-					}),
-				),
+export const Route = createFileRoute("/_authenticated/demo/table")({
+	beforeLoad: async ({ context }) => {
+		const allowed = await context.queryClient.fetchQuery({
+			...convexQuery(api.functions.authorization.hasPermission, {
+				permission: "demo.table.access",
+			}),
+			staleTime: 0,
 		});
+		if (!allowed) throw redirect({ to: "/forbidden" });
+	},
+	loader: async ({ context }) => {
+		await context.queryClient.ensureQueryData(
+			convexQuery(api.functions.tableDemo.page, {
+				filter: "",
+				sortKey: "id",
+				sortDirection: "asc",
+				pageIndex: DEFAULT_PAGINATION.pageIndex,
+				pageSize: DEFAULT_PAGINATION.pageSize,
+			}),
+		);
 	},
 	component: TableDemo,
 });
