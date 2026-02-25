@@ -22,7 +22,7 @@ export const Route = createFileRoute("/_authenticated/admin/permissions")({
 			convexQuery(api.functions.authorization.getCatalogAndMatrix, { scope: "app" }),
 		);
 	},
-	},
+	component: AppPermissionsPage,
 	component: AppPermissionsPage,
 });
 
