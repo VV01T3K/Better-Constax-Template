@@ -3,7 +3,6 @@ import { api } from "@convex/_generated/api";
 import { parseAuthUserId, type AppPermission } from "@convex/schemas";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
-import { useConvexAuth } from "convex/react";
 import {
 	ClipboardType,
 	Database,
@@ -23,7 +22,7 @@ import {
 	Zap,
 	type LucideIcon,
 } from "lucide-react";
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useMemo, useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
 import { waitForImpersonationState } from "@/lib/impersonation-client";
@@ -80,8 +79,6 @@ type NavTarget =
 	| (typeof demoLinks)[number]["to"]
 	| (typeof adminLinks)[number]["to"];
 
-const noopSubscribe = () => () => {};
-
 function hasAccess(
 	permissionSet: ReadonlySet<AppPermission>,
 	permission: (typeof demoLinks)[number]["permission"] | (typeof adminLinks)[number]["permission"],
@@ -90,26 +87,28 @@ function hasAccess(
 }
 
 export default function Header() {
-	const currentUserQuery = convexQuery(api.auth.getCurrentUser, {});
 	const accessQuery = convexQuery(api.functions.authorization.getMyAccess, {});
-	const { data: currentUser } = useSuspenseQuery(currentUserQuery);
 	const { data: myAccess } = useSuspenseQuery(accessQuery);
+	// SSR-prefetched user — used as fallback while Better Auth session is loading
+	const { data: ssrUser } = useSuspenseQuery(convexQuery(api.auth.getCurrentUser, {}));
 	const {
 		data: sessionData,
 		isPending: isSessionPending,
 		refetch: refetchSession,
 	} = authClient.useSession();
-	const { isLoading: isAuthLoading } = useConvexAuth();
+
+	// Use sessionData as primary source of truth. While it's still pending
+	// (initial hydration), fall back to the SSR-prefetched Convex user so
+	// logged-in users see their name immediately without a flash.
+	const sessionUser = sessionData?.user ?? null;
+	// While session is pending (hydration), fall back to SSR-prefetched user
+	const isLoggedIn = sessionUser ?? (isSessionPending ? ssrUser : null);
+	const displayName =
+		sessionUser?.name || sessionUser?.email || ssrUser?.name || ssrUser?.email || "";
 	const [isOpen, setIsOpen] = useState(false);
 	const [impersonationError, setImpersonationError] = useState<string | null>(null);
-	const isHydrated = useSyncExternalStore(
-		noopSubscribe,
-		() => true,
-		() => false,
-	);
 	const queryClient = useQueryClient();
 	const router = useRouter();
-	const showAuthPlaceholder = !isHydrated || isAuthLoading || isSessionPending;
 
 	const permissionSet = useMemo(() => {
 		return new Set<AppPermission>(myAccess?.permissions ?? []);
@@ -228,13 +227,11 @@ export default function Header() {
 				</div>
 
 				<div className="flex items-center gap-3">
-					{showAuthPlaceholder ? (
-						<div className="h-8 w-24 animate-pulse rounded-lg bg-gray-700" aria-hidden="true" />
-					) : currentUser ? (
+					{isLoggedIn ? (
 						<>
 							<span className="flex items-center gap-2 text-sm text-gray-300">
 								<User size={16} />
-								{currentUser.name || currentUser.email || currentUser.subject}
+								{displayName}
 							</span>
 							<button
 								onClick={() => {
@@ -324,9 +321,7 @@ export default function Header() {
 					) : null}
 
 					<div className="mt-2 border-t border-gray-700 pt-2">
-						{showAuthPlaceholder ? (
-							<div className="mb-2 h-12 animate-pulse rounded-lg bg-gray-800" aria-hidden="true" />
-						) : currentUser ? (
+						{isLoggedIn ? (
 							<button
 								type="button"
 								onClick={() => {

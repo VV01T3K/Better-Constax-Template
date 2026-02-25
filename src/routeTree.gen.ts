@@ -11,19 +11,20 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ShadcnRouteImport } from './routes/shadcn'
 import { Route as ForbiddenRouteImport } from './routes/forbidden'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DemoTanstackOptimisticRouteImport } from './routes/demo/tanstack-optimistic'
-import { Route as DemoTableRouteImport } from './routes/demo/table'
-import { Route as DemoMassiveDataRouteImport } from './routes/demo/massive-data'
-import { Route as DemoFileUploadRouteImport } from './routes/demo/file-upload'
-import { Route as DemoConvexQueryRouteImport } from './routes/demo/convex-query'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
-import { Route as AdminUsersRouteImport } from './routes/admin/users'
-import { Route as AdminPermissionsRouteImport } from './routes/admin/permissions'
-import { Route as DemoFormAddressRouteImport } from './routes/demo/form.address'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as AdminPermissionsAdminRouteImport } from './routes/admin/permissions.admin'
+import { Route as AuthenticatedDemoTanstackOptimisticRouteImport } from './routes/_authenticated/demo/tanstack-optimistic'
+import { Route as AuthenticatedDemoTableRouteImport } from './routes/_authenticated/demo/table'
+import { Route as AuthenticatedDemoMassiveDataRouteImport } from './routes/_authenticated/demo/massive-data'
+import { Route as AuthenticatedDemoFileUploadRouteImport } from './routes/_authenticated/demo/file-upload'
+import { Route as AuthenticatedDemoConvexQueryRouteImport } from './routes/_authenticated/demo/convex-query'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
+import { Route as AuthenticatedAdminPermissionsRouteImport } from './routes/_authenticated/admin/permissions'
+import { Route as AuthenticatedDemoFormAddressRouteImport } from './routes/_authenticated/demo/form.address'
+import { Route as AuthenticatedAdminPermissionsAdminRouteImport } from './routes/_authenticated/admin/permissions.admin'
 
 const ShadcnRoute = ShadcnRouteImport.update({
   id: '/shadcn',
@@ -35,34 +36,13 @@ const ForbiddenRoute = ForbiddenRouteImport.update({
   path: '/forbidden',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoTanstackOptimisticRoute = DemoTanstackOptimisticRouteImport.update({
-  id: '/demo/tanstack-optimistic',
-  path: '/demo/tanstack-optimistic',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoTableRoute = DemoTableRouteImport.update({
-  id: '/demo/table',
-  path: '/demo/table',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoMassiveDataRoute = DemoMassiveDataRouteImport.update({
-  id: '/demo/massive-data',
-  path: '/demo/massive-data',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoFileUploadRoute = DemoFileUploadRouteImport.update({
-  id: '/demo/file-upload',
-  path: '/demo/file-upload',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoConvexQueryRoute = DemoConvexQueryRouteImport.update({
-  id: '/demo/convex-query',
-  path: '/demo/convex-query',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSignupRoute = AuthSignupRouteImport.update({
@@ -75,83 +55,116 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/admin/users',
-  path: '/admin/users',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminPermissionsRoute = AdminPermissionsRouteImport.update({
-  id: '/admin/permissions',
-  path: '/admin/permissions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoFormAddressRoute = DemoFormAddressRouteImport.update({
-  id: '/demo/form/address',
-  path: '/demo/form/address',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminPermissionsAdminRoute = AdminPermissionsAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AdminPermissionsRoute,
+const AuthenticatedDemoTanstackOptimisticRoute =
+  AuthenticatedDemoTanstackOptimisticRouteImport.update({
+    id: '/demo/tanstack-optimistic',
+    path: '/demo/tanstack-optimistic',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedDemoTableRoute = AuthenticatedDemoTableRouteImport.update({
+  id: '/demo/table',
+  path: '/demo/table',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedDemoMassiveDataRoute =
+  AuthenticatedDemoMassiveDataRouteImport.update({
+    id: '/demo/massive-data',
+    path: '/demo/massive-data',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedDemoFileUploadRoute =
+  AuthenticatedDemoFileUploadRouteImport.update({
+    id: '/demo/file-upload',
+    path: '/demo/file-upload',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedDemoConvexQueryRoute =
+  AuthenticatedDemoConvexQueryRouteImport.update({
+    id: '/demo/convex-query',
+    path: '/demo/convex-query',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdminPermissionsRoute =
+  AuthenticatedAdminPermissionsRouteImport.update({
+    id: '/admin/permissions',
+    path: '/admin/permissions',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedDemoFormAddressRoute =
+  AuthenticatedDemoFormAddressRouteImport.update({
+    id: '/demo/form/address',
+    path: '/demo/form/address',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminPermissionsAdminRoute =
+  AuthenticatedAdminPermissionsAdminRouteImport.update({
+    id: '/admin',
+    path: '/admin',
+    getParentRoute: () => AuthenticatedAdminPermissionsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/forbidden': typeof ForbiddenRoute
   '/shadcn': typeof ShadcnRoute
-  '/admin/permissions': typeof AdminPermissionsRouteWithChildren
-  '/admin/users': typeof AdminUsersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/demo/convex-query': typeof DemoConvexQueryRoute
-  '/demo/file-upload': typeof DemoFileUploadRoute
-  '/demo/massive-data': typeof DemoMassiveDataRoute
-  '/demo/table': typeof DemoTableRoute
-  '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
-  '/admin/permissions/admin': typeof AdminPermissionsAdminRoute
+  '/admin/permissions': typeof AuthenticatedAdminPermissionsRouteWithChildren
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/demo/convex-query': typeof AuthenticatedDemoConvexQueryRoute
+  '/demo/file-upload': typeof AuthenticatedDemoFileUploadRoute
+  '/demo/massive-data': typeof AuthenticatedDemoMassiveDataRoute
+  '/demo/table': typeof AuthenticatedDemoTableRoute
+  '/demo/tanstack-optimistic': typeof AuthenticatedDemoTanstackOptimisticRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/demo/form/address': typeof DemoFormAddressRoute
+  '/admin/permissions/admin': typeof AuthenticatedAdminPermissionsAdminRoute
+  '/demo/form/address': typeof AuthenticatedDemoFormAddressRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/forbidden': typeof ForbiddenRoute
   '/shadcn': typeof ShadcnRoute
-  '/admin/permissions': typeof AdminPermissionsRouteWithChildren
-  '/admin/users': typeof AdminUsersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/demo/convex-query': typeof DemoConvexQueryRoute
-  '/demo/file-upload': typeof DemoFileUploadRoute
-  '/demo/massive-data': typeof DemoMassiveDataRoute
-  '/demo/table': typeof DemoTableRoute
-  '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
-  '/admin/permissions/admin': typeof AdminPermissionsAdminRoute
+  '/admin/permissions': typeof AuthenticatedAdminPermissionsRouteWithChildren
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/demo/convex-query': typeof AuthenticatedDemoConvexQueryRoute
+  '/demo/file-upload': typeof AuthenticatedDemoFileUploadRoute
+  '/demo/massive-data': typeof AuthenticatedDemoMassiveDataRoute
+  '/demo/table': typeof AuthenticatedDemoTableRoute
+  '/demo/tanstack-optimistic': typeof AuthenticatedDemoTanstackOptimisticRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/demo/form/address': typeof DemoFormAddressRoute
+  '/admin/permissions/admin': typeof AuthenticatedAdminPermissionsAdminRoute
+  '/demo/form/address': typeof AuthenticatedDemoFormAddressRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/forbidden': typeof ForbiddenRoute
   '/shadcn': typeof ShadcnRoute
-  '/admin/permissions': typeof AdminPermissionsRouteWithChildren
-  '/admin/users': typeof AdminUsersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/demo/convex-query': typeof DemoConvexQueryRoute
-  '/demo/file-upload': typeof DemoFileUploadRoute
-  '/demo/massive-data': typeof DemoMassiveDataRoute
-  '/demo/table': typeof DemoTableRoute
-  '/demo/tanstack-optimistic': typeof DemoTanstackOptimisticRoute
-  '/admin/permissions/admin': typeof AdminPermissionsAdminRoute
+  '/_authenticated/admin/permissions': typeof AuthenticatedAdminPermissionsRouteWithChildren
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/demo/convex-query': typeof AuthenticatedDemoConvexQueryRoute
+  '/_authenticated/demo/file-upload': typeof AuthenticatedDemoFileUploadRoute
+  '/_authenticated/demo/massive-data': typeof AuthenticatedDemoMassiveDataRoute
+  '/_authenticated/demo/table': typeof AuthenticatedDemoTableRoute
+  '/_authenticated/demo/tanstack-optimistic': typeof AuthenticatedDemoTanstackOptimisticRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/demo/form/address': typeof DemoFormAddressRoute
+  '/_authenticated/admin/permissions/admin': typeof AuthenticatedAdminPermissionsAdminRoute
+  '/_authenticated/demo/form/address': typeof AuthenticatedDemoFormAddressRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -159,69 +172,63 @@ export interface FileRouteTypes {
     | '/'
     | '/forbidden'
     | '/shadcn'
-    | '/admin/permissions'
-    | '/admin/users'
     | '/auth/login'
     | '/auth/signup'
+    | '/admin/permissions'
+    | '/admin/users'
     | '/demo/convex-query'
     | '/demo/file-upload'
     | '/demo/massive-data'
     | '/demo/table'
     | '/demo/tanstack-optimistic'
-    | '/admin/permissions/admin'
     | '/api/auth/$'
+    | '/admin/permissions/admin'
     | '/demo/form/address'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/forbidden'
     | '/shadcn'
-    | '/admin/permissions'
-    | '/admin/users'
     | '/auth/login'
     | '/auth/signup'
+    | '/admin/permissions'
+    | '/admin/users'
     | '/demo/convex-query'
     | '/demo/file-upload'
     | '/demo/massive-data'
     | '/demo/table'
     | '/demo/tanstack-optimistic'
-    | '/admin/permissions/admin'
     | '/api/auth/$'
+    | '/admin/permissions/admin'
     | '/demo/form/address'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/forbidden'
     | '/shadcn'
-    | '/admin/permissions'
-    | '/admin/users'
     | '/auth/login'
     | '/auth/signup'
-    | '/demo/convex-query'
-    | '/demo/file-upload'
-    | '/demo/massive-data'
-    | '/demo/table'
-    | '/demo/tanstack-optimistic'
-    | '/admin/permissions/admin'
+    | '/_authenticated/admin/permissions'
+    | '/_authenticated/admin/users'
+    | '/_authenticated/demo/convex-query'
+    | '/_authenticated/demo/file-upload'
+    | '/_authenticated/demo/massive-data'
+    | '/_authenticated/demo/table'
+    | '/_authenticated/demo/tanstack-optimistic'
     | '/api/auth/$'
-    | '/demo/form/address'
+    | '/_authenticated/admin/permissions/admin'
+    | '/_authenticated/demo/form/address'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   ForbiddenRoute: typeof ForbiddenRoute
   ShadcnRoute: typeof ShadcnRoute
-  AdminPermissionsRoute: typeof AdminPermissionsRouteWithChildren
-  AdminUsersRoute: typeof AdminUsersRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
-  DemoConvexQueryRoute: typeof DemoConvexQueryRoute
-  DemoFileUploadRoute: typeof DemoFileUploadRoute
-  DemoMassiveDataRoute: typeof DemoMassiveDataRoute
-  DemoTableRoute: typeof DemoTableRoute
-  DemoTanstackOptimisticRoute: typeof DemoTanstackOptimisticRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
-  DemoFormAddressRoute: typeof DemoFormAddressRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -240,46 +247,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForbiddenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/tanstack-optimistic': {
-      id: '/demo/tanstack-optimistic'
-      path: '/demo/tanstack-optimistic'
-      fullPath: '/demo/tanstack-optimistic'
-      preLoaderRoute: typeof DemoTanstackOptimisticRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/table': {
-      id: '/demo/table'
-      path: '/demo/table'
-      fullPath: '/demo/table'
-      preLoaderRoute: typeof DemoTableRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/massive-data': {
-      id: '/demo/massive-data'
-      path: '/demo/massive-data'
-      fullPath: '/demo/massive-data'
-      preLoaderRoute: typeof DemoMassiveDataRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/file-upload': {
-      id: '/demo/file-upload'
-      path: '/demo/file-upload'
-      fullPath: '/demo/file-upload'
-      preLoaderRoute: typeof DemoFileUploadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/convex-query': {
-      id: '/demo/convex-query'
-      path: '/demo/convex-query'
-      fullPath: '/demo/convex-query'
-      preLoaderRoute: typeof DemoConvexQueryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/signup': {
@@ -296,27 +275,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/users': {
-      id: '/admin/users'
-      path: '/admin/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/permissions': {
-      id: '/admin/permissions'
-      path: '/admin/permissions'
-      fullPath: '/admin/permissions'
-      preLoaderRoute: typeof AdminPermissionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/form/address': {
-      id: '/demo/form/address'
-      path: '/demo/form/address'
-      fullPath: '/demo/form/address'
-      preLoaderRoute: typeof DemoFormAddressRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -324,42 +282,123 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/permissions/admin': {
-      id: '/admin/permissions/admin'
+    '/_authenticated/demo/tanstack-optimistic': {
+      id: '/_authenticated/demo/tanstack-optimistic'
+      path: '/demo/tanstack-optimistic'
+      fullPath: '/demo/tanstack-optimistic'
+      preLoaderRoute: typeof AuthenticatedDemoTanstackOptimisticRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/demo/table': {
+      id: '/_authenticated/demo/table'
+      path: '/demo/table'
+      fullPath: '/demo/table'
+      preLoaderRoute: typeof AuthenticatedDemoTableRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/demo/massive-data': {
+      id: '/_authenticated/demo/massive-data'
+      path: '/demo/massive-data'
+      fullPath: '/demo/massive-data'
+      preLoaderRoute: typeof AuthenticatedDemoMassiveDataRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/demo/file-upload': {
+      id: '/_authenticated/demo/file-upload'
+      path: '/demo/file-upload'
+      fullPath: '/demo/file-upload'
+      preLoaderRoute: typeof AuthenticatedDemoFileUploadRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/demo/convex-query': {
+      id: '/_authenticated/demo/convex-query'
+      path: '/demo/convex-query'
+      fullPath: '/demo/convex-query'
+      preLoaderRoute: typeof AuthenticatedDemoConvexQueryRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/permissions': {
+      id: '/_authenticated/admin/permissions'
+      path: '/admin/permissions'
+      fullPath: '/admin/permissions'
+      preLoaderRoute: typeof AuthenticatedAdminPermissionsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/demo/form/address': {
+      id: '/_authenticated/demo/form/address'
+      path: '/demo/form/address'
+      fullPath: '/demo/form/address'
+      preLoaderRoute: typeof AuthenticatedDemoFormAddressRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/permissions/admin': {
+      id: '/_authenticated/admin/permissions/admin'
       path: '/admin'
       fullPath: '/admin/permissions/admin'
-      preLoaderRoute: typeof AdminPermissionsAdminRouteImport
-      parentRoute: typeof AdminPermissionsRoute
+      preLoaderRoute: typeof AuthenticatedAdminPermissionsAdminRouteImport
+      parentRoute: typeof AuthenticatedAdminPermissionsRoute
     }
   }
 }
 
-interface AdminPermissionsRouteChildren {
-  AdminPermissionsAdminRoute: typeof AdminPermissionsAdminRoute
+interface AuthenticatedAdminPermissionsRouteChildren {
+  AuthenticatedAdminPermissionsAdminRoute: typeof AuthenticatedAdminPermissionsAdminRoute
 }
 
-const AdminPermissionsRouteChildren: AdminPermissionsRouteChildren = {
-  AdminPermissionsAdminRoute: AdminPermissionsAdminRoute,
+const AuthenticatedAdminPermissionsRouteChildren: AuthenticatedAdminPermissionsRouteChildren =
+  {
+    AuthenticatedAdminPermissionsAdminRoute:
+      AuthenticatedAdminPermissionsAdminRoute,
+  }
+
+const AuthenticatedAdminPermissionsRouteWithChildren =
+  AuthenticatedAdminPermissionsRoute._addFileChildren(
+    AuthenticatedAdminPermissionsRouteChildren,
+  )
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedAdminPermissionsRoute: typeof AuthenticatedAdminPermissionsRouteWithChildren
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedDemoConvexQueryRoute: typeof AuthenticatedDemoConvexQueryRoute
+  AuthenticatedDemoFileUploadRoute: typeof AuthenticatedDemoFileUploadRoute
+  AuthenticatedDemoMassiveDataRoute: typeof AuthenticatedDemoMassiveDataRoute
+  AuthenticatedDemoTableRoute: typeof AuthenticatedDemoTableRoute
+  AuthenticatedDemoTanstackOptimisticRoute: typeof AuthenticatedDemoTanstackOptimisticRoute
+  AuthenticatedDemoFormAddressRoute: typeof AuthenticatedDemoFormAddressRoute
 }
 
-const AdminPermissionsRouteWithChildren =
-  AdminPermissionsRoute._addFileChildren(AdminPermissionsRouteChildren)
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminPermissionsRoute:
+    AuthenticatedAdminPermissionsRouteWithChildren,
+  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+  AuthenticatedDemoConvexQueryRoute: AuthenticatedDemoConvexQueryRoute,
+  AuthenticatedDemoFileUploadRoute: AuthenticatedDemoFileUploadRoute,
+  AuthenticatedDemoMassiveDataRoute: AuthenticatedDemoMassiveDataRoute,
+  AuthenticatedDemoTableRoute: AuthenticatedDemoTableRoute,
+  AuthenticatedDemoTanstackOptimisticRoute:
+    AuthenticatedDemoTanstackOptimisticRoute,
+  AuthenticatedDemoFormAddressRoute: AuthenticatedDemoFormAddressRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   ForbiddenRoute: ForbiddenRoute,
   ShadcnRoute: ShadcnRoute,
-  AdminPermissionsRoute: AdminPermissionsRouteWithChildren,
-  AdminUsersRoute: AdminUsersRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
-  DemoConvexQueryRoute: DemoConvexQueryRoute,
-  DemoFileUploadRoute: DemoFileUploadRoute,
-  DemoMassiveDataRoute: DemoMassiveDataRoute,
-  DemoTableRoute: DemoTableRoute,
-  DemoTanstackOptimisticRoute: DemoTanstackOptimisticRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
-  DemoFormAddressRoute: DemoFormAddressRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
