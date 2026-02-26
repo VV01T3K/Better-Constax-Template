@@ -4,10 +4,10 @@
 
 export const meta = {
 	todos: {
-		add: { type: "mutation" },
-		list: { type: "query" },
-		remove: { type: "mutation" },
-		toggle: { type: "mutation" },
+		add: { auth: "required", type: "mutation" },
+		list: { auth: "required", type: "query" },
+		remove: { auth: "required", type: "mutation" },
+		toggle: { auth: "required", type: "mutation" },
 	},
 	_http: {},
 } as const;

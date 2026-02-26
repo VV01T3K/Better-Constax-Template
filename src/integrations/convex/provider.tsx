@@ -1,18 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
-import {
-	ConvexProvider,
-	ConvexReactClient,
-	getConvexQueryClientSingleton,
-} from "better-convex/react";
+import { ConvexAuthProvider } from "better-convex/auth-client";
+import { ConvexReactClient, getConvexQueryClientSingleton } from "better-convex/react";
 
 import { env } from "../../env";
+import { authClient } from "./auth-client";
 import { CRPCProvider } from "./crpc";
 
-const CONVEX_URL = env.VITE_CONVEX_URL;
-if (!CONVEX_URL) {
-	throw new Error("Missing required env var: VITE_CONVEX_URL");
-}
-const convexClient = new ConvexReactClient(CONVEX_URL);
+const convexClient = new ConvexReactClient(env.VITE_CONVEX_URL);
 
 export default function AppConvexProvider({ children }: { children: React.ReactNode }) {
 	const queryClient = useQueryClient();
@@ -22,10 +16,10 @@ export default function AppConvexProvider({ children }: { children: React.ReactN
 	});
 
 	return (
-		<ConvexProvider client={convexClient}>
+		<ConvexAuthProvider client={convexClient} authClient={authClient}>
 			<CRPCProvider convexQueryClient={convexQueryClient} convexClient={convexClient}>
 				{children}
 			</CRPCProvider>
-		</ConvexProvider>
+		</ConvexAuthProvider>
 	);
 }

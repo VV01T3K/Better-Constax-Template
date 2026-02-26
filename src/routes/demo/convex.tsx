@@ -1,22 +1,51 @@
 import type { Doc, Id } from "@convex/dataModel";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { Trash2, Plus, Check, Circle } from "lucide-react";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { Trash2, Plus, Check, Circle, LogOut } from "lucide-react";
 import { useCallback, useState } from "react";
 
+import { useSignOutMutationOptions } from "../../integrations/convex/auth-client";
 import { useCRPC } from "../../integrations/convex/crpc";
+import { getServerAuthState, getServerTodos } from "../../integrations/convex/server-fn";
 
 export const Route = createFileRoute("/demo/convex")({
-	ssr: false,
+	beforeLoad: async ({ location }) => {
+		const { isAuthenticated } = await getServerAuthState();
+
+		if (!isAuthenticated) {
+			throw redirect({
+				to: "/auth",
+				search: {
+					redirect: location.pathname,
+				},
+			});
+		}
+	},
+	loader: async () => {
+		const initialTodos = await getServerTodos();
+
+		return { initialTodos };
+	},
 	component: ConvexTodos,
 });
 
 function ConvexTodos() {
+	const { initialTodos } = Route.useLoaderData();
 	const crpc = useCRPC();
-	const { data: todos, isPending } = useQuery(crpc.todos.list.queryOptions({}));
+	const { data: todos = initialTodos, isPending } = useQuery({
+		...crpc.todos.list.queryOptions({}),
+		initialData: initialTodos,
+	});
 	const { mutateAsync: addTodo } = useMutation(crpc.todos.add.mutationOptions());
 	const { mutateAsync: toggleTodo } = useMutation(crpc.todos.toggle.mutationOptions());
 	const { mutateAsync: removeTodo } = useMutation(crpc.todos.remove.mutationOptions());
+	const { mutateAsync: signOut, isPending: isSigningOut } = useMutation(
+		useSignOutMutationOptions({
+			onSuccess: () => {
+				window.location.assign("/auth?redirect=/demo/convex");
+			},
+		}),
+	);
 
 	const [newTodo, setNewTodo] = useState("");
 	const todoItems: Doc<"todos">[] = todos ?? [];
@@ -54,6 +83,18 @@ function ConvexTodos() {
 			}}
 		>
 			<div className="w-full max-w-2xl">
+				<div className="mb-6 flex justify-end">
+					<button
+						type="button"
+						onClick={() => signOut()}
+						disabled={isSigningOut}
+						className="inline-flex items-center gap-2 rounded-lg border border-green-700/40 bg-white/90 px-3 py-2 text-sm font-semibold text-green-800 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+					>
+						<LogOut size={16} />
+						{isSigningOut ? "Signing out..." : "Sign Out"}
+					</button>
+				</div>
+
 				{/* Header Card */}
 				<div className="mb-6 rounded-2xl border border-green-200/50 bg-white/95 p-8 shadow-2xl backdrop-blur-sm">
 					<div className="text-center">

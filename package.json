@@ -10,7 +10,9 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"convex": "better-convex dev",
-		"test": "vitest run",
+		"convex:codegen": "better-convex codegen",
+		"test": "vitest run --passWithNoTests",
+		"convex:env": "convex env set BETTER_AUTH_SECRET=$(openssl rand -base64 32) && convex env set SITE_URL http://localhost:3000 && convex env set BETTER_AUTH_ADMIN_EMAILS admin@gmail.com",
 		"lint": "oxlint --type-aware --type-check --fix",
 		"format": "oxfmt",
 		"check": "oxfmt && oxlint --type-aware --type-check --fix && tsgo --noEmit"
@@ -26,6 +28,7 @@
 		"@tanstack/react-router-ssr-query": "^1.163.2",
 		"@tanstack/react-start": "^1.163.2",
 		"@tanstack/router-plugin": "^1.163.2",
+		"better-auth": "^1.4.9",
 		"better-convex": "^0.6.4",
 		"convex": "^1.32.0",
 		"lucide-react": "^0.575.0",
@@ -36,6 +39,7 @@
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
+		"@better-auth/cli": "^1.4.9",
 		"@tanstack/devtools-vite": "^0.5.1",
 		"@tanstack/eslint-plugin-query": "^5.91.4",
 		"@testing-library/dom": "^10.4.1",
