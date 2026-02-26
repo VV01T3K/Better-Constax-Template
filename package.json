@@ -6,16 +6,18 @@
 		"#/*": "./src/*"
 	},
 	"scripts": {
-		"dev": "vite dev --port 3000 --host",
+		"dev": "bun --bun vite dev --port 3000 --host",
 		"build": "vite build",
 		"preview": "vite preview",
+		"postinstall": "node scripts/verify-patches.mjs",
 		"convex": "better-convex dev",
 		"convex:codegen": "better-convex codegen",
 		"test": "vitest run --passWithNoTests",
 		"convex:env": "SITE_URL=http://localhost:3000 && convex env set BETTER_AUTH_SECRET=$(openssl rand -base64 32) && convex env set SITE_URL $SITE_URL && convex env set BETTER_AUTH_ADMIN_EMAILS admin@gmail.com && convex run generated/auth:getLatestJwks | convex env set JWKS && (grep -q '^VITE_SITE_URL=' .env.local && sed -i \"s|^VITE_SITE_URL=.*|VITE_SITE_URL=$SITE_URL|\" .env.local || printf \"\\nVITE_SITE_URL=%s\\n\" \"$SITE_URL\" >> .env.local)",
 		"lint": "oxlint --type-aware --type-check --fix",
 		"format": "oxfmt",
-		"check": "oxfmt && oxlint --type-aware --type-check --fix && tsgo --noEmit"
+		"check": "oxfmt && oxlint --type-aware --type-check --fix && tsgo --noEmit",
+		"verify:patches": "node scripts/verify-patches.mjs"
 	},
 	"dependencies": {
 		"@t3-oss/env-core": "^0.13.10",
@@ -58,5 +60,11 @@
 		"vite": "^7.3.1",
 		"vite-tsconfig-paths": "^6.1.1",
 		"vitest": "^4.0.18"
+	},
+	"overrides": {
+		"@convex-dev/better-auth": "0.10.12"
+	},
+	"patchedDependencies": {
+		"@convex-dev/better-auth@0.10.12": "patches/@convex-dev%2Fbetter-auth@0.10.12.patch"
 	}
 }
