@@ -13,6 +13,7 @@ import {
 	createRootRouteWithContext,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { ConvexProvider } from "convex/react";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { buttonVariants } from "@/components/ui/button";
@@ -99,10 +100,11 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 });
 
 function RootComponent() {
+	const { convexQueryClient } = Route.useRouteContext();
 	const showDevtools = import.meta.env.DEV;
 
 	return (
-		<>
+		<ConvexProvider client={convexQueryClient.convexClient}>
 			<AppLayout />
 			{showDevtools ? (
 				<TanStackDevtools
@@ -122,7 +124,7 @@ function RootComponent() {
 					]}
 				/>
 			) : null}
-		</>
+		</ConvexProvider>
 	);
 }
 
