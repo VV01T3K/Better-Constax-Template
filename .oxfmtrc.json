@@ -19,6 +19,8 @@
 		"**/routeTree.gen.ts",
 		"**/bun.lock",
 		"**/_generated/**",
-		"**/betterAuth/generatedSchema.ts"
+		"**/generated/**",
+		"**/betterAuth/generatedSchema.ts",
+		"convex/shared/api.ts"
 	]
 }

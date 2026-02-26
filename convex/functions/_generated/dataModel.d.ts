@@ -73,6 +73,7 @@ export type DataModel = {
   jwks: {
     document: {
       createdAt: number;
+      expiresAt?: null | number;
       privateKey: string;
       publicKey: string;
       _id: Id<"jwks">;
@@ -82,153 +83,12 @@ export type DataModel = {
       | "_creationTime"
       | "_id"
       | "createdAt"
+      | "expiresAt"
       | "privateKey"
       | "publicKey";
     indexes: {
       by_id: ["_id"];
       by_creation_time: ["_creationTime"];
-    };
-    searchIndexes: {};
-    vectorIndexes: {};
-  };
-  oauthAccessToken: {
-    document: {
-      accessToken?: null | string;
-      accessTokenExpiresAt?: null | number;
-      clientId?: null | string;
-      createdAt?: null | number;
-      refreshToken?: null | string;
-      refreshTokenExpiresAt?: null | number;
-      scopes?: null | string;
-      updatedAt?: null | number;
-      userId?: null | string;
-      _id: Id<"oauthAccessToken">;
-      _creationTime: number;
-    };
-    fieldPaths:
-      | "_creationTime"
-      | "_id"
-      | "accessToken"
-      | "accessTokenExpiresAt"
-      | "clientId"
-      | "createdAt"
-      | "refreshToken"
-      | "refreshTokenExpiresAt"
-      | "scopes"
-      | "updatedAt"
-      | "userId";
-    indexes: {
-      by_id: ["_id"];
-      by_creation_time: ["_creationTime"];
-      accessToken: ["accessToken", "_creationTime"];
-      clientId: ["clientId", "_creationTime"];
-      refreshToken: ["refreshToken", "_creationTime"];
-      userId: ["userId", "_creationTime"];
-    };
-    searchIndexes: {};
-    vectorIndexes: {};
-  };
-  oauthApplication: {
-    document: {
-      clientId?: null | string;
-      clientSecret?: null | string;
-      createdAt?: null | number;
-      disabled?: null | boolean;
-      icon?: null | string;
-      metadata?: null | string;
-      name?: null | string;
-      redirectURLs?: null | string;
-      type?: null | string;
-      updatedAt?: null | number;
-      userId?: null | string;
-      _id: Id<"oauthApplication">;
-      _creationTime: number;
-    };
-    fieldPaths:
-      | "_creationTime"
-      | "_id"
-      | "clientId"
-      | "clientSecret"
-      | "createdAt"
-      | "disabled"
-      | "icon"
-      | "metadata"
-      | "name"
-      | "redirectURLs"
-      | "type"
-      | "updatedAt"
-      | "userId";
-    indexes: {
-      by_id: ["_id"];
-      by_creation_time: ["_creationTime"];
-      clientId: ["clientId", "_creationTime"];
-      userId: ["userId", "_creationTime"];
-    };
-    searchIndexes: {};
-    vectorIndexes: {};
-  };
-  oauthConsent: {
-    document: {
-      clientId?: null | string;
-      consentGiven?: null | boolean;
-      createdAt?: null | number;
-      scopes?: null | string;
-      updatedAt?: null | number;
-      userId?: null | string;
-      _id: Id<"oauthConsent">;
-      _creationTime: number;
-    };
-    fieldPaths:
-      | "_creationTime"
-      | "_id"
-      | "clientId"
-      | "consentGiven"
-      | "createdAt"
-      | "scopes"
-      | "updatedAt"
-      | "userId";
-    indexes: {
-      by_id: ["_id"];
-      by_creation_time: ["_creationTime"];
-      clientId_userId: ["clientId", "userId", "_creationTime"];
-      userId: ["userId", "_creationTime"];
-    };
-    searchIndexes: {};
-    vectorIndexes: {};
-  };
-  passkey: {
-    document: {
-      aaguid?: null | string;
-      backedUp: boolean;
-      counter: number;
-      createdAt?: null | number;
-      credentialID: string;
-      deviceType: string;
-      name?: null | string;
-      publicKey: string;
-      transports?: null | string;
-      userId: string;
-      _id: Id<"passkey">;
-      _creationTime: number;
-    };
-    fieldPaths:
-      | "_creationTime"
-      | "_id"
-      | "aaguid"
-      | "backedUp"
-      | "counter"
-      | "createdAt"
-      | "credentialID"
-      | "deviceType"
-      | "name"
-      | "publicKey"
-      | "transports"
-      | "userId";
-    indexes: {
-      by_id: ["_id"];
-      by_creation_time: ["_creationTime"];
-      credentialID: ["credentialID", "_creationTime"];
-      userId: ["userId", "_creationTime"];
     };
     searchIndexes: {};
     vectorIndexes: {};
@@ -245,23 +105,6 @@ export type DataModel = {
     indexes: {
       by_id: ["_id"];
       by_creation_time: ["_creationTime"];
-    };
-    searchIndexes: {};
-    vectorIndexes: {};
-  };
-  rateLimit: {
-    document: {
-      count?: null | number;
-      key?: null | string;
-      lastRequest?: null | number;
-      _id: Id<"rateLimit">;
-      _creationTime: number;
-    };
-    fieldPaths: "_creationTime" | "_id" | "count" | "key" | "lastRequest";
-    indexes: {
-      by_id: ["_id"];
-      by_creation_time: ["_creationTime"];
-      key: ["key", "_creationTime"];
     };
     searchIndexes: {};
     vectorIndexes: {};
@@ -316,38 +159,15 @@ export type DataModel = {
     searchIndexes: {};
     vectorIndexes: {};
   };
-  twoFactor: {
-    document: {
-      backupCodes: string;
-      secret: string;
-      userId: string;
-      _id: Id<"twoFactor">;
-      _creationTime: number;
-    };
-    fieldPaths: "_creationTime" | "_id" | "backupCodes" | "secret" | "userId";
-    indexes: {
-      by_id: ["_id"];
-      by_creation_time: ["_creationTime"];
-      userId: ["userId", "_creationTime"];
-    };
-    searchIndexes: {};
-    vectorIndexes: {};
-  };
   user: {
     document: {
       createdAt: number;
-      displayUsername?: null | string;
       email: string;
       emailVerified: boolean;
       image?: null | string;
-      isAnonymous?: null | boolean;
       name: string;
-      phoneNumber?: null | string;
-      phoneNumberVerified?: null | boolean;
-      twoFactorEnabled?: null | boolean;
       updatedAt: number;
       userId?: null | string;
-      username?: null | string;
       _id: Id<"user">;
       _creationTime: number;
     };
@@ -355,26 +175,18 @@ export type DataModel = {
       | "_creationTime"
       | "_id"
       | "createdAt"
-      | "displayUsername"
       | "email"
       | "emailVerified"
       | "image"
-      | "isAnonymous"
       | "name"
-      | "phoneNumber"
-      | "phoneNumberVerified"
-      | "twoFactorEnabled"
       | "updatedAt"
-      | "userId"
-      | "username";
+      | "userId";
     indexes: {
       by_id: ["_id"];
       by_creation_time: ["_creationTime"];
       email_name: ["email", "name", "_creationTime"];
       name: ["name", "_creationTime"];
-      phoneNumber: ["phoneNumber", "_creationTime"];
       userId: ["userId", "_creationTime"];
-      username: ["username", "_creationTime"];
     };
     searchIndexes: {};
     vectorIndexes: {};

@@ -1,10 +1,11 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
-import { tables as betterAuthTables } from "./betterAuth/schema";
+// Auth tables are CLI-generated in `./authSchema.ts`; app tables stay here.
+import { tables as authSchema } from "./authSchema";
 
 export default defineSchema({
-	...betterAuthTables,
+	...authSchema,
 	products: defineTable({
 		title: v.string(),
 		imageId: v.string(),

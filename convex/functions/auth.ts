@@ -1,15 +1,16 @@
 import { convex, defineAuth } from "better-convex/auth";
 
 import authConfig from "./auth.config";
+import { getSharedAuthOptions, getSiteUrl } from "./auth.shared";
 
-const SITE_URL = process.env.SITE_URL ?? "http://localhost:3000";
+// Keep this root entrypoint because better-convex codegen/runtime expects
+// `convex/functions/auth.ts` to default export `defineAuth(...)`.
+const siteUrl = getSiteUrl();
 
 export default defineAuth(() => ({
-	baseURL: SITE_URL,
-	trustedOrigins: [SITE_URL],
-	emailAndPassword: {
-		enabled: true,
-	},
+	baseURL: siteUrl,
+	trustedOrigins: [siteUrl],
+	...getSharedAuthOptions(),
 	plugins: [
 		convex({
 			authConfig,
