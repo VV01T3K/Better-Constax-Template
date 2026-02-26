@@ -68,6 +68,7 @@
 	"overrides": {
 		"@convex-dev/better-auth": "0.10.12"
 	},
+	"packageManager": "bun@1.3.9",
 	"patchedDependencies": {
 		"@convex-dev/better-auth@0.10.12": "patches/@convex-dev%2Fbetter-auth@0.10.12.patch"
 	}
