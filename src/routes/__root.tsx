@@ -18,7 +18,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { UserRoundCheck } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -34,6 +34,8 @@ interface MyRouterContext {
 	queryClient: QueryClient;
 	convexQueryClient: ConvexQueryClient;
 }
+
+const SIGN_OUT_SYNC_KEY = "better-constax:auth-signout";
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
 	head: () => {
@@ -175,9 +177,57 @@ function AppLayout() {
 	const handleSignOut = async () => {
 		await queryClient.cancelQueries();
 		await authClient.signOut().catch(() => undefined);
+		window.localStorage.setItem(SIGN_OUT_SYNC_KEY, Date.now().toString());
 		queryClient.clear();
 		await router.navigate({ to: "/auth/login", replace: true });
 	};
+
+	useEffect(() => {
+		let disposed = false;
+
+		const syncAuthState = async () => {
+			const response = await authClient.getSession({
+				fetchOptions: {
+					throw: false,
+				},
+			});
+			if (disposed || response.error || response.data?.session) {
+				return;
+			}
+
+			await queryClient.cancelQueries();
+			queryClient.clear();
+			if (router.state.location.pathname.startsWith("/auth/")) {
+				return;
+			}
+			await router.navigate({ to: "/auth/login", replace: true });
+		};
+
+		const onFocus = () => {
+			void syncAuthState();
+		};
+		const onVisibilityChange = () => {
+			if (document.visibilityState === "visible") {
+				onFocus();
+			}
+		};
+		const onStorage = (event: StorageEvent) => {
+			if (event.key === SIGN_OUT_SYNC_KEY) {
+				onFocus();
+			}
+		};
+
+		window.addEventListener("focus", onFocus);
+		window.addEventListener("storage", onStorage);
+		document.addEventListener("visibilitychange", onVisibilityChange);
+
+		return () => {
+			disposed = true;
+			window.removeEventListener("focus", onFocus);
+			window.removeEventListener("storage", onStorage);
+			document.removeEventListener("visibilitychange", onVisibilityChange);
+		};
+	}, [queryClient, router]);
 
 	const handleStopImpersonation = async () => {
 		setImpersonationError(null);

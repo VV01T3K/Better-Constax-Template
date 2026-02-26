@@ -7,7 +7,9 @@ import { getRoleAndPermissions } from "./authorization";
 import { getAuthUserId, throwForbidden, zMutation, zQuery, requireAuth } from "./functionHelpers";
 
 type MaybePromise<T> = T | Promise<T>;
-type ContextWithAuthAndDb = Pick<QueryCtx, "auth" | "db"> | Pick<MutationCtx, "auth" | "db">;
+type ContextWithAuthAndDb =
+	| Pick<QueryCtx, "auth" | "db" | "runQuery">
+	| Pick<MutationCtx, "auth" | "db" | "runQuery">;
 type RoleAndPermissionContext = Pick<QueryCtx, "db"> | Pick<MutationCtx, "db">;
 type RoleAndPermissionResolver = (
 	ctx: RoleAndPermissionContext,
@@ -82,6 +84,7 @@ export async function getActor(
 	ctx: {
 		auth: ContextWithAuthAndDb["auth"];
 		db: ContextWithAuthAndDb["db"];
+		runQuery: ContextWithAuthAndDb["runQuery"];
 	},
 	options?: {
 		resolveRoleAndPermissions?: RoleAndPermissionResolver;

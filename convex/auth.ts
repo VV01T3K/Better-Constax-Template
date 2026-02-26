@@ -12,6 +12,7 @@ import { query } from "./_generated/server";
 import authConfig from "./auth.config";
 import schema from "./betterAuth/schema";
 import { getRoleClaimValue } from "./lib/authIdentity";
+import { getValidatedIdentity } from "./lib/functionHelpers";
 import { normalizeRole, parseAuthUserId } from "./schemas";
 
 const authFunctions: AuthFunctions = internal.auth;
@@ -164,6 +165,6 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
 export const getCurrentUser = query({
 	args: {},
 	handler: async (ctx) => {
-		return await ctx.auth.getUserIdentity();
+		return await getValidatedIdentity(ctx);
 	},
 });
