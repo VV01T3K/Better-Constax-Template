@@ -2,7 +2,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import { createTodoSchema } from "@convex/schemas";
 import { useMutationState } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Circle, Loader2, Plus, Trash2, Zap } from "lucide-react";
 import { useState } from "react";
 
@@ -14,16 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useTodosOptimisticTQ } from "@/hooks/useTodosOptimisticTQ";
 
-export const Route = createFileRoute("/_authenticated/demo/tanstack-optimistic")({
-	beforeLoad: async ({ context }) => {
-		const allowed = await context.queryClient.fetchQuery({
-			...convexQuery(api.functions.authorization.hasPermission, {
-				permission: "demo.todos.access",
-			}),
-			staleTime: 0,
-		});
-		if (!allowed) throw redirect({ to: "/forbidden" });
-	},
+export const Route = createFileRoute("/demo/tanstack-optimistic")({
 	loader: async ({ context }) => {
 		await context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {}));
 	},

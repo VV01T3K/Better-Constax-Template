@@ -20,9 +20,6 @@ const config = defineConfig({
 	build: {
 		chunkSizeWarningLimit: 1024,
 	},
-	ssr: {
-		noExternal: ["@convex-dev/better-auth"],
-	},
 	plugins: [
 		devtools(),
 		nitro({

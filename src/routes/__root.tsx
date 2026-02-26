@@ -1,12 +1,9 @@
-import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import type { ConvexQueryClient } from "@convex-dev/react-query";
-import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
+import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
-import { parseAuthUserId, type AppPermission } from "@convex/schemas";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { formDevtoolsPlugin } from "@tanstack/react-form-devtools";
 import type { QueryClient } from "@tanstack/react-query";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import {
 	HeadContent,
@@ -14,19 +11,13 @@ import {
 	Outlet,
 	Scripts,
 	createRootRouteWithContext,
-	useRouter,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { UserRoundCheck } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
 
 import { AppSidebar } from "@/components/app-sidebar";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { authClient } from "@/lib/auth-client";
-import { waitForImpersonationState } from "@/lib/impersonation-client";
 
 import appCss from "../styles.css?url";
 
@@ -35,7 +26,16 @@ interface MyRouterContext {
 	convexQueryClient: ConvexQueryClient;
 }
 
-const SIGN_OUT_SYNC_KEY = "better-constax:auth-signout";
+const PROTOTYPE_PERMISSIONS = new Set<string>([
+	"demo.todos.access",
+	"demo.massive-data.access",
+	"demo.files.access",
+	"demo.table.access",
+	"demo.address-form.access",
+	"admin.users.access",
+	"admin.permissions.app.access",
+	"admin.permissions.admin.access",
+]);
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
 	head: () => {
@@ -86,24 +86,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 			scripts: pwaScripts,
 		};
 	},
-
-	beforeLoad: async (ctx) => {
-		if (!import.meta.env.SSR) {
-			return {};
-		}
-
-		const { getToken } = await import("@/lib/auth-server");
-		const token = await getToken();
-
-		if (token) {
-			ctx.context.convexQueryClient.serverHttpClient?.setAuth(token);
-		}
-
-		return { token };
-	},
 	loader: async ({ context }) => {
 		await context.queryClient.fetchQuery({
-			...convexQuery(api.auth.getCurrentUser, {}),
+			...convexQuery(api.functions.todos.list, {}),
 			staleTime: 0,
 		});
 	},
@@ -114,15 +99,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 });
 
 function RootComponent() {
-	const { convexQueryClient, token } = Route.useRouteContext();
 	const showDevtools = import.meta.env.DEV;
 
 	return (
-		<ConvexBetterAuthProvider
-			client={convexQueryClient.convexClient}
-			authClient={authClient}
-			initialToken={token}
-		>
+		<>
 			<AppLayout />
 			{showDevtools ? (
 				<TanStackDevtools
@@ -142,184 +122,15 @@ function RootComponent() {
 					]}
 				/>
 			) : null}
-		</ConvexBetterAuthProvider>
+		</>
 	);
 }
 
 function AppLayout() {
-	const accessQuery = convexQuery(api.functions.authorization.getMyAccess, {});
-	const { data: myAccess } = useSuspenseQuery(accessQuery);
-	const { data: ssrUser } = useSuspenseQuery(convexQuery(api.auth.getCurrentUser, {}));
-	const {
-		data: sessionData,
-		isPending: isSessionPending,
-		refetch: refetchSession,
-	} = authClient.useSession();
-
-	const sessionUser = sessionData?.user ?? null;
-	const isLoggedIn = sessionUser ?? (isSessionPending ? ssrUser : null);
-	const displayName =
-		sessionUser?.name || sessionUser?.email || ssrUser?.name || ssrUser?.email || "";
-	const displayEmail = sessionUser?.email || ssrUser?.email || "";
-
-	const [impersonationError, setImpersonationError] = useState<string | null>(null);
-	const queryClient = useQueryClient();
-	const router = useRouter();
-
-	const permissionSet = useMemo(() => {
-		return new Set<AppPermission>(myAccess?.permissions ?? []);
-	}, [myAccess?.permissions]);
-
-	const stopAuditMutation = useMutation({
-		mutationFn: useConvexMutation(api.functions.impersonationAudit.stop),
-	});
-
-	const handleSignOut = async () => {
-		await queryClient.cancelQueries();
-		await authClient.signOut().catch(() => undefined);
-		window.localStorage.setItem(SIGN_OUT_SYNC_KEY, Date.now().toString());
-		queryClient.clear();
-		await router.navigate({ to: "/auth/login", replace: true });
-	};
-
-	useEffect(() => {
-		let disposed = false;
-
-		const syncAuthState = async () => {
-			const response = await authClient.getSession({
-				fetchOptions: {
-					throw: false,
-				},
-			});
-			if (disposed || response.error || response.data?.session) {
-				return;
-			}
-
-			await queryClient.cancelQueries();
-			queryClient.clear();
-			if (router.state.location.pathname.startsWith("/auth/")) {
-				return;
-			}
-			await router.navigate({ to: "/auth/login", replace: true });
-		};
-
-		const onFocus = () => {
-			void syncAuthState();
-		};
-		const onVisibilityChange = () => {
-			if (document.visibilityState === "visible") {
-				onFocus();
-			}
-		};
-		const onStorage = (event: StorageEvent) => {
-			if (event.key === SIGN_OUT_SYNC_KEY) {
-				onFocus();
-			}
-		};
-
-		window.addEventListener("focus", onFocus);
-		window.addEventListener("storage", onStorage);
-		document.addEventListener("visibilitychange", onVisibilityChange);
-
-		return () => {
-			disposed = true;
-			window.removeEventListener("focus", onFocus);
-			window.removeEventListener("storage", onStorage);
-			document.removeEventListener("visibilitychange", onVisibilityChange);
-		};
-	}, [queryClient, router]);
-
-	const handleStopImpersonation = async () => {
-		setImpersonationError(null);
-		await queryClient.cancelQueries();
-		await router.navigate({ to: "/", replace: true });
-
-		const targetUserIdRaw = sessionData?.user?.id ?? null;
-		const result = await authClient.admin.stopImpersonating();
-		if (result.error) {
-			setImpersonationError(result.error.message ?? "Failed to stop impersonation");
-			return;
-		}
-
-		const switched = await waitForImpersonationState({
-			expectedImpersonating: false,
-			refetchSession,
-		});
-
-		if (!switched) {
-			window.location.assign("/");
-			return;
-		}
-
-		const refreshedAccess = await queryClient
-			.fetchQuery({
-				...accessQuery,
-				staleTime: 0,
-			})
-			.catch(() => null);
-		const canStopAudit =
-			refreshedAccess?.permissions.includes("admin.users.impersonation.mutate") ?? false;
-
-		if (targetUserIdRaw && canStopAudit) {
-			const targetUserId = parseAuthUserId(targetUserIdRaw);
-			if (targetUserId.isErr()) {
-				setImpersonationError(targetUserId.error.message);
-			} else {
-				await stopAuditMutation
-					.mutateAsync({
-						targetUserId: targetUserId.value,
-						source: "header-stop-impersonation",
-					})
-					.catch(() => undefined);
-			}
-		}
-
-		queryClient.clear();
-		await router.invalidate();
-	};
-
-	const isImpersonating = Boolean(sessionData?.session?.impersonatedBy);
-
 	return (
 		<SidebarProvider>
-			<AppSidebar
-				user={isLoggedIn ? { name: displayName, email: displayEmail } : null}
-				permissionSet={permissionSet}
-				isLoggedIn={Boolean(isLoggedIn)}
-				isImpersonating={isImpersonating}
-				onSignOut={() => {
-					void handleSignOut();
-				}}
-				onStopImpersonation={() => {
-					void handleStopImpersonation();
-				}}
-			/>
+			<AppSidebar permissionSet={PROTOTYPE_PERMISSIONS} />
 			<SidebarInset>
-				{isImpersonating ? (
-					<Alert className="rounded-none border-x-0 border-t-0 border-amber-700 bg-amber-900/80 text-amber-50">
-						<UserRoundCheck className="size-4 text-amber-200" />
-						<AlertDescription className="flex flex-wrap items-center justify-between gap-2">
-							<span>
-								Impersonating{" "}
-								<strong>{sessionData?.user?.email ?? sessionData?.user?.name ?? "user"}</strong>
-							</span>
-							<Button
-								variant="secondary"
-								size="sm"
-								onClick={() => {
-									void handleStopImpersonation();
-								}}
-							>
-								Stop Impersonation
-							</Button>
-						</AlertDescription>
-					</Alert>
-				) : null}
-				{impersonationError ? (
-					<Alert variant="destructive" className="mx-4 mt-2">
-						<AlertDescription>{impersonationError}</AlertDescription>
-					</Alert>
-				) : null}
 				<header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
 					<SidebarTrigger className="-ml-1" />
 				</header>

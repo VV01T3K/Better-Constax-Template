@@ -2,7 +2,7 @@ import type { ConvexQueryClient } from "@convex-dev/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { BarChart3, Database, Rows3, Timer } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -53,16 +53,7 @@ const PREFETCH_LINEAR_SCALE = 0.3;
 const MASSIVE_DATA_GRID_COLUMNS =
 	"grid-cols-[minmax(80px,0.7fr)_minmax(220px,2.1fr)_minmax(90px,0.9fr)_minmax(110px,1fr)_minmax(110px,1fr)_minmax(130px,1.1fr)_minmax(110px,1fr)_minmax(130px,1.1fr)]";
 
-export const Route = createFileRoute("/_authenticated/demo/massive-data")({
-	beforeLoad: async ({ context }) => {
-		const allowed = await context.queryClient.fetchQuery({
-			...convexQuery(api.functions.authorization.hasPermission, {
-				permission: "demo.massive-data.access",
-			}),
-			staleTime: 0,
-		});
-		if (!allowed) throw redirect({ to: "/forbidden" });
-	},
+export const Route = createFileRoute("/demo/massive-data")({
 	loader: async ({ context }) => {
 		await context.queryClient.ensureQueryData(
 			convexQuery(api.functions.massiveDataset.page, {

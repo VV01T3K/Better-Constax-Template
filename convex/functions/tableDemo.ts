@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { authedQuery, requirePermissionForIdentity, withIdentity } from "../lib/functionHelpers";
+import { requirePermission, zQuery } from "../lib/functionHelpers";
 
 const TOTAL_ROWS = 5_000;
 const DEFAULT_PAGE_SIZE = 20;
@@ -88,7 +88,7 @@ function getSortableValue(row: ReturnType<typeof buildRow>, sortKey: SortKey): s
 	return row.status;
 }
 
-export const page = authedQuery({
+export const page = zQuery({
 	args: {
 		filter: z.string().optional(),
 		sortKey: z
@@ -98,8 +98,8 @@ export const page = authedQuery({
 		pageIndex: z.number().int().nonnegative().optional(),
 		pageSize: z.number().int().positive().optional(),
 	},
-	handler: withIdentity(async (_ctx, args, identity) => {
-		await requirePermissionForIdentity(_ctx, identity, "demo.table.access");
+	handler: async (_ctx, args) => {
+		await requirePermission("demo.table.access");
 		const sortKey: SortKey = args.sortKey ?? "id";
 		const sortDirection: SortDirection = args.sortDirection ?? "asc";
 		const pageIndex = args.pageIndex ?? 0;
@@ -150,5 +150,5 @@ export const page = authedQuery({
 			sortDirection,
 			filter: args.filter ?? "",
 		};
-	}),
+	},
 });

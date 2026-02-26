@@ -1,36 +1,26 @@
 import { z } from "zod";
 
-import {
-	authedMutation,
-	authedQuery,
-	getAuthUserId,
-	requirePermissionForIdentity,
-	withIdentity,
-} from "../lib/functionHelpers";
+import { requirePermission, zMutation, zQuery } from "../lib/functionHelpers";
 import { submitAddressFormSchema } from "../schemas";
 
-export const listMine = authedQuery({
+export const listMine = zQuery({
 	args: {
 		limit: z.number().int().positive().max(100).optional(),
 	},
-	handler: withIdentity(async (ctx, { limit }, identity) => {
-		await requirePermissionForIdentity(ctx, identity, "demo.address-form.access");
-		const authUserId = getAuthUserId(identity);
+	handler: async (ctx, { limit }) => {
+		await requirePermission("demo.address-form.access");
 		return await ctx.db
 			.query("addressSubmissions")
-			.withIndex("by_authUserId", (q) => q.eq("authUserId", authUserId))
 			.order("desc")
 			.take(limit ?? 20);
-	}),
+	},
 });
 
-export const submit = authedMutation({
+export const submit = zMutation({
 	args: submitAddressFormSchema.shape,
-	handler: withIdentity(async (ctx, args, identity) => {
-		await requirePermissionForIdentity(ctx, identity, "demo.address-form.mutate");
-		const authUserId = getAuthUserId(identity);
+	handler: async (ctx, args) => {
+		await requirePermission("demo.address-form.mutate");
 		return await ctx.db.insert("addressSubmissions", {
-			authUserId,
 			fullName: args.fullName.trim(),
 			email: args.email.trim().toLowerCase(),
 			address: {
@@ -43,5 +33,5 @@ export const submit = authedMutation({
 			phone: args.phone.trim(),
 			submittedAt: Date.now(),
 		});
-	}),
+	},
 });

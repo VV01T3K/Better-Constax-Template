@@ -5,12 +5,10 @@ import {
 	Globe,
 	Home,
 	Layers,
-	LogIn,
 	ShieldCheck,
 	Table,
 	Upload,
 	UserCog,
-	UserPlus,
 	Zap,
 	type LucideIcon,
 } from "lucide-react";
@@ -40,11 +38,6 @@ type NavLinkDef = {
 const generalLinks: NavItem[] = [
 	{ to: "/", label: "Home", icon: Home },
 	{ to: "/shadcn", label: "shadcn UI", icon: Layers },
-];
-
-const authLinks: NavItem[] = [
-	{ to: "/auth/login", label: "Login", icon: LogIn },
-	{ to: "/auth/signup", label: "Sign Up", icon: UserPlus },
 ];
 
 const demoLinkDefs: NavLinkDef[] = [
@@ -109,20 +102,10 @@ function filterByPermission(links: NavLinkDef[], permissions: ReadonlySet<string
 }
 
 export function AppSidebar({
-	user,
 	permissionSet,
-	isLoggedIn,
-	isImpersonating,
-	onSignOut,
-	onStopImpersonation,
 	...props
 }: React.ComponentProps<typeof Sidebar> & {
-	user: { name: string; email: string } | null;
 	permissionSet: ReadonlySet<string>;
-	isLoggedIn: boolean;
-	isImpersonating: boolean;
-	onSignOut: () => void;
-	onStopImpersonation: () => void;
 }) {
 	const visibleDemoLinks = filterByPermission(demoLinkDefs, permissionSet);
 	const visibleAdminLinks = filterByPermission(adminLinkDefs, permissionSet);
@@ -174,18 +157,11 @@ export function AppSidebar({
 						))}
 					</SidebarMenu>
 				</SidebarGroup>
-				{!isLoggedIn ? <NavMain label="Auth" items={authLinks} /> : null}
 				<NavMain label="Demos" items={visibleDemoLinks} />
 				<NavMain label="Admin" items={visibleAdminLinks} />
 			</SidebarContent>
 			<SidebarFooter>
-				<NavUser
-					user={user}
-					isLoggedIn={isLoggedIn}
-					isImpersonating={isImpersonating}
-					onSignOut={onSignOut}
-					onStopImpersonation={onStopImpersonation}
-				/>
+				<NavUser />
 			</SidebarFooter>
 			<SidebarRail />
 		</Sidebar>

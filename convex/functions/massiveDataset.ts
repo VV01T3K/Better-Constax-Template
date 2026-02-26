@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { authedQuery, requirePermissionForIdentity, withIdentity } from "../lib/functionHelpers";
+import { requirePermission, zQuery } from "../lib/functionHelpers";
 
 const TOTAL_ROWS = 1_000_000;
 const DEFAULT_LIMIT = 200;
@@ -37,13 +37,13 @@ function buildRow(index: number) {
 	};
 }
 
-export const page = authedQuery({
+export const page = zQuery({
 	args: {
 		cursor: z.union([z.number().int().nonnegative(), z.null()]),
 		limit: z.number().int().positive().optional(),
 	},
-	handler: withIdentity(async (_ctx, { cursor, limit }, identity) => {
-		await requirePermissionForIdentity(_ctx, identity, "demo.massive-data.access");
+	handler: async (_ctx, { cursor, limit }) => {
+		await requirePermission("demo.massive-data.access");
 		const safeLimit = Math.min(Math.max(limit ?? DEFAULT_LIMIT, 1), MAX_LIMIT);
 		const start = cursor ?? 0;
 
@@ -70,5 +70,5 @@ export const page = authedQuery({
 			hasMore: end < TOTAL_ROWS,
 			limit: safeLimit,
 		};
-	}),
+	},
 });

@@ -2,7 +2,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
 import {
 	Archive,
@@ -27,16 +27,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { detectFileType } from "@/lib/file-type";
 
-export const Route = createFileRoute("/_authenticated/demo/file-upload")({
-	beforeLoad: async ({ context }) => {
-		const allowed = await context.queryClient.fetchQuery({
-			...convexQuery(api.functions.authorization.hasPermission, {
-				permission: "demo.files.access",
-			}),
-			staleTime: 0,
-		});
-		if (!allowed) throw redirect({ to: "/forbidden" });
-	},
+export const Route = createFileRoute("/demo/file-upload")({
 	loader: async ({ context }) => {
 		await context.queryClient.fetchQuery(convexQuery(api.functions.files.list, {}));
 	},

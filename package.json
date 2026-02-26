@@ -11,13 +11,10 @@
 		"preview": "bun --bun run .output/server/index.mjs ",
 		"lint": "oxlint --type-aware --type-check --fix",
 		"format": "oxfmt",
-		"check": "oxfmt && oxlint --type-aware --type-check --fix && tsgo --noEmit",
-		"auth:generate": "cd convex/betterAuth && bunx @better-auth/cli generate --output ./generatedSchema.ts -y",
-		"convex:env": "convex env set BETTER_AUTH_SECRET=$(openssl rand -base64 32) && convex env set SITE_URL http://localhost:3000 && convex env set BETTER_AUTH_ADMIN_EMAILS admin@gmail.com"
+		"check": "mise exec -- bun --bunx oxfmt && mise exec -- bun --bunx oxlint --type-aware --type-check --fix && mise exec -- bun --bunx tsgo --noEmit"
 	},
 	"dependencies": {
 		"@base-ui/react": "^1.2.0",
-		"@convex-dev/better-auth": "0.10.11",
 		"@convex-dev/react-query": "0.1.0",
 		"@faker-js/faker": "^10.3.0",
 		"@fontsource-variable/geist": "^5.2.8",
@@ -36,7 +33,6 @@
 		"@tanstack/react-table": "^8.21.3",
 		"@tanstack/react-virtual": "^3.13.19",
 		"@tanstack/router-plugin": "^1.162.8",
-		"better-auth": "^1.4.19",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"convex": "^1.32.0",
@@ -75,8 +71,5 @@
 	"catalog": {
 		"vite": "npm:rolldown-vite@7.3.1",
 		"nitro": "npm:nitro-nightly@3.0.1-20260219-081345-4df7aab2"
-	},
-	"patchedDependencies": {
-		"@convex-dev/better-auth@0.10.11": "patches/@convex-dev%2Fbetter-auth@0.10.11.patch"
 	}
 }

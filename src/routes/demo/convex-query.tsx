@@ -3,7 +3,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { createTodoSchema } from "@convex/schemas";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Circle, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
@@ -12,16 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 
-export const Route = createFileRoute("/_authenticated/demo/convex-query")({
-	beforeLoad: async ({ context }) => {
-		const allowed = await context.queryClient.fetchQuery({
-			...convexQuery(api.functions.authorization.hasPermission, {
-				permission: "demo.todos.access",
-			}),
-			staleTime: 0,
-		});
-		if (!allowed) throw redirect({ to: "/forbidden" });
-	},
+export const Route = createFileRoute("/demo/convex-query")({
 	loader: async ({ context }) => {
 		await context.queryClient.ensureQueryData(convexQuery(api.functions.todos.list, {}));
 	},

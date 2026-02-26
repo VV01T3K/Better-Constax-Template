@@ -1,7 +1,7 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import {
 	flexRender,
 	functionalUpdate,
@@ -75,16 +75,7 @@ type TableRow_ = {
 const DEFAULT_SORTING: SortingState = [{ id: "id", desc: false }];
 const DEFAULT_PAGINATION: PaginationState = { pageIndex: 0, pageSize: DEFAULT_PAGE_SIZE };
 
-export const Route = createFileRoute("/_authenticated/demo/table")({
-	beforeLoad: async ({ context }) => {
-		const allowed = await context.queryClient.fetchQuery({
-			...convexQuery(api.functions.authorization.hasPermission, {
-				permission: "demo.table.access",
-			}),
-			staleTime: 0,
-		});
-		if (!allowed) throw redirect({ to: "/forbidden" });
-	},
+export const Route = createFileRoute("/demo/table")({
 	loader: async ({ context }) => {
 		await context.queryClient.ensureQueryData(
 			convexQuery(api.functions.tableDemo.page, {

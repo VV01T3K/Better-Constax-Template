@@ -2,26 +2,16 @@ import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
 import { submitAddressFormSchema } from "@convex/schemas";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/demo.form";
 
-const currentUserQuery = convexQuery(api.auth.getCurrentUser, {});
 const submissionsQuery = convexQuery(api.functions.addressForms.listMine, { limit: 10 });
 
-export const Route = createFileRoute("/_authenticated/demo/form/address")({
-	beforeLoad: async ({ context }) => {
-		const allowed = await context.queryClient.fetchQuery({
-			...convexQuery(api.functions.authorization.hasPermission, {
-				permission: "demo.address-form.access",
-			}),
-			staleTime: 0,
-		});
-		if (!allowed) throw redirect({ to: "/forbidden" });
-	},
+export const Route = createFileRoute("/demo/form/address")({
 	loader: async ({ context }) => {
 		await context.queryClient.ensureQueryData(submissionsQuery);
 	},
@@ -29,7 +19,6 @@ export const Route = createFileRoute("/_authenticated/demo/form/address")({
 });
 
 function AddressForm() {
-	const { data: currentUser } = useSuspenseQuery(currentUserQuery);
 	const { data: submissions } = useSuspenseQuery(submissionsQuery);
 	const queryClient = useQueryClient();
 	const [submitError, setSubmitError] = useState<string | null>(null);
@@ -43,8 +32,8 @@ function AddressForm() {
 
 	const form = useAppForm({
 		defaultValues: {
-			fullName: currentUser?.name ?? "",
-			email: currentUser?.email ?? "",
+			fullName: "",
+			email: "",
 			address: {
 				street: "",
 				city: "",
@@ -85,12 +74,6 @@ function AddressForm() {
 	return (
 		<div className="p-6">
 			<div className="mx-auto w-full max-w-4xl space-y-6">
-				<Alert>
-					<AlertDescription>
-						Submitting to Convex as <strong>{currentUser?.email ?? currentUser?.subject}</strong>
-					</AlertDescription>
-				</Alert>
-
 				{submitError ? (
 					<Alert variant="destructive">
 						<AlertDescription>{submitError}</AlertDescription>
