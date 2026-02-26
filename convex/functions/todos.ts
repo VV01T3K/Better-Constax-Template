@@ -1,22 +1,29 @@
-import { CRPCError, zid } from "better-convex/server";
-import { z } from "zod";
+import { CRPCError } from "better-convex/server";
 
 import { protectedMutation, protectedQuery } from "../lib/crpc";
+import {
+	addTodoInputSchema,
+	addTodoOutputSchema,
+	emptyMutationOutputSchema,
+	listTodosInputSchema,
+	listTodosOutputSchema,
+	todoIdInputSchema,
+} from "./app.zod";
 
-export const list = protectedQuery.input(z.object({})).query(async ({ ctx }) => {
-	return await ctx.db
-		.query("todos")
-		.withIndex("by_user", (q) => q.eq("userId", ctx.userId))
-		.order("desc")
-		.collect();
-});
+export const list = protectedQuery
+	.input(listTodosInputSchema)
+	.output(listTodosOutputSchema)
+	.query(async ({ ctx }) => {
+		return await ctx.db
+			.query("todos")
+			.withIndex("by_user", (q) => q.eq("userId", ctx.userId))
+			.order("desc")
+			.collect();
+	});
 
 export const add = protectedMutation
-	.input(
-		z.object({
-			text: z.string(),
-		}),
-	)
+	.input(addTodoInputSchema)
+	.output(addTodoOutputSchema)
 	.mutation(async ({ ctx, input }) => {
 		return await ctx.db.insert("todos", {
 			text: input.text,
@@ -26,11 +33,8 @@ export const add = protectedMutation
 	});
 
 export const toggle = protectedMutation
-	.input(
-		z.object({
-			id: zid("todos"),
-		}),
-	)
+	.input(todoIdInputSchema)
+	.output(emptyMutationOutputSchema)
 	.mutation(async ({ ctx, input }) => {
 		const todo = await ctx.db.get(input.id);
 
@@ -48,17 +52,15 @@ export const toggle = protectedMutation
 			});
 		}
 
-		return await ctx.db.patch(input.id, {
+		await ctx.db.patch(input.id, {
 			completed: !todo.completed,
 		});
+		return null;
 	});
 
 export const remove = protectedMutation
-	.input(
-		z.object({
-			id: zid("todos"),
-		}),
-	)
+	.input(todoIdInputSchema)
+	.output(emptyMutationOutputSchema)
 	.mutation(async ({ ctx, input }) => {
 		const todo = await ctx.db.get(input.id);
 
@@ -76,5 +78,6 @@ export const remove = protectedMutation
 			});
 		}
 
-		return await ctx.db.delete(input.id);
+		await ctx.db.delete(input.id);
+		return null;
 	});
