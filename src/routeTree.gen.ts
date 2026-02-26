@@ -9,9 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ShadcnRouteImport } from './routes/shadcn'
 import { Route as ForbiddenRouteImport } from './routes/forbidden'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AuthenticatedDemoTanstackOptimisticRouteImport } from './routes/_authenticated/demo/tanstack-optimistic'
@@ -24,6 +26,11 @@ import { Route as AuthenticatedAdminPermissionsRouteImport } from './routes/_aut
 import { Route as AuthenticatedDemoFormAddressRouteImport } from './routes/_authenticated/demo/form.address'
 import { Route as AuthenticatedAdminPermissionsAdminRouteImport } from './routes/_authenticated/admin/permissions.admin'
 
+const ShadcnRoute = ShadcnRouteImport.update({
+  id: '/shadcn',
+  path: '/shadcn',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForbiddenRoute = ForbiddenRouteImport.update({
   id: '/forbidden',
   path: '/forbidden',
@@ -36,6 +43,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/auth/signup',
+  path: '/auth/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
@@ -104,7 +116,9 @@ const AuthenticatedAdminPermissionsAdminRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/forbidden': typeof ForbiddenRoute
+  '/shadcn': typeof ShadcnRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/admin/permissions': typeof AuthenticatedAdminPermissionsRouteWithChildren
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/demo/convex-query': typeof AuthenticatedDemoConvexQueryRoute
@@ -119,7 +133,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/forbidden': typeof ForbiddenRoute
+  '/shadcn': typeof ShadcnRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/admin/permissions': typeof AuthenticatedAdminPermissionsRouteWithChildren
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/demo/convex-query': typeof AuthenticatedDemoConvexQueryRoute
@@ -136,7 +152,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/forbidden': typeof ForbiddenRoute
+  '/shadcn': typeof ShadcnRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/_authenticated/admin/permissions': typeof AuthenticatedAdminPermissionsRouteWithChildren
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/demo/convex-query': typeof AuthenticatedDemoConvexQueryRoute
@@ -153,7 +171,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/forbidden'
+    | '/shadcn'
     | '/auth/login'
+    | '/auth/signup'
     | '/admin/permissions'
     | '/admin/users'
     | '/demo/convex-query'
@@ -168,7 +188,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/forbidden'
+    | '/shadcn'
     | '/auth/login'
+    | '/auth/signup'
     | '/admin/permissions'
     | '/admin/users'
     | '/demo/convex-query'
@@ -184,7 +206,9 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/forbidden'
+    | '/shadcn'
     | '/auth/login'
+    | '/auth/signup'
     | '/_authenticated/admin/permissions'
     | '/_authenticated/admin/users'
     | '/_authenticated/demo/convex-query'
@@ -201,12 +225,21 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   ForbiddenRoute: typeof ForbiddenRoute
+  ShadcnRoute: typeof ShadcnRoute
   AuthLoginRoute: typeof AuthLoginRoute
+  AuthSignupRoute: typeof AuthSignupRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/shadcn': {
+      id: '/shadcn'
+      path: '/shadcn'
+      fullPath: '/shadcn'
+      preLoaderRoute: typeof ShadcnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forbidden': {
       id: '/forbidden'
       path: '/forbidden'
@@ -226,6 +259,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/auth/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/login': {
@@ -355,7 +395,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   ForbiddenRoute: ForbiddenRoute,
+  ShadcnRoute: ShadcnRoute,
   AuthLoginRoute: AuthLoginRoute,
+  AuthSignupRoute: AuthSignupRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

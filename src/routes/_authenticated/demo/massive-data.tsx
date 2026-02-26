@@ -1,11 +1,24 @@
 import type { ConvexQueryClient } from "@convex-dev/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "@convex/_generated/api";
-import { useInfiniteQuery, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { BarChart3, Database, Rows3, Timer } from "lucide-react";
-import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Select as UiSelect,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type MassiveMode = "paginated" | "infinite";
 
@@ -30,6 +43,10 @@ type MassivePageResult = {
 
 const DEFAULT_PAGE_SIZE = 200;
 const PAGE_SIZE_OPTIONS = [50, 100, 200, 500, 1000, 2000] as const;
+const PAGE_SIZE_ITEMS = PAGE_SIZE_OPTIONS.map((option) => ({
+	label: String(option),
+	value: String(option),
+}));
 const VIRTUAL_ROW_HEIGHT = 52;
 const MIN_PREFETCH_AHEAD_ROWS = 50;
 const PREFETCH_LINEAR_SCALE = 0.3;
@@ -62,57 +79,43 @@ function MassiveDataPage() {
 	const [mode, setMode] = useState<MassiveMode>("infinite");
 
 	return (
-		<div className="min-h-screen bg-radial from-slate-900 via-slate-950 to-black p-6 text-white">
+		<div className="p-6">
 			<div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
-				<div className="rounded-2xl border border-slate-700 bg-slate-900/80 p-6 shadow-xl">
-					<div className="flex flex-wrap items-center justify-between gap-4">
-						<div>
-							<h1 className="text-3xl font-bold tracking-tight">Massive Data Demo</h1>
-							<p className="mt-2 max-w-3xl text-sm text-slate-300">
-								Convex-generated dataset rendered with TanStack Query in paginated and infinite
-								loading modes.
-							</p>
+				<Card>
+					<CardHeader>
+						<div className="flex flex-wrap items-center justify-between gap-4">
+							<div>
+								<CardTitle className="text-3xl">Massive Data Demo</CardTitle>
+								<CardDescription className="mt-2 max-w-3xl">
+									Convex-generated dataset rendered with TanStack Query in paginated and infinite
+									loading modes.
+								</CardDescription>
+							</div>
 						</div>
-						<div className="inline-flex rounded-xl border border-slate-700 bg-slate-950 p-1">
-							<ModeButton active={mode === "paginated"} onClick={() => setMode("paginated")}>
-								Paginated
-							</ModeButton>
-							<ModeButton active={mode === "infinite"} onClick={() => setMode("infinite")}>
-								Infinite
-							</ModeButton>
-						</div>
-					</div>
-				</div>
+					</CardHeader>
+				</Card>
 
-				{mode === "paginated" ? (
-					<PaginatedDatasetView />
-				) : (
-					<InfiniteDatasetView convexQueryClient={convexQueryClient} />
-				)}
+				<Tabs
+					value={mode}
+					onValueChange={(value) => {
+						if (value === "paginated" || value === "infinite") {
+							setMode(value);
+						}
+					}}
+				>
+					<TabsList className="w-fit">
+						<TabsTrigger value="paginated">Paginated</TabsTrigger>
+						<TabsTrigger value="infinite">Infinite</TabsTrigger>
+					</TabsList>
+					<TabsContent value="paginated">
+						<PaginatedDatasetView />
+					</TabsContent>
+					<TabsContent value="infinite">
+						<InfiniteDatasetView convexQueryClient={convexQueryClient} />
+					</TabsContent>
+				</Tabs>
 			</div>
 		</div>
-	);
-}
-
-function ModeButton({
-	active,
-	onClick,
-	children,
-}: {
-	active: boolean;
-	onClick: () => void;
-	children: ReactNode;
-}) {
-	return (
-		<button
-			type="button"
-			onClick={onClick}
-			className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
-				active ? "bg-cyan-500 text-white" : "text-slate-300 hover:bg-slate-800"
-			}`}
-		>
-			{children}
-		</button>
 	);
 }
 
@@ -131,9 +134,11 @@ function PaginatedDatasetView() {
 
 	if (!data) {
 		return (
-			<div className="rounded-xl border border-slate-700 bg-slate-900/80 p-6 text-center text-slate-300">
-				Loading dataset...
-			</div>
+			<Card>
+				<CardContent className="text-muted-foreground p-6 text-center">
+					Loading dataset...
+				</CardContent>
+			</Card>
 		);
 	}
 
@@ -150,67 +155,68 @@ function PaginatedDatasetView() {
 				fetchStatus={isFetching ? "Refreshing" : "Ready"}
 			/>
 
-			<div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-700 bg-slate-900/80 p-4">
-				<label className="text-sm text-slate-300" htmlFor="page-size">
-					Page size
-				</label>
-				<select
-					id="page-size"
-					value={pageSize}
-					onChange={(event) => {
-						const nextPageSize = Number(event.target.value);
-						setPageSize(nextPageSize);
-						setPageIndex(0);
-					}}
-					className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm"
-				>
-					{PAGE_SIZE_OPTIONS.map((option) => (
-						<option key={option} value={option}>
-							{option}
-						</option>
-					))}
-				</select>
+			<Card>
+				<CardContent className="flex flex-wrap items-center gap-3 pt-6">
+					<span className="text-muted-foreground text-sm">Page size</span>
+					<UiSelect
+						items={PAGE_SIZE_ITEMS}
+						value={String(pageSize)}
+						onValueChange={(value) => {
+							if (!value) return;
+							setPageSize(Number(value));
+							setPageIndex(0);
+						}}
+					>
+						<SelectTrigger className="w-28">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								{PAGE_SIZE_ITEMS.map((option) => (
+									<SelectItem key={option.value} value={option.value}>
+										{option.label}
+									</SelectItem>
+								))}
+							</SelectGroup>
+						</SelectContent>
+					</UiSelect>
 
-				<div className="ml-auto flex items-center gap-2">
-					<button
-						type="button"
-						onClick={() => setPageIndex(0)}
-						disabled={!canPrev}
-						className="rounded-lg border border-slate-700 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
-					>
-						First
-					</button>
-					<button
-						type="button"
-						onClick={() => setPageIndex((prev) => Math.max(0, prev - 1))}
-						disabled={!canPrev}
-						className="rounded-lg border border-slate-700 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
-					>
-						Prev
-					</button>
-					<span className="min-w-36 text-center text-sm text-slate-300">
-						Page {pageIndex + 1} / {totalPages}
-					</span>
-					<button
-						type="button"
-						onClick={() => setPageIndex((prev) => Math.min(totalPages - 1, prev + 1))}
-						disabled={!canNext}
-						className="rounded-lg border border-slate-700 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
-					>
-						Next
-					</button>
-					<button
-						type="button"
-						onClick={() => setPageIndex(() => Math.max(0, totalPages - 1))}
-						disabled={!canNext}
-						className="rounded-lg border border-slate-700 px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
-					>
-						Last
-					</button>
-				</div>
+					<div className="ml-auto flex items-center gap-2">
+						<Button variant="outline" size="sm" onClick={() => setPageIndex(0)} disabled={!canPrev}>
+							First
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => setPageIndex((prev) => Math.max(0, prev - 1))}
+							disabled={!canPrev}
+						>
+							Prev
+						</Button>
+						<span className="text-muted-foreground min-w-36 text-center text-sm">
+							Page {pageIndex + 1} / {totalPages}
+						</span>
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => setPageIndex((prev) => Math.min(totalPages - 1, prev + 1))}
+							disabled={!canNext}
+						>
+							Next
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => setPageIndex(() => Math.max(0, totalPages - 1))}
+							disabled={!canNext}
+						>
+							Last
+						</Button>
+					</div>
 
-				<DatasetRowsTable rows={data.rows} />
-			</div>
+					<DatasetRowsTable rows={data.rows} />
+				</CardContent>
+			</Card>
 		</div>
 	);
 }
@@ -259,31 +265,40 @@ function InfiniteDatasetView({ convexQueryClient }: { convexQueryClient: ConvexQ
 				fetchStatus={isFetchingNextPage ? "Loading next page" : isFetching ? "Refreshing" : "Ready"}
 			/>
 
-			<div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-700 bg-slate-900/80 p-4">
-				<label className="text-sm text-slate-300" htmlFor="infinite-page-size">
-					Page size
-				</label>
-				<select
-					id="infinite-page-size"
-					value={pageSize}
-					onChange={(event) => setPageSize(Number(event.target.value))}
-					className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm"
-				>
-					{PAGE_SIZE_OPTIONS.map((option) => (
-						<option key={option} value={option}>
-							{option}
-						</option>
-					))}
-				</select>
+			<Card>
+				<CardContent className="flex flex-wrap items-center gap-3 pt-6">
+					<span className="text-muted-foreground text-sm">Page size</span>
+					<UiSelect
+						items={PAGE_SIZE_ITEMS}
+						value={String(pageSize)}
+						onValueChange={(value) => {
+							if (!value) return;
+							setPageSize(Number(value));
+						}}
+					>
+						<SelectTrigger className="w-28">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								{PAGE_SIZE_ITEMS.map((option) => (
+									<SelectItem key={option.value} value={option.value}>
+										{option.label}
+									</SelectItem>
+								))}
+							</SelectGroup>
+						</SelectContent>
+					</UiSelect>
 
-				<p className="ml-auto text-sm text-slate-300">
-					{hasMore
-						? isFetchingNextPage
-							? "Loading next page..."
-							: "Scroll to auto-load more (virtualized)"
-						: "No more rows"}
-				</p>
-			</div>
+					<p className="text-muted-foreground ml-auto text-sm">
+						{hasMore
+							? isFetchingNextPage
+								? "Loading next page..."
+								: "Scroll to auto-load more (virtualized)"
+							: "No more rows"}
+					</p>
+				</CardContent>
+			</Card>
 
 			<VirtualizedDatasetRowsTable
 				rows={rows}
@@ -294,7 +309,9 @@ function InfiniteDatasetView({ convexQueryClient }: { convexQueryClient: ConvexQ
 			/>
 
 			{isFetching && !isFetchingNextPage && (
-				<p className="text-right text-xs text-slate-400">Refreshing already loaded pages...</p>
+				<p className="text-muted-foreground text-right text-xs">
+					Refreshing already loaded pages...
+				</p>
 			)}
 		</div>
 	);
@@ -312,38 +329,24 @@ function StatsBar({
 	fetchStatus: string;
 }) {
 	const cards = [
-		{
-			icon: Database,
-			label: "Total",
-			value: formatInt(totalRows),
-		},
-		{
-			icon: Rows3,
-			label: "Loaded",
-			value: formatInt(loadedRows),
-		},
-		{
-			icon: BarChart3,
-			label: "Mode",
-			value: modeLabel,
-		},
-		{
-			icon: Timer,
-			label: "Fetch",
-			value: fetchStatus,
-		},
+		{ icon: Database, label: "Total", value: formatInt(totalRows) },
+		{ icon: Rows3, label: "Loaded", value: formatInt(loadedRows) },
+		{ icon: BarChart3, label: "Mode", value: modeLabel },
+		{ icon: Timer, label: "Fetch", value: fetchStatus },
 	] as const;
 
 	return (
 		<div className="grid grid-cols-2 gap-3 md:grid-cols-4">
 			{cards.map((card) => (
-				<div key={card.label} className="rounded-xl border border-slate-700 bg-slate-900/80 p-4">
-					<div className="mb-1 flex items-center gap-2 text-xs tracking-wide text-slate-400 uppercase">
-						<card.icon size={14} />
-						{card.label}
-					</div>
-					<div className="text-lg font-semibold">{card.value}</div>
-				</div>
+				<Card key={card.label}>
+					<CardContent className="p-4">
+						<div className="text-muted-foreground mb-1 flex items-center gap-2 text-xs tracking-wide uppercase">
+							<card.icon className="size-3.5" />
+							{card.label}
+						</div>
+						<div className="text-lg font-semibold">{card.value}</div>
+					</CardContent>
+				</Card>
 			))}
 		</div>
 	);
@@ -351,9 +354,9 @@ function StatsBar({
 
 function DatasetRowsTable({ rows }: { rows: MassiveRow[] }) {
 	return (
-		<div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-900/80">
+		<div className="w-full overflow-hidden rounded-lg border">
 			<div
-				className={`grid ${MASSIVE_DATA_GRID_COLUMNS} border-b border-slate-700 bg-slate-950/90 px-4 py-3 text-xs tracking-wide text-slate-400 uppercase`}
+				className={`grid ${MASSIVE_DATA_GRID_COLUMNS} bg-muted/50 text-muted-foreground border-b px-4 py-3 text-xs tracking-wide uppercase`}
 			>
 				<span>ID</span>
 				<span>Name</span>
@@ -368,16 +371,16 @@ function DatasetRowsTable({ rows }: { rows: MassiveRow[] }) {
 				{rows.map((row) => (
 					<div
 						key={row.id}
-						className={`grid w-full ${MASSIVE_DATA_GRID_COLUMNS} items-center border-b border-slate-800 px-4 py-3 text-sm text-slate-100`}
+						className={`grid w-full ${MASSIVE_DATA_GRID_COLUMNS} items-center border-b px-4 py-3 text-sm`}
 					>
-						<span className="font-mono text-xs text-slate-300">{row.id}</span>
+						<span className="text-muted-foreground font-mono text-xs">{row.id}</span>
 						<span className="truncate">{row.name}</span>
 						<span>{row.region}</span>
-						<span className={statusClassName(row.status)}>{row.status}</span>
+						<StatusBadge status={row.status} />
 						<span>{formatInt(row.score)}</span>
 						<span>{formatInt(row.throughput)}</span>
 						<span>{row.latencyMs}ms</span>
-						<span className="text-xs text-slate-400">{formatTime(row.updatedAt)}</span>
+						<span className="text-muted-foreground text-xs">{formatTime(row.updatedAt)}</span>
 					</div>
 				))}
 			</div>
@@ -423,9 +426,9 @@ function VirtualizedDatasetRowsTable({
 	}, [fetchNextPage, hasMore, isFetchingNextPage, prefetchAheadRows, rows.length, virtualItems]);
 
 	return (
-		<div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-900/80">
+		<div className="overflow-hidden rounded-lg border">
 			<div
-				className={`grid ${MASSIVE_DATA_GRID_COLUMNS} border-b border-slate-700 bg-slate-950/90 px-4 py-3 text-xs tracking-wide text-slate-400 uppercase`}
+				className={`grid ${MASSIVE_DATA_GRID_COLUMNS} bg-muted/50 text-muted-foreground border-b px-4 py-3 text-xs tracking-wide uppercase`}
 			>
 				<span>ID</span>
 				<span>Name</span>
@@ -451,7 +454,7 @@ function VirtualizedDatasetRowsTable({
 						return (
 							<div
 								key={virtualRow.key}
-								className={`grid w-full ${MASSIVE_DATA_GRID_COLUMNS} items-center border-b border-slate-800 px-4 py-3 text-sm text-slate-100`}
+								className={`grid w-full ${MASSIVE_DATA_GRID_COLUMNS} items-center border-b px-4 py-3 text-sm`}
 								style={{
 									position: "absolute",
 									top: 0,
@@ -462,19 +465,21 @@ function VirtualizedDatasetRowsTable({
 								}}
 							>
 								{isLoaderRow || !row ? (
-									<span className="col-span-8 text-center text-xs text-slate-400">
+									<span className="text-muted-foreground col-span-8 text-center text-xs">
 										{hasMore ? "Loading more rows..." : "All rows loaded"}
 									</span>
 								) : (
 									<>
-										<span className="font-mono text-xs text-slate-300">{row.id}</span>
+										<span className="text-muted-foreground font-mono text-xs">{row.id}</span>
 										<span className="truncate">{row.name}</span>
 										<span>{row.region}</span>
-										<span className={statusClassName(row.status)}>{row.status}</span>
+										<StatusBadge status={row.status} />
 										<span>{formatInt(row.score)}</span>
 										<span>{formatInt(row.throughput)}</span>
 										<span>{row.latencyMs}ms</span>
-										<span className="text-xs text-slate-400">{formatTime(row.updatedAt)}</span>
+										<span className="text-muted-foreground text-xs">
+											{formatTime(row.updatedAt)}
+										</span>
 									</>
 								)}
 							</div>
@@ -486,11 +491,11 @@ function VirtualizedDatasetRowsTable({
 	);
 }
 
-function statusClassName(status: MassiveRow["status"]) {
-	if (status === "active") return "text-emerald-300";
-	if (status === "paused") return "text-amber-300";
-	if (status === "error") return "text-rose-300";
-	return "text-slate-300";
+function StatusBadge({ status }: { status: MassiveRow["status"] }) {
+	const variant =
+		status === "active" ? "default" : status === "error" ? "destructive" : "secondary";
+
+	return <Badge variant={variant}>{status}</Badge>;
 }
 
 function formatInt(value: number) {

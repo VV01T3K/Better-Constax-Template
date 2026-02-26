@@ -17,9 +17,7 @@ declare global {
 const convexUrl = env.VITE_CONVEX_URL;
 
 export const getRouter = () => {
-	const convexQueryClient = new ConvexQueryClient(convexUrl, {
-		expectAuth: true,
-	});
+	const convexQueryClient = new ConvexQueryClient(convexUrl);
 
 	const queryClient = new QueryClient({
 		defaultOptions: {
@@ -52,9 +50,3 @@ export const getRouter = () => {
 
 	return router;
 };
-
-declare module "@tanstack/react-router" {
-	interface Register {
-		router: ReturnType<typeof getRouter>;
-	}
-}

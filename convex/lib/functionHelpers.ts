@@ -2,7 +2,9 @@ import { NoOp, customCtx } from "convex-helpers/server/customFunctions";
 import { zCustomMutation, zCustomQuery } from "convex-helpers/server/zod4";
 import type { UserIdentity } from "convex/server";
 import { ConvexError } from "convex/values";
+import { z } from "zod";
 
+import { components } from "../_generated/api";
 import type { Doc, Id, TableNames } from "../_generated/dataModel";
 import { mutation, query, type MutationCtx, type QueryCtx } from "../_generated/server";
 import { parseAuthUserId, type AppPermission, type AuthUserId } from "../schemas";
@@ -11,10 +13,16 @@ import { hasPermission } from "./authorization";
 export const zQuery = zCustomQuery(query, NoOp);
 export const zMutation = zCustomMutation(mutation, NoOp);
 
-type ContextWithAuth = Pick<QueryCtx, "auth"> | Pick<MutationCtx, "auth">;
+type ContextWithAuthAndRunner =
+	| Pick<QueryCtx, "auth" | "runQuery">
+	| Pick<MutationCtx, "auth" | "runQuery">;
 type ContextWithDb = Pick<QueryCtx, "db"> | Pick<MutationCtx, "db">;
 type ContextWithIdentity = { identity: UserIdentity };
 type MaybePromise<T> = T | Promise<T>;
+const betterAuthSessionSchema = z.object({
+	userId: z.string().optional(),
+	expiresAt: z.number().nullable().optional(),
+});
 
 export function throwUnauthorized(message = "Authentication required"): never {
 	throw new ConvexError({
@@ -37,11 +45,61 @@ export function throwNotFound(message = "Resource not found"): never {
 	});
 }
 
+function getSessionIdClaim(identity: UserIdentity): string | null {
+	const sessionId = identity.sessionId;
+	if (typeof sessionId !== "string" || sessionId.length === 0) {
+		return null;
+	}
+	return sessionId;
+}
+
+async function hasActiveSession(
+	ctx: ContextWithAuthAndRunner,
+	identity: UserIdentity,
+): Promise<boolean> {
+	const sessionId = getSessionIdClaim(identity);
+	if (!sessionId) {
+		return false;
+	}
+
+	const session = await ctx.runQuery(components.betterAuth.adapter.findOne, {
+		model: "session",
+		where: [{ field: "_id", operator: "eq", value: sessionId }],
+	});
+	if (!session || typeof session !== "object") {
+		return false;
+	}
+
+	const parsedSession = betterAuthSessionSchema.safeParse(session);
+	if (!parsedSession.success) {
+		return false;
+	}
+	const sessionRecord = parsedSession.data;
+	if (typeof sessionRecord.userId !== "string" || sessionRecord.userId !== identity.subject) {
+		return false;
+	}
+
+	return (
+		typeof sessionRecord.expiresAt !== "number" ||
+		Number.isNaN(sessionRecord.expiresAt) ||
+		sessionRecord.expiresAt > Date.now()
+	);
+}
+
+export async function getValidatedIdentity(ctx: ContextWithAuthAndRunner): Promise<UserIdentity | null> {
+	const identity = await ctx.auth.getUserIdentity();
+	if (!identity) {
+		return null;
+	}
+
+	return (await hasActiveSession(ctx, identity)) ? identity : null;
+}
+
 export async function requireAuth(
-	ctx: ContextWithAuth,
+	ctx: ContextWithAuthAndRunner,
 	options?: { message?: string },
 ): Promise<UserIdentity> {
-	const identity = await ctx.auth.getUserIdentity();
+	const identity = await getValidatedIdentity(ctx);
 	if (!identity) {
 		throwUnauthorized(options?.message);
 	}
