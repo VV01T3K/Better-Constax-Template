@@ -20,7 +20,7 @@
 		"**/bun.lock",
 		"**/_generated/**",
 		"**/generated/**",
-		"**/betterAuth/generatedSchema.ts",
+		"convex/functions/authSchema.ts",
 		"convex/shared/api.ts"
 	]
 }
