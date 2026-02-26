@@ -19,6 +19,7 @@
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true,
+		"strictFunctionTypes": false,
 		"noUncheckedSideEffectImports": true,
 		"paths": {
 			"@/*": ["./src/*"],
