@@ -15,6 +15,7 @@ export const getServerAuthState = createServerFn({ method: "GET" }).handler(asyn
 
 	return {
 		isAuthenticated: ctx.isAuthenticated,
+		token: ctx.token ?? null,
 	};
 });
 

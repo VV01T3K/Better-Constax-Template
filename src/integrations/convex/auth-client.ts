@@ -1,5 +1,5 @@
 import { createAuthClient } from "better-auth/react";
-import { convexClient } from "better-convex/auth-client";
+import { convexClient } from "better-convex/auth/client";
 import { createAuthMutations } from "better-convex/react";
 
 import { env } from "../../env";

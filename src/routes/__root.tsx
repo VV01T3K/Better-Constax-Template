@@ -5,6 +5,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import Header from "../components/Header";
 import ConvexProvider from "../integrations/convex/provider";
+import { getServerAuthState } from "../integrations/convex/server-fn";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import TanStackQueryProvider from "../integrations/tanstack-query/root-provider";
 
@@ -35,6 +36,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 			},
 		],
 	}),
+	beforeLoad: async () => {
+		return await getServerAuthState();
+	},
 	shellComponent: RootDocument,
 });
 

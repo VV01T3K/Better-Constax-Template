@@ -1,8 +1,8 @@
-import { CRPCError, initCRPC } from "better-convex/server";
+import { CRPCError } from "better-convex/server";
 
-import type { DataModel } from "../functions/_generated/dataModel";
+import { initCRPC } from "../functions/generated/server";
 
-const crpc = initCRPC.dataModel<DataModel>().create();
+const crpc = initCRPC.create();
 
 export const publicQuery = crpc.query;
 export const publicMutation = crpc.mutation;
