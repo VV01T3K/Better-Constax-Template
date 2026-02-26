@@ -1,13 +1,31 @@
-import { ConvexQueryClient } from "@convex-dev/react-query";
-import { ConvexProvider } from "convex/react";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+	ConvexProvider,
+	ConvexReactClient,
+	getConvexQueryClientSingleton,
+} from "better-convex/react";
 
-const CONVEX_URL = import.meta.env.VITE_CONVEX_URL;
+import { env } from "../../env";
+import { CRPCProvider } from "./crpc";
+
+const CONVEX_URL = env.VITE_CONVEX_URL;
 if (!CONVEX_URL) {
-	// eslint-disable-next-line no-console
-	console.error("missing envar CONVEX_URL");
+	throw new Error("Missing required env var: VITE_CONVEX_URL");
 }
-const convexQueryClient = new ConvexQueryClient(CONVEX_URL);
+const convexClient = new ConvexReactClient(CONVEX_URL);
 
 export default function AppConvexProvider({ children }: { children: React.ReactNode }) {
-	return <ConvexProvider client={convexQueryClient.convexClient}>{children}</ConvexProvider>;
+	const queryClient = useQueryClient();
+	const convexQueryClient = getConvexQueryClientSingleton({
+		convex: convexClient,
+		queryClient,
+	});
+
+	return (
+		<ConvexProvider client={convexClient}>
+			<CRPCProvider convexQueryClient={convexQueryClient} convexClient={convexClient}>
+				{children}
+			</CRPCProvider>
+		</ConvexProvider>
+	);
 }

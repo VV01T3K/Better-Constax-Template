@@ -1,10 +1,10 @@
+import type { Doc, Id } from "@convex/dataModel";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, useMutation } from "convex/react";
 import { Trash2, Plus, Check, Circle } from "lucide-react";
 import { useCallback, useState } from "react";
 
-import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
+import { useCRPC } from "../../integrations/convex/crpc";
 
 export const Route = createFileRoute("/demo/convex")({
 	ssr: false,
@@ -12,12 +12,14 @@ export const Route = createFileRoute("/demo/convex")({
 });
 
 function ConvexTodos() {
-	const todos = useQuery(api.todos.list);
-	const addTodo = useMutation(api.todos.add);
-	const toggleTodo = useMutation(api.todos.toggle);
-	const removeTodo = useMutation(api.todos.remove);
+	const crpc = useCRPC();
+	const { data: todos, isPending } = useQuery(crpc.todos.list.queryOptions({}));
+	const { mutateAsync: addTodo } = useMutation(crpc.todos.add.mutationOptions());
+	const { mutateAsync: toggleTodo } = useMutation(crpc.todos.toggle.mutationOptions());
+	const { mutateAsync: removeTodo } = useMutation(crpc.todos.remove.mutationOptions());
 
 	const [newTodo, setNewTodo] = useState("");
+	const todoItems: Doc<"todos">[] = todos ?? [];
 
 	const handleAddTodo = useCallback(async () => {
 		if (newTodo.trim()) {
@@ -40,8 +42,8 @@ function ConvexTodos() {
 		[removeTodo],
 	);
 
-	const completedCount = todos?.filter((todo) => todo.completed).length || 0;
-	const totalCount = todos?.length || 0;
+	const completedCount = todoItems.filter((todo) => todo.completed).length;
+	const totalCount = todoItems.length;
 
 	return (
 		<div
@@ -84,7 +86,7 @@ function ConvexTodos() {
 						<button
 							onClick={handleAddTodo}
 							disabled={!newTodo.trim()}
-							className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:from-green-600 hover:to-green-700 hover:shadow-xl disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400"
+							className="flex items-center gap-2 rounded-xl bg-linear-to-r from-green-500 to-green-600 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:from-green-600 hover:to-green-700 hover:shadow-xl disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400"
 						>
 							<Plus size={20} />
 							Add
@@ -94,12 +96,12 @@ function ConvexTodos() {
 
 				{/* Todos List */}
 				<div className="overflow-hidden rounded-2xl border border-green-200/50 bg-white/95 shadow-xl backdrop-blur-sm">
-					{!todos ? (
+					{isPending ? (
 						<div className="p-8 text-center">
 							<div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-green-500"></div>
 							<p className="text-green-600">Loading todos...</p>
 						</div>
-					) : todos.length === 0 ? (
+					) : todoItems.length === 0 ? (
 						<div className="p-12 text-center">
 							<Circle size={48} className="mx-auto mb-4 text-green-300" />
 							<h3 className="mb-2 text-xl font-semibold text-green-800">No todos yet</h3>
@@ -107,7 +109,7 @@ function ConvexTodos() {
 						</div>
 					) : (
 						<div className="divide-y divide-green-100">
-							{todos.map((todo, index) => (
+							{todoItems.map((todo, index) => (
 								<div
 									key={todo._id}
 									className={`flex items-center gap-4 p-4 transition-colors hover:bg-green-50/50 ${
@@ -119,7 +121,7 @@ function ConvexTodos() {
 								>
 									<button
 										onClick={() => handleToggleTodo(todo._id)}
-										className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 ${
+										className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 ${
 											todo.completed
 												? "border-green-500 bg-green-500 text-white"
 												: "border-green-300 text-transparent hover:border-green-400 hover:text-green-400"
@@ -138,7 +140,7 @@ function ConvexTodos() {
 
 									<button
 										onClick={() => handleRemoveTodo(todo._id)}
-										className="flex-shrink-0 rounded-lg p-2 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
+										className="shrink-0 rounded-lg p-2 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
 									>
 										<Trash2 size={18} />
 									</button>
@@ -151,7 +153,7 @@ function ConvexTodos() {
 				{/* Footer */}
 				<div className="mt-6 text-center">
 					<p className="text-sm text-green-700/80">
-						Built with Convex • Real-time updates • Always in sync
+						Built with Better Convex • Real-time updates • Always in sync
 					</p>
 				</div>
 			</div>
