@@ -50,8 +50,7 @@ function GlobalPendingIndicator() {
 		<div className="fixed right-4 bottom-4 z-50">
 			<Badge className="flex items-center gap-2 px-4 py-2">
 				<Loader2 className="size-4 animate-spin" />
-				{pendingMutations.length} {pendingMutations.length === 1 ? "change" : "changes"}{" "}
-				syncing...
+				{pendingMutations.length} {pendingMutations.length === 1 ? "change" : "changes"} syncing...
 			</Badge>
 		</div>
 	);
@@ -93,13 +92,11 @@ function TanStackOptimisticTodos() {
 					<CardTitle className="text-3xl">TanStack Query - Optimistic Todos</CardTitle>
 					<CardDescription>useMutationState for visual optimism</CardDescription>
 					{totalCount > 0 && (
-						<div className="mt-2 flex justify-center gap-6 text-sm text-muted-foreground">
+						<div className="text-muted-foreground mt-2 flex justify-center gap-6 text-sm">
 							<span>{completedCount} completed</span>
 							<span>{totalCount - completedCount} remaining</span>
 							{pendingCount > 0 && (
-								<span className="animate-pulse text-primary">
-									{pendingCount} syncing...
-								</span>
+								<span className="text-primary animate-pulse">{pendingCount} syncing...</span>
 							)}
 						</div>
 					)}
@@ -110,8 +107,7 @@ function TanStackOptimisticTodos() {
 				<Zap className="size-4" />
 				<AlertTitle>Zero cache manipulation</AlertTitle>
 				<AlertDescription>
-					Uses useMutationState to track pending mutations. No onMutate/onError callbacks
-					needed.
+					Uses useMutationState to track pending mutations. No onMutate/onError callbacks needed.
 				</AlertDescription>
 			</Alert>
 
@@ -133,9 +129,7 @@ function TanStackOptimisticTodos() {
 							Add
 						</Button>
 					</div>
-					{validationError && (
-						<p className="mt-2 text-sm text-destructive">{validationError}</p>
-					)}
+					{validationError && <p className="text-destructive mt-2 text-sm">{validationError}</p>}
 				</CardContent>
 			</Card>
 
@@ -143,18 +137,16 @@ function TanStackOptimisticTodos() {
 				<CardContent className="p-0">
 					{todos.length === 0 ? (
 						<div className="p-12 text-center">
-							<Circle className="mx-auto mb-4 size-12 text-muted-foreground/40" />
+							<Circle className="text-muted-foreground/40 mx-auto mb-4 size-12" />
 							<h3 className="mb-2 text-xl font-semibold">No todos yet</h3>
-							<p className="text-muted-foreground">
-								Add your first todo above to get started!
-							</p>
+							<p className="text-muted-foreground">Add your first todo above to get started!</p>
 						</div>
 					) : (
-						<div className="divide-y divide-border">
+						<div className="divide-border divide-y">
 							{todos.map((todo) => (
 								<div
 									key={todo.id}
-									className={`flex items-center gap-4 p-4 transition-all hover:bg-muted/50 ${
+									className={`hover:bg-muted/50 flex items-center gap-4 p-4 transition-all ${
 										todo.completed ? "opacity-60" : ""
 									} ${todo.status === "pending" ? "opacity-40" : ""}`}
 								>
@@ -167,9 +159,7 @@ function TanStackOptimisticTodos() {
 									/>
 									<span
 										className={`flex-1 text-base ${
-											todo.completed
-												? "text-muted-foreground line-through"
-												: "text-foreground"
+											todo.completed ? "text-muted-foreground line-through" : "text-foreground"
 										}`}
 									>
 										{todo.text}
@@ -196,7 +186,7 @@ function TanStackOptimisticTodos() {
 				</CardContent>
 			</Card>
 
-			<p className="text-center text-sm text-muted-foreground">
+			<p className="text-muted-foreground text-center text-sm">
 				Built with TanStack Query v5 &bull; useMutationState + Optimistic UI
 			</p>
 

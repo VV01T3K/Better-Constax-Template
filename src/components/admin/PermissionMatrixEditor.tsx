@@ -9,7 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -160,9 +160,9 @@ export function PermissionMatrixEditor({
 				header: "Permission",
 				cell: ({ row }) => (
 					<div className="min-w-80 space-y-1">
-						<p className="font-semibold text-foreground">{row.original.label}</p>
-						<p className="text-xs text-muted-foreground">{row.original.key}</p>
-						<p className="text-xs text-muted-foreground">{row.original.description}</p>
+						<p className="text-foreground font-semibold">{row.original.label}</p>
+						<p className="text-muted-foreground text-xs">{row.original.key}</p>
+						<p className="text-muted-foreground text-xs">{row.original.description}</p>
 					</div>
 				),
 			},
@@ -235,12 +235,24 @@ export function PermissionMatrixEditor({
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="flex flex-wrap gap-2">
-							<Button asChild variant={scope === "app" ? "default" : "outline"} size="sm">
-								<Link to="/admin/permissions">App Permissions</Link>
-							</Button>
-							<Button asChild variant={scope === "admin" ? "default" : "outline"} size="sm">
-								<Link to="/admin/permissions/admin">Admin Permissions</Link>
-							</Button>
+							<Link
+								to="/admin/permissions"
+								className={buttonVariants({
+									variant: scope === "app" ? "default" : "outline",
+									size: "sm",
+								})}
+							>
+								App Permissions
+							</Link>
+							<Link
+								to="/admin/permissions/admin"
+								className={buttonVariants({
+									variant: scope === "admin" ? "default" : "outline",
+									size: "sm",
+								})}
+							>
+								Admin Permissions
+							</Link>
 						</div>
 
 						<Input
@@ -275,7 +287,7 @@ export function PermissionMatrixEditor({
 					<TableBody>
 						{table.getRowModel().rows.length === 0 ? (
 							<TableRow>
-								<TableCell colSpan={6} className="text-center text-muted-foreground">
+								<TableCell colSpan={6} className="text-muted-foreground text-center">
 									No permissions match your search.
 								</TableCell>
 							</TableRow>

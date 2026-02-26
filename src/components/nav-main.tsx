@@ -15,13 +15,7 @@ export type NavItem = {
 	icon: LucideIcon;
 };
 
-export function NavMain({
-	label,
-	items,
-}: {
-	label: string;
-	items: NavItem[];
-}) {
+export function NavMain({ label, items }: { label: string; items: NavItem[] }) {
 	if (items.length === 0) return null;
 
 	return (
@@ -31,13 +25,8 @@ export function NavMain({
 				{items.map((item) => (
 					<SidebarMenuItem key={item.to}>
 						<SidebarMenuButton
-							tooltip={item.label}
 							render={
-								<Link
-									to={item.to}
-									activeProps={{ "data-active": true }}
-									aria-label={item.label}
-								/>
+								<Link to={item.to} activeProps={{ "data-active": true }} aria-label={item.label} />
 							}
 						>
 							<item.icon />

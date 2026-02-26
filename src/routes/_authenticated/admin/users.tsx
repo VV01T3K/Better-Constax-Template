@@ -194,8 +194,8 @@ function AdminUsersPage() {
 			header: "User",
 			cell: ({ row }) => (
 				<div className="min-w-52">
-					<p className="font-semibold text-foreground">{row.original.name}</p>
-					<p className="text-xs text-muted-foreground">{row.original.email}</p>
+					<p className="text-foreground font-semibold">{row.original.name}</p>
+					<p className="text-muted-foreground text-xs">{row.original.email}</p>
 				</div>
 			),
 		},
@@ -212,13 +212,17 @@ function AdminUsersPage() {
 			id: "status",
 			header: "Status",
 			cell: ({ row }) =>
-				row.original.banned ? <Badge variant="destructive">banned</Badge> : <Badge variant="secondary">active</Badge>,
+				row.original.banned ? (
+					<Badge variant="destructive">banned</Badge>
+				) : (
+					<Badge variant="secondary">active</Badge>
+				),
 		},
 		{
 			accessorKey: "createdAt",
 			header: "Created",
 			cell: ({ row }) => (
-				<span className="text-xs text-muted-foreground">
+				<span className="text-muted-foreground text-xs">
 					{row.original.createdAt ? row.original.createdAt.toLocaleDateString() : "Unknown"}
 				</span>
 			),
@@ -300,7 +304,7 @@ function AdminUsersPage() {
 									Assign roles and start guarded impersonation sessions for non-admin users.
 								</CardDescription>
 							</div>
-							<div className="text-sm text-muted-foreground">
+							<div className="text-muted-foreground text-sm">
 								{usersQuery.isFetching ? (
 									<span className="inline-flex items-center gap-2">
 										<Loader2 size={14} className="animate-spin" />
@@ -337,7 +341,8 @@ function AdminUsersPage() {
 				) : usersQuery.isError ? (
 					<Alert variant="destructive">
 						<AlertDescription>
-							Failed to load users: {usersQuery.error instanceof Error ? usersQuery.error.message : "Unknown error"}
+							Failed to load users:{" "}
+							{usersQuery.error instanceof Error ? usersQuery.error.message : "Unknown error"}
 						</AlertDescription>
 					</Alert>
 				) : (
@@ -358,7 +363,7 @@ function AdminUsersPage() {
 						<TableBody>
 							{table.getRowModel().rows.length === 0 ? (
 								<TableRow>
-									<TableCell colSpan={columns.length} className="text-center text-muted-foreground">
+									<TableCell colSpan={columns.length} className="text-muted-foreground text-center">
 										No users found.
 									</TableCell>
 								</TableRow>

@@ -22,7 +22,7 @@ import { useMemo, useState } from "react";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
@@ -251,9 +251,7 @@ function AppLayout() {
 						<AlertDescription className="flex flex-wrap items-center justify-between gap-2">
 							<span>
 								Impersonating{" "}
-								<strong>
-									{sessionData?.user?.email ?? sessionData?.user?.name ?? "user"}
-								</strong>
+								<strong>{sessionData?.user?.email ?? sessionData?.user?.name ?? "user"}</strong>
 							</span>
 							<Button
 								variant="secondary"
@@ -302,13 +300,13 @@ function NotFoundComponent() {
 		<main className="flex min-h-[60vh] items-center justify-center px-6">
 			<Card className="max-w-md text-center">
 				<CardContent className="space-y-4 pt-6">
-					<h1 className="text-3xl font-semibold text-foreground">Page not found</h1>
-					<p className="text-sm text-muted-foreground">
+					<h1 className="text-foreground text-3xl font-semibold">Page not found</h1>
+					<p className="text-muted-foreground text-sm">
 						The route you tried to reach does not exist.
 					</p>
-					<Button asChild>
-						<Link to="/">Go Home</Link>
-					</Button>
+					<Link to="/" className={buttonVariants()}>
+						Go Home
+					</Link>
 				</CardContent>
 			</Card>
 		</main>

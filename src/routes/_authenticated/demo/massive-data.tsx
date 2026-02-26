@@ -87,8 +87,8 @@ function MassiveDataPage() {
 							<div>
 								<CardTitle className="text-3xl">Massive Data Demo</CardTitle>
 								<CardDescription className="mt-2 max-w-3xl">
-									Convex-generated dataset rendered with TanStack Query in paginated and
-									infinite loading modes.
+									Convex-generated dataset rendered with TanStack Query in paginated and infinite
+									loading modes.
 								</CardDescription>
 							</div>
 						</div>
@@ -135,7 +135,7 @@ function PaginatedDatasetView() {
 	if (!data) {
 		return (
 			<Card>
-				<CardContent className="p-6 text-center text-muted-foreground">
+				<CardContent className="text-muted-foreground p-6 text-center">
 					Loading dataset...
 				</CardContent>
 			</Card>
@@ -157,7 +157,7 @@ function PaginatedDatasetView() {
 
 			<Card>
 				<CardContent className="flex flex-wrap items-center gap-3 pt-6">
-					<span className="text-sm text-muted-foreground">Page size</span>
+					<span className="text-muted-foreground text-sm">Page size</span>
 					<UiSelect
 						items={PAGE_SIZE_ITEMS}
 						value={String(pageSize)}
@@ -182,12 +182,7 @@ function PaginatedDatasetView() {
 					</UiSelect>
 
 					<div className="ml-auto flex items-center gap-2">
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => setPageIndex(0)}
-							disabled={!canPrev}
-						>
+						<Button variant="outline" size="sm" onClick={() => setPageIndex(0)} disabled={!canPrev}>
 							First
 						</Button>
 						<Button
@@ -198,15 +193,13 @@ function PaginatedDatasetView() {
 						>
 							Prev
 						</Button>
-						<span className="min-w-36 text-center text-sm text-muted-foreground">
+						<span className="text-muted-foreground min-w-36 text-center text-sm">
 							Page {pageIndex + 1} / {totalPages}
 						</span>
 						<Button
 							variant="outline"
 							size="sm"
-							onClick={() =>
-								setPageIndex((prev) => Math.min(totalPages - 1, prev + 1))
-							}
+							onClick={() => setPageIndex((prev) => Math.min(totalPages - 1, prev + 1))}
 							disabled={!canNext}
 						>
 							Next
@@ -269,14 +262,12 @@ function InfiniteDatasetView({ convexQueryClient }: { convexQueryClient: ConvexQ
 				totalRows={totalRows}
 				loadedRows={rows.length}
 				modeLabel="Infinite"
-				fetchStatus={
-					isFetchingNextPage ? "Loading next page" : isFetching ? "Refreshing" : "Ready"
-				}
+				fetchStatus={isFetchingNextPage ? "Loading next page" : isFetching ? "Refreshing" : "Ready"}
 			/>
 
 			<Card>
 				<CardContent className="flex flex-wrap items-center gap-3 pt-6">
-					<span className="text-sm text-muted-foreground">Page size</span>
+					<span className="text-muted-foreground text-sm">Page size</span>
 					<UiSelect
 						items={PAGE_SIZE_ITEMS}
 						value={String(pageSize)}
@@ -299,7 +290,7 @@ function InfiniteDatasetView({ convexQueryClient }: { convexQueryClient: ConvexQ
 						</SelectContent>
 					</UiSelect>
 
-					<p className="ml-auto text-sm text-muted-foreground">
+					<p className="text-muted-foreground ml-auto text-sm">
 						{hasMore
 							? isFetchingNextPage
 								? "Loading next page..."
@@ -318,7 +309,7 @@ function InfiniteDatasetView({ convexQueryClient }: { convexQueryClient: ConvexQ
 			/>
 
 			{isFetching && !isFetchingNextPage && (
-				<p className="text-right text-xs text-muted-foreground">
+				<p className="text-muted-foreground text-right text-xs">
 					Refreshing already loaded pages...
 				</p>
 			)}
@@ -349,7 +340,7 @@ function StatsBar({
 			{cards.map((card) => (
 				<Card key={card.label}>
 					<CardContent className="p-4">
-						<div className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
+						<div className="text-muted-foreground mb-1 flex items-center gap-2 text-xs tracking-wide uppercase">
 							<card.icon className="size-3.5" />
 							{card.label}
 						</div>
@@ -365,7 +356,7 @@ function DatasetRowsTable({ rows }: { rows: MassiveRow[] }) {
 	return (
 		<div className="w-full overflow-hidden rounded-lg border">
 			<div
-				className={`grid ${MASSIVE_DATA_GRID_COLUMNS} border-b bg-muted/50 px-4 py-3 text-xs uppercase tracking-wide text-muted-foreground`}
+				className={`grid ${MASSIVE_DATA_GRID_COLUMNS} bg-muted/50 text-muted-foreground border-b px-4 py-3 text-xs tracking-wide uppercase`}
 			>
 				<span>ID</span>
 				<span>Name</span>
@@ -382,16 +373,14 @@ function DatasetRowsTable({ rows }: { rows: MassiveRow[] }) {
 						key={row.id}
 						className={`grid w-full ${MASSIVE_DATA_GRID_COLUMNS} items-center border-b px-4 py-3 text-sm`}
 					>
-						<span className="font-mono text-xs text-muted-foreground">{row.id}</span>
+						<span className="text-muted-foreground font-mono text-xs">{row.id}</span>
 						<span className="truncate">{row.name}</span>
 						<span>{row.region}</span>
 						<StatusBadge status={row.status} />
 						<span>{formatInt(row.score)}</span>
 						<span>{formatInt(row.throughput)}</span>
 						<span>{row.latencyMs}ms</span>
-						<span className="text-xs text-muted-foreground">
-							{formatTime(row.updatedAt)}
-						</span>
+						<span className="text-muted-foreground text-xs">{formatTime(row.updatedAt)}</span>
 					</div>
 				))}
 			</div>
@@ -439,7 +428,7 @@ function VirtualizedDatasetRowsTable({
 	return (
 		<div className="overflow-hidden rounded-lg border">
 			<div
-				className={`grid ${MASSIVE_DATA_GRID_COLUMNS} border-b bg-muted/50 px-4 py-3 text-xs uppercase tracking-wide text-muted-foreground`}
+				className={`grid ${MASSIVE_DATA_GRID_COLUMNS} bg-muted/50 text-muted-foreground border-b px-4 py-3 text-xs tracking-wide uppercase`}
 			>
 				<span>ID</span>
 				<span>Name</span>
@@ -476,21 +465,19 @@ function VirtualizedDatasetRowsTable({
 								}}
 							>
 								{isLoaderRow || !row ? (
-									<span className="col-span-8 text-center text-xs text-muted-foreground">
+									<span className="text-muted-foreground col-span-8 text-center text-xs">
 										{hasMore ? "Loading more rows..." : "All rows loaded"}
 									</span>
 								) : (
 									<>
-										<span className="font-mono text-xs text-muted-foreground">
-											{row.id}
-										</span>
+										<span className="text-muted-foreground font-mono text-xs">{row.id}</span>
 										<span className="truncate">{row.name}</span>
 										<span>{row.region}</span>
 										<StatusBadge status={row.status} />
 										<span>{formatInt(row.score)}</span>
 										<span>{formatInt(row.throughput)}</span>
 										<span>{row.latencyMs}ms</span>
-										<span className="text-xs text-muted-foreground">
+										<span className="text-muted-foreground text-xs">
 											{formatTime(row.updatedAt)}
 										</span>
 									</>
@@ -506,11 +493,7 @@ function VirtualizedDatasetRowsTable({
 
 function StatusBadge({ status }: { status: MassiveRow["status"] }) {
 	const variant =
-		status === "active"
-			? "default"
-			: status === "error"
-				? "destructive"
-				: "secondary";
+		status === "active" ? "default" : status === "error" ? "destructive" : "secondary";
 
 	return <Badge variant={variant}>{status}</Badge>;
 }

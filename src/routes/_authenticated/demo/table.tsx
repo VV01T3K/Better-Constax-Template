@@ -180,7 +180,7 @@ function TableDemo() {
 		return (
 			<div className="p-6">
 				<Card>
-					<CardContent className="p-6 text-muted-foreground">Loading table data...</CardContent>
+					<CardContent className="text-muted-foreground p-6">Loading table data...</CardContent>
 				</Card>
 			</div>
 		);
@@ -192,7 +192,7 @@ function TableDemo() {
 				<Card className="border-destructive">
 					<CardContent className="p-6">
 						<p className="font-semibold">Failed to load table data.</p>
-						<p className="mt-1 text-sm text-muted-foreground">{formatUnknownError(error)}</p>
+						<p className="text-muted-foreground mt-1 text-sm">{formatUnknownError(error)}</p>
 						<Button
 							variant="destructive"
 							size="sm"
@@ -243,30 +243,23 @@ function TableDemo() {
 							</Button>
 						</div>
 
-						<div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+						<div className="text-muted-foreground flex flex-wrap items-center gap-3 text-sm">
 							<span>{data.totalRows} rows total</span>
 							<span>{selectedCount} selected</span>
 							<span>{isFetching ? "Refreshing..." : "Up to date"}</span>
 						</div>
 
 						<details>
-							<summary className="cursor-pointer text-sm text-muted-foreground">
-								Columns
-							</summary>
+							<summary className="text-muted-foreground cursor-pointer text-sm">Columns</summary>
 							<div className="mt-2 flex flex-wrap gap-3 rounded-md border p-3">
 								{table
 									.getAllLeafColumns()
 									.filter((column) => column.getCanHide())
 									.map((column) => (
-										<label
-											key={column.id}
-											className="inline-flex items-center gap-2 text-sm"
-										>
+										<label key={column.id} className="inline-flex items-center gap-2 text-sm">
 											<Checkbox
 												checked={column.getIsVisible()}
-												onCheckedChange={() =>
-													column.toggleVisibility(!column.getIsVisible())
-												}
+												onCheckedChange={() => column.toggleVisibility(!column.getIsVisible())}
 											/>
 											<span>{getColumnLabel(column.id)}</span>
 										</label>
@@ -278,7 +271,7 @@ function TableDemo() {
 
 				{isError ? (
 					<Card className="border-destructive">
-						<CardContent className="p-3 text-sm text-destructive">
+						<CardContent className="text-destructive p-3 text-sm">
 							Refresh failed: {formatUnknownError(error)}
 						</CardContent>
 					</Card>
@@ -290,8 +283,7 @@ function TableDemo() {
 							<TableRow key={headerGroup.id}>
 								{headerGroup.headers.map((header) => {
 									const isSorted = header.column.getIsSorted();
-									const sortIndicator =
-										isSorted === "asc" ? " ▲" : isSorted === "desc" ? " ▼" : "";
+									const sortIndicator = isSorted === "asc" ? " ▲" : isSorted === "desc" ? " ▼" : "";
 
 									return (
 										<TableHead key={header.id}>
@@ -302,17 +294,11 @@ function TableDemo() {
 													onClick={header.column.getToggleSortingHandler()}
 													className="h-auto px-0 py-0 font-semibold hover:bg-transparent"
 												>
-													{flexRender(
-														header.column.columnDef.header,
-														header.getContext(),
-													)}
+													{flexRender(header.column.columnDef.header, header.getContext())}
 													{sortIndicator}
 												</Button>
 											) : (
-												flexRender(
-													header.column.columnDef.header,
-													header.getContext(),
-												)
+												flexRender(header.column.columnDef.header, header.getContext())
 											)}
 										</TableHead>
 									);
@@ -324,7 +310,7 @@ function TableDemo() {
 						{table.getRowModel().rows.length === 0 ? (
 							<TableRow>
 								<TableCell
-									className="text-center text-muted-foreground"
+									className="text-muted-foreground text-center"
 									colSpan={table.getAllLeafColumns().length}
 								>
 									No results for the current filter.
@@ -332,10 +318,7 @@ function TableDemo() {
 							</TableRow>
 						) : (
 							table.getRowModel().rows.map((row) => (
-								<TableRow
-									key={row.id}
-									data-state={row.getIsSelected() ? "selected" : undefined}
-								>
+								<TableRow key={row.id} data-state={row.getIsSelected() ? "selected" : undefined}>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
 											{flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -396,12 +379,12 @@ function TableDemo() {
 						{">>"}
 					</Button>
 
-					<span className="ml-2 text-sm text-muted-foreground">
+					<span className="text-muted-foreground ml-2 text-sm">
 						Page <strong className="text-foreground">{pageIndexForView + 1}</strong> of{" "}
 						<strong className="text-foreground">{pageCount}</strong>
 					</span>
 
-					<span className="text-sm text-muted-foreground">
+					<span className="text-muted-foreground text-sm">
 						| Go to:
 						<Input
 							type="number"
@@ -466,7 +449,7 @@ function TableDemo() {
 
 				<Card>
 					<CardContent className="p-4">
-						<pre className="overflow-auto text-xs text-muted-foreground">
+						<pre className="text-muted-foreground overflow-auto text-xs">
 							{JSON.stringify(
 								{
 									globalFilterInput,
@@ -496,13 +479,8 @@ const TABLE_COLUMNS: ColumnDef<TableRow_>[] = [
 		header: ({ table }) => (
 			<div className="flex items-center justify-center">
 				<Checkbox
-					checked={
-						table.getIsAllPageRowsSelected()
-							? true
-							: table.getIsSomePageRowsSelected()
-								? "mixed"
-								: false
-					}
+					checked={table.getIsAllPageRowsSelected()}
+					indeterminate={!table.getIsAllPageRowsSelected() && table.getIsSomePageRowsSelected()}
 					onCheckedChange={() => table.toggleAllPageRowsSelected()}
 					aria-label="Select all rows"
 				/>
@@ -552,7 +530,7 @@ const TABLE_COLUMNS: ColumnDef<TableRow_>[] = [
 			return (
 				<div className="flex min-w-28 items-center gap-2">
 					<Progress value={value} className="flex-1" />
-					<span className="text-xs text-muted-foreground">{value}%</span>
+					<span className="text-muted-foreground text-xs">{value}%</span>
 				</div>
 			);
 		},
@@ -563,11 +541,7 @@ const TABLE_COLUMNS: ColumnDef<TableRow_>[] = [
 		cell: ({ row }) => {
 			const value = row.original.status;
 			const variant =
-				value === "single"
-					? "default"
-					: value === "relationship"
-						? "secondary"
-						: "outline";
+				value === "single" ? "default" : value === "relationship" ? "secondary" : "outline";
 
 			return <Badge variant={variant}>{value}</Badge>;
 		},

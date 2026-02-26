@@ -73,7 +73,7 @@ function ConvexQueryTodos() {
 					<CardTitle className="text-3xl">Convex + TanStack Query</CardTitle>
 					<CardDescription>Mutations via @tanstack/react-query</CardDescription>
 					{totalCount > 0 && (
-						<div className="mt-2 flex justify-center gap-6 text-sm text-muted-foreground">
+						<div className="text-muted-foreground mt-2 flex justify-center gap-6 text-sm">
 							<span>{completedCount} completed</span>
 							<span>{totalCount - completedCount} remaining</span>
 						</div>
@@ -99,9 +99,7 @@ function ConvexQueryTodos() {
 							Add
 						</Button>
 					</div>
-					{validationError && (
-						<p className="mt-2 text-sm text-destructive">{validationError}</p>
-					)}
+					{validationError && <p className="text-destructive mt-2 text-sm">{validationError}</p>}
 				</CardContent>
 			</Card>
 
@@ -109,18 +107,16 @@ function ConvexQueryTodos() {
 				<CardContent className="p-0">
 					{todos.length === 0 ? (
 						<div className="p-12 text-center">
-							<Circle className="mx-auto mb-4 size-12 text-muted-foreground/40" />
+							<Circle className="text-muted-foreground/40 mx-auto mb-4 size-12" />
 							<h3 className="mb-2 text-xl font-semibold">No todos yet</h3>
-							<p className="text-muted-foreground">
-								Add your first todo above to get started!
-							</p>
+							<p className="text-muted-foreground">Add your first todo above to get started!</p>
 						</div>
 					) : (
-						<div className="divide-y divide-border">
+						<div className="divide-border divide-y">
 							{todos.map((todo) => (
 								<div
 									key={todo._id}
-									className={`flex items-center gap-4 p-4 transition-colors hover:bg-muted/50 ${
+									className={`hover:bg-muted/50 flex items-center gap-4 p-4 transition-colors ${
 										todo.completed ? "opacity-60" : ""
 									}`}
 								>
@@ -132,9 +128,7 @@ function ConvexQueryTodos() {
 									/>
 									<span
 										className={`flex-1 text-base ${
-											todo.completed
-												? "text-muted-foreground line-through"
-												: "text-foreground"
+											todo.completed ? "text-muted-foreground line-through" : "text-foreground"
 										}`}
 									>
 										{todo.text}
@@ -154,7 +148,7 @@ function ConvexQueryTodos() {
 				</CardContent>
 			</Card>
 
-			<p className="text-center text-sm text-muted-foreground">
+			<p className="text-muted-foreground text-center text-sm">
 				Built with Convex + TanStack Query &bull; useConvexMutation + useMutation
 			</p>
 		</div>

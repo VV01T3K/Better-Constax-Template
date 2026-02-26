@@ -21,7 +21,7 @@ import {
 import { err as resultErr, ok, type Result } from "neverthrow";
 import { useRef, useState } from "react";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -176,9 +176,7 @@ function FileUploadDemo() {
 
 						xhr.upload.addEventListener("progress", (progressEvent) => {
 							if (progressEvent.lengthComputable) {
-								const progress = Math.round(
-									(progressEvent.loaded / progressEvent.total) * 100,
-								);
+								const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
 								setUploadProgress(progress);
 							}
 						});
@@ -192,10 +190,7 @@ function FileUploadDemo() {
 								}
 								reject(new Error("Upload failed: missing storage id"));
 							} else {
-								const parsedMessage = extractJsonStringField(
-									xhr.responseText,
-									"message",
-								);
+								const parsedMessage = extractJsonStringField(xhr.responseText, "message");
 								const errorMessage =
 									parsedMessage && parsedMessage.length > 0
 										? parsedMessage
@@ -225,9 +220,7 @@ function FileUploadDemo() {
 				return ok(undefined);
 			})
 			.catch((uploadError) =>
-				resultErr(
-					uploadError instanceof Error ? uploadError : new Error(String(uploadError)),
-				),
+				resultErr(uploadError instanceof Error ? uploadError : new Error(String(uploadError))),
 			);
 
 		if (uploadResult.isErr()) {
@@ -252,7 +245,7 @@ function FileUploadDemo() {
 					<CardTitle className="text-3xl">File Upload</CardTitle>
 					<CardDescription>Convex File Storage Demo</CardDescription>
 					{files.length > 0 && (
-						<div className="mt-2 flex justify-center gap-6 text-sm text-muted-foreground">
+						<div className="text-muted-foreground mt-2 flex justify-center gap-6 text-sm">
 							<span>
 								{files.length} file{files.length !== 1 ? "s" : ""}
 							</span>
@@ -278,21 +271,21 @@ function FileUploadDemo() {
 						onClick={() => inputRef.current?.click()}
 						disabled={uploading}
 					>
-						<UploadCloud className="size-8 text-muted-foreground" />
+						<UploadCloud className="text-muted-foreground size-8" />
 						<span className="text-sm font-medium">
 							{uploading ? "Uploading..." : "Click to upload a file"}
 						</span>
 					</Button>
 					{uploading && uploadProgress > 0 && (
 						<div className="mt-4 space-y-1">
-							<div className="flex justify-between text-sm text-muted-foreground">
+							<div className="text-muted-foreground flex justify-between text-sm">
 								<span>Uploading...</span>
 								<span className="font-medium">{uploadProgress}%</span>
 							</div>
 							<Progress value={uploadProgress} />
 						</div>
 					)}
-					{error && <p className="mt-2 text-sm text-destructive">{error}</p>}
+					{error && <p className="text-destructive mt-2 text-sm">{error}</p>}
 				</CardContent>
 			</Card>
 
@@ -300,21 +293,19 @@ function FileUploadDemo() {
 				<CardContent className="p-0">
 					{files.length === 0 ? (
 						<div className="p-12 text-center">
-							<Upload className="mx-auto mb-4 size-12 text-muted-foreground/40" />
+							<Upload className="text-muted-foreground/40 mx-auto mb-4 size-12" />
 							<h3 className="mb-2 text-xl font-semibold">No files yet</h3>
-							<p className="text-muted-foreground">
-								Upload your first file above to get started!
-							</p>
+							<p className="text-muted-foreground">Upload your first file above to get started!</p>
 						</div>
 					) : (
 						<TooltipProvider>
-							<div className="divide-y divide-border">
+							<div className="divide-border divide-y">
 								{files.map((file) => (
 									<div
 										key={file._id}
-										className="flex items-center gap-4 p-4 transition-colors hover:bg-muted/50"
+										className="hover:bg-muted/50 flex items-center gap-4 p-4 transition-colors"
 									>
-										<div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted text-muted-foreground">
+										<div className="bg-muted text-muted-foreground flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg">
 											{file.fileType.startsWith("image/") && file.url ? (
 												<img
 													src={file.url}
@@ -330,10 +321,8 @@ function FileUploadDemo() {
 											)}
 										</div>
 										<div className="min-w-0 flex-1">
-											<p className="truncate font-medium text-foreground">
-												{file.fileName}
-											</p>
-											<p className="text-sm text-muted-foreground">
+											<p className="text-foreground truncate font-medium">{file.fileName}</p>
+											<p className="text-muted-foreground text-sm">
 												{file.fileType} &middot; {formatFileSize(file.fileSize)}
 											</p>
 										</div>
@@ -341,46 +330,55 @@ function FileUploadDemo() {
 											{file.url && (
 												<>
 													<Tooltip>
-														<TooltipTrigger asChild>
-															<Button variant="ghost" size="icon" asChild>
+														<TooltipTrigger
+															render={
 																<a
 																	href={file.url}
 																	target="_blank"
 																	rel="noopener noreferrer"
+																	className={buttonVariants({
+																		variant: "ghost",
+																		size: "icon",
+																	})}
 																>
-																	<Upload className="size-4" />
+																	<span className="sr-only">Open file</span>
 																</a>
-															</Button>
+															}
+														>
+															<Upload className="size-4" />
 														</TooltipTrigger>
 														<TooltipContent>Open file</TooltipContent>
 													</Tooltip>
 													<Tooltip>
-														<TooltipTrigger asChild>
-															<Button
-																variant="ghost"
-																size="icon"
-																onClick={() =>
-																	file.url &&
-																	handleDownload(file.url, file.fileName)
-																}
-															>
-																<Download className="size-4" />
-															</Button>
+														<TooltipTrigger
+															render={
+																<Button
+																	variant="ghost"
+																	size="icon"
+																	onClick={() =>
+																		file.url && handleDownload(file.url, file.fileName)
+																	}
+																/>
+															}
+														>
+															<Download className="size-4" />
 														</TooltipTrigger>
 														<TooltipContent>Download</TooltipContent>
 													</Tooltip>
 												</>
 											)}
 											<Tooltip>
-												<TooltipTrigger asChild>
-													<Button
-														variant="ghost"
-														size="icon"
-														onClick={() => handleRemove(file._id)}
-														className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-													>
-														<Trash2 className="size-4" />
-													</Button>
+												<TooltipTrigger
+													render={
+														<Button
+															variant="ghost"
+															size="icon"
+															onClick={() => handleRemove(file._id)}
+															className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+														/>
+													}
+												>
+													<Trash2 className="size-4" />
 												</TooltipTrigger>
 												<TooltipContent>Delete</TooltipContent>
 											</Tooltip>
@@ -393,9 +391,8 @@ function FileUploadDemo() {
 				</CardContent>
 			</Card>
 
-			<p className="text-center text-sm text-muted-foreground">
-				Built with Convex File Storage &bull; Upload &bull; Preview &bull; Download &bull;
-				Delete
+			<p className="text-muted-foreground text-center text-sm">
+				Built with Convex File Storage &bull; Upload &bull; Preview &bull; Download &bull; Delete
 			</p>
 		</div>
 	);

@@ -29,7 +29,7 @@ function ErrorMessages({ errors }: { errors: Array<string | { message: string }>
 			{errors.map((error) => (
 				<p
 					key={typeof error === "string" ? error : error.message}
-					className="mt-1 text-sm font-medium text-destructive"
+					className="text-destructive mt-1 text-sm font-medium"
 				>
 					{typeof error === "string" ? error : error.message}
 				</p>

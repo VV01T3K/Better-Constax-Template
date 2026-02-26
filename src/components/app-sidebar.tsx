@@ -147,7 +147,7 @@ export function AppSidebar({
 							</div>
 							<div className="grid flex-1 text-left text-sm leading-tight">
 								<span className="truncate font-semibold">TanStack Start</span>
-								<span className="truncate text-xs text-muted-foreground">Full-Stack Template</span>
+								<span className="text-muted-foreground truncate text-xs">Full-Stack Template</span>
 							</div>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
@@ -159,7 +159,6 @@ export function AppSidebar({
 						{generalLinks.map((item) => (
 							<SidebarMenuItem key={item.to}>
 								<SidebarMenuButton
-									tooltip={item.label}
 									render={
 										<Link
 											to={item.to}

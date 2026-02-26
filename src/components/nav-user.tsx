@@ -1,10 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-	ChevronsUpDownIcon,
-	LogInIcon,
-	LogOutIcon,
-	UserRoundCheckIcon,
-} from "lucide-react";
+import { ChevronsUpDownIcon, LogInIcon, LogOutIcon, UserRoundCheckIcon } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -52,11 +47,7 @@ export function NavUser({
 		return (
 			<SidebarMenu>
 				<SidebarMenuItem>
-					<SidebarMenuButton
-						size="lg"
-						tooltip="Sign In"
-						render={<Link to="/auth/login" aria-label="Sign In" />}
-					>
+					<SidebarMenuButton size="lg" render={<Link to="/auth/login" aria-label="Sign In" />}>
 						<LogInIcon className="size-4" />
 						<span>Sign In</span>
 					</SidebarMenuButton>
@@ -79,7 +70,7 @@ export function NavUser({
 						</Avatar>
 						<div className="grid flex-1 text-left text-sm leading-tight">
 							<span className="truncate font-medium">{user.name}</span>
-							<span className="truncate text-xs text-muted-foreground">{user.email}</span>
+							<span className="text-muted-foreground truncate text-xs">{user.email}</span>
 						</div>
 						<ChevronsUpDownIcon className="ml-auto size-4" />
 					</DropdownMenuTrigger>
@@ -97,7 +88,7 @@ export function NavUser({
 									</Avatar>
 									<div className="grid flex-1 text-left text-sm leading-tight">
 										<span className="truncate font-medium">{user.name}</span>
-										<span className="truncate text-xs text-muted-foreground">{user.email}</span>
+										<span className="text-muted-foreground truncate text-xs">{user.email}</span>
 									</div>
 								</div>
 							</DropdownMenuLabel>

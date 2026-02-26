@@ -101,8 +101,7 @@ function AddressForm() {
 					<CardHeader>
 						<CardTitle>Address Form</CardTitle>
 						<CardDescription>
-							{submissions.length} submission{submissions.length === 1 ? "" : "s"} stored in
-							 Convex
+							{submissions.length} submission{submissions.length === 1 ? "" : "s"} stored in Convex
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
@@ -256,20 +255,20 @@ function AddressForm() {
 					</CardHeader>
 					<CardContent>
 						{submissions.length === 0 ? (
-							<p className="text-sm text-muted-foreground">No submissions yet.</p>
+							<p className="text-muted-foreground text-sm">No submissions yet.</p>
 						) : (
 							<div className="space-y-2">
 								{submissions.map((submission) => (
 									<div key={submission._id} className="rounded-md border p-3">
-										<p className="text-sm font-medium text-foreground">
+										<p className="text-foreground text-sm font-medium">
 											{submission.fullName} ({submission.email})
 										</p>
-										<p className="text-xs text-muted-foreground">
+										<p className="text-muted-foreground text-xs">
 											{submission.address.street}, {submission.address.city},{" "}
 											{submission.address.state} {submission.address.zipCode},{" "}
 											{submission.address.country}
 										</p>
-										<p className="text-xs text-muted-foreground">
+										<p className="text-muted-foreground text-xs">
 											{new Date(submission.submittedAt).toISOString()}
 										</p>
 									</div>
