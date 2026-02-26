@@ -1,16 +1,19 @@
 {
 	"include": ["**/*.ts", "**/*.tsx"],
 	"compilerOptions": {
-		"target": "ES2023",
+		"target": "ES2022",
 		"jsx": "react-jsx",
 		"module": "ESNext",
-		"lib": ["ES2023", "DOM", "DOM.Iterable"],
-		"types": ["vite/client", "@types/bun"],
+		"paths": {
+			"@/*": ["./src/*"]
+		},
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"types": ["vite/client"],
 
 		/* Bundler mode */
 		"moduleResolution": "bundler",
 		"allowImportingTsExtensions": true,
-		"verbatimModuleSyntax": false,
+		"verbatimModuleSyntax": true,
 		"noEmit": true,
 
 		/* Linting */
@@ -19,10 +22,6 @@
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true,
-		"noUncheckedSideEffectImports": true,
-		"paths": {
-			"@/*": ["./src/*"],
-			"@convex/*": ["./convex/*"]
-		}
+		"noUncheckedSideEffectImports": true
 	}
 }
