@@ -4,6 +4,7 @@ import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/reac
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import Header from "../components/Header";
+import { getConvexQueryClient } from "../integrations/convex/client";
 import ConvexProvider from "../integrations/convex/provider";
 import { getServerAuthState } from "../integrations/convex/server-fn";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
@@ -36,8 +37,14 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 			},
 		],
 	}),
-	beforeLoad: async () => {
-		return await getServerAuthState();
+	beforeLoad: async ({ context }) => {
+		const authState = await getServerAuthState();
+
+		if (authState.token) {
+			getConvexQueryClient(context.queryClient).serverHttpClient?.setAuth(authState.token);
+		}
+
+		return authState;
 	},
 	shellComponent: RootDocument,
 });

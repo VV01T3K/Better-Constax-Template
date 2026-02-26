@@ -4,13 +4,14 @@ import { createAuthMutations } from "better-convex/react";
 
 import { env } from "../../env";
 
-const serverAuthOrigin = import.meta.env.SSR
-	? (env.SERVER_URL ?? "http://localhost:3000")
-	: undefined;
+const baseURL = typeof window === "undefined" ? env.VITE_SITE_URL : window.location.origin;
 
 export const authClient = createAuthClient({
-	baseURL: serverAuthOrigin,
+	baseURL,
 	basePath: "/api/auth",
+	sessionOptions: {
+		refetchOnWindowFocus: false,
+	},
 	plugins: [convexClient()],
 });
 
