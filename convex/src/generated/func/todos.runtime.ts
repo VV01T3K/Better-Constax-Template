@@ -10,14 +10,14 @@ import {
   type ProcedureCallerFromRegistry,
   type ProcedureScheduleCallerFromRegistry,
 } from 'better-convex/server';
-import { api, internal } from '../_generated/api.js';
-import type { ActionCtx, MutationCtx, QueryCtx } from './server';
+import { api, internal } from '../../_generated/api.js';
+import type { ActionCtx, MutationCtx, QueryCtx } from '../server';
 
 const procedureRegistry = {
-  "add": ["mutation", typedProcedureResolver(api["todos"]["add"], () => (require("../todos") as Record<string, unknown>)["add"])],
-  "list": ["query", typedProcedureResolver(api["todos"]["list"], () => (require("../todos") as Record<string, unknown>)["list"])],
-  "remove": ["mutation", typedProcedureResolver(api["todos"]["remove"], () => (require("../todos") as Record<string, unknown>)["remove"])],
-  "toggle": ["mutation", typedProcedureResolver(api["todos"]["toggle"], () => (require("../todos") as Record<string, unknown>)["toggle"])],
+  "add": ["mutation", typedProcedureResolver(api["func"]["todos"]["add"], () => (require("../../func/todos") as Record<string, unknown>)["add"])],
+  "list": ["query", typedProcedureResolver(api["func"]["todos"]["list"], () => (require("../../func/todos") as Record<string, unknown>)["list"])],
+  "remove": ["mutation", typedProcedureResolver(api["func"]["todos"]["remove"], () => (require("../../func/todos") as Record<string, unknown>)["remove"])],
+  "toggle": ["mutation", typedProcedureResolver(api["func"]["todos"]["toggle"], () => (require("../../func/todos") as Record<string, unknown>)["toggle"])],
 } as const;
 
 type ProcedureCallerContext = QueryCtx | MutationCtx | ActionCtx;
@@ -55,13 +55,13 @@ const createHandlerFromRegistry = createGenericHandlerFactory<
 >(procedureRegistry);
 
 
-export function createTodosCaller<TCtx extends ProcedureCallerContext>(
+export function createFuncTodosCaller<TCtx extends ProcedureCallerContext>(
   ctx: TCtx
 ): GeneratedProcedureCaller<TCtx> {
   return createCallerFromRegistry(ctx) as GeneratedProcedureCaller<TCtx>;
 }
 
-export function createTodosHandler<TCtx extends ProcedureHandlerContext>(
+export function createFuncTodosHandler<TCtx extends ProcedureHandlerContext>(
   ctx: TCtx
 ): GeneratedProcedureHandler<TCtx> {
   return createHandlerFromRegistry(ctx) as GeneratedProcedureHandler<TCtx>;

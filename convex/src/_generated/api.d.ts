@@ -20,22 +20,39 @@ import type { GenericId as Id } from "convex/values";
  * ```
  */
 export declare const api: {
-  todos: {
-    add: FunctionReference<"mutation", "public", { text: string }, Id<"todos">>;
-    list: FunctionReference<
-      "query",
-      "public",
-      {},
-      Array<{
-        _creationTime: number;
-        _id: Id<"todos">;
-        completed: boolean;
-        text: string;
-        userId: string;
-      }>
-    >;
-    remove: FunctionReference<"mutation", "public", { id: Id<"todos"> }, null>;
-    toggle: FunctionReference<"mutation", "public", { id: Id<"todos"> }, null>;
+  func: {
+    todos: {
+      add: FunctionReference<
+        "mutation",
+        "public",
+        { text: string },
+        Id<"todos">
+      >;
+      list: FunctionReference<
+        "query",
+        "public",
+        {},
+        Array<{
+          _creationTime: number;
+          _id: Id<"todos">;
+          completed: boolean;
+          text: string;
+          userId: string;
+        }>
+      >;
+      remove: FunctionReference<
+        "mutation",
+        "public",
+        { id: Id<"todos"> },
+        null
+      >;
+      toggle: FunctionReference<
+        "mutation",
+        "public",
+        { id: Id<"todos"> },
+        null
+      >;
+    };
   };
 };
 

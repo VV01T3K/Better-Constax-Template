@@ -1,6 +1,6 @@
 import { CRPCError } from "better-convex/server";
 
-import { initCRPC } from "../functions/generated/server";
+import { initCRPC } from "../src/generated/server";
 
 const crpc = initCRPC.create();
 

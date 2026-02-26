@@ -4,15 +4,17 @@
 
 import { createApiLeaf } from "better-convex/server";
 import type { inferApiInputs, inferApiOutputs } from "better-convex/server";
-import { api as convexApi } from "../functions/_generated/api.js";
+import { api as convexApi } from "../src/_generated/api.js";
 
 
 export const api = {
-  todos: {
-    add: createApiLeaf<"mutation", typeof import("../functions/todos").add>(convexApi["todos"]["add"], { auth: "required", type: "mutation" }),
-    list: createApiLeaf<"query", typeof import("../functions/todos").list>(convexApi["todos"]["list"], { auth: "required", type: "query" }),
-    remove: createApiLeaf<"mutation", typeof import("../functions/todos").remove>(convexApi["todos"]["remove"], { auth: "required", type: "mutation" }),
-    toggle: createApiLeaf<"mutation", typeof import("../functions/todos").toggle>(convexApi["todos"]["toggle"], { auth: "required", type: "mutation" }),
+  func: {
+    todos: {
+      add: createApiLeaf<"mutation", typeof import("../src/func/todos").add>(convexApi["func"]["todos"]["add"], { auth: "required", type: "mutation" }),
+      list: createApiLeaf<"query", typeof import("../src/func/todos").list>(convexApi["func"]["todos"]["list"], { auth: "required", type: "query" }),
+      remove: createApiLeaf<"mutation", typeof import("../src/func/todos").remove>(convexApi["func"]["todos"]["remove"], { auth: "required", type: "mutation" }),
+      toggle: createApiLeaf<"mutation", typeof import("../src/func/todos").toggle>(convexApi["func"]["todos"]["toggle"], { auth: "required", type: "mutation" }),
+    },
   },
   _http: {
   },

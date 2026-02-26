@@ -1,6 +1,6 @@
 import { CRPCError } from "better-convex/server";
 
-import { protectedMutation, protectedQuery } from "../lib/crpc";
+import { protectedMutation, protectedQuery } from "../../lib/crpc";
 import {
 	addTodoInputSchema,
 	addTodoOutputSchema,
@@ -8,7 +8,7 @@ import {
 	listTodosInputSchema,
 	listTodosOutputSchema,
 	todoIdInputSchema,
-} from "./app.zod";
+} from "../schemas/app.zod";
 
 export const list = protectedQuery
 	.input(listTodosInputSchema)

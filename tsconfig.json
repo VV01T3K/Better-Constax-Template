@@ -6,7 +6,7 @@
 		"module": "ESNext",
 		"paths": {
 			"@/*": ["./src/*"],
-			"@convex/*": ["./convex/shared/*", "./convex/functions/_generated/*"]
+			"@convex/*": ["./convex/shared/*", "./convex/src/_generated/*"]
 		},
 		"lib": ["ES2022", "DOM", "DOM.Iterable"],
 		"types": ["vite/client"],
@@ -26,5 +26,5 @@
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedSideEffectImports": true
 	},
-	"exclude": ["convex/functions/generated/*.runtime.ts", "node_modules"]
+	"exclude": ["convex/src/generated/**/*.runtime.ts", "node_modules"]
 }

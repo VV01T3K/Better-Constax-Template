@@ -26,7 +26,7 @@ export const getServerTodos = createServerFn({ method: "GET" }).handler(async ()
 		return [];
 	}
 
-	const todos = await ctx.caller.todos.list({}, { skipUnauth: true });
+	const todos = await ctx.caller.func.todos.list({}, { skipUnauth: true });
 
 	return todos ?? [];
 });

@@ -33,12 +33,12 @@ function ConvexTodos() {
 	const { initialTodos } = Route.useLoaderData();
 	const crpc = useCRPC();
 	const { data: todos = initialTodos, isPending } = useQuery({
-		...crpc.todos.list.queryOptions({}),
+		...crpc.func.todos.list.queryOptions({}),
 		initialData: initialTodos,
 	});
-	const { mutateAsync: addTodo } = useMutation(crpc.todos.add.mutationOptions());
-	const { mutateAsync: toggleTodo } = useMutation(crpc.todos.toggle.mutationOptions());
-	const { mutateAsync: removeTodo } = useMutation(crpc.todos.remove.mutationOptions());
+	const { mutateAsync: addTodo } = useMutation(crpc.func.todos.add.mutationOptions());
+	const { mutateAsync: toggleTodo } = useMutation(crpc.func.todos.toggle.mutationOptions());
+	const { mutateAsync: removeTodo } = useMutation(crpc.func.todos.remove.mutationOptions());
 	const { mutateAsync: signOut, isPending: isSigningOut } = useMutation(
 		useSignOutMutationOptions({
 			onSuccess: () => {

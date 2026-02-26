@@ -73,7 +73,7 @@
 		"**/bun.lock",
 		"**/_generated/**",
 		"**/generated/**",
-		"convex/functions/authSchema.ts",
+		"convex/src/generated/authSchema.ts",
 		"convex/shared/api.ts"
 	]
 }
