@@ -17,9 +17,7 @@ declare global {
 const convexUrl = env.VITE_CONVEX_URL;
 
 export const getRouter = () => {
-	const convexQueryClient = new ConvexQueryClient(convexUrl, {
-		expectAuth: true,
-	});
+	const convexQueryClient = new ConvexQueryClient(convexUrl);
 
 	const queryClient = new QueryClient({
 		defaultOptions: {
