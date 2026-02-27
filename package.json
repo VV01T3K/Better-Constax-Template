@@ -59,7 +59,7 @@
 		"babel-plugin-react-compiler": "^1.0.0",
 		"oxfmt": "^0.35.0",
 		"oxlint": "^1.50.0",
-		"oxlint-tsgolint": "^0.14.2",
+		"oxlint-tsgolint": "^0.15.0",
 		"vite": "catalog:",
 		"vite-plugin-pwa": "^1.2.0",
 		"web-vitals": "^5.1.0"
