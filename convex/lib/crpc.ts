@@ -15,6 +15,7 @@ export const authMiddleware = c.middleware<object, ValidatedAuth>(async ({ ctx, 
 
 	return next({
 		ctx: {
+			...ctx,
 			sessionId: validated.sessionId,
 			userId: validated.userId,
 		},
