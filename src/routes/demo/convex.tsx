@@ -1,9 +1,9 @@
-import type { Doc, Id } from "@convex/dataModel";
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Trash2, Plus, Check, Circle, LogOut } from "lucide-react";
-import { useCallback, useState } from "react";
 
+import { addTodoInputSchema } from "../../../convex/src/schemas/app.zod";
 import { useSignOutMutationOptions } from "../../integrations/convex/auth-client";
 import { useCRPC } from "../../integrations/convex/crpc";
 import { getServerAuthState, getServerTodos } from "../../integrations/convex/server-fn";
@@ -47,32 +47,23 @@ function ConvexTodos() {
 		}),
 	);
 
-	const [newTodo, setNewTodo] = useState("");
-	const todoItems: Doc<"todos">[] = todos ?? [];
-
-	const handleAddTodo = useCallback(async () => {
-		if (newTodo.trim()) {
-			await addTodo({ text: newTodo.trim() });
-			setNewTodo("");
-		}
-	}, [addTodo, newTodo]);
-
-	const handleToggleTodo = useCallback(
-		async (id: Id<"todos">) => {
-			await toggleTodo({ id });
-		},
-		[toggleTodo],
-	);
-
-	const handleRemoveTodo = useCallback(
-		async (id: Id<"todos">) => {
-			await removeTodo({ id });
-		},
-		[removeTodo],
-	);
-
+	const todoItems = todos;
 	const completedCount = todoItems.filter((todo) => todo.completed).length;
 	const totalCount = todoItems.length;
+
+	const form = useForm({
+		defaultValues: {
+			text: "",
+		},
+		validators: {
+			onMount: addTodoInputSchema,
+			onChange: addTodoInputSchema,
+		},
+		onSubmit: async ({ value, formApi }) => {
+			await addTodo(addTodoInputSchema.parse(value));
+			formApi.reset();
+		},
+	});
 
 	return (
 		<div
@@ -86,7 +77,7 @@ function ConvexTodos() {
 				<div className="mb-6 flex justify-end">
 					<button
 						type="button"
-						onClick={() => signOut()}
+						onClick={() => void signOut()}
 						disabled={isSigningOut}
 						className="inline-flex items-center gap-2 rounded-lg border border-green-700/40 bg-white/90 px-3 py-2 text-sm font-semibold text-green-800 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
 					>
@@ -111,28 +102,38 @@ function ConvexTodos() {
 
 				{/* Add Todo Card */}
 				<div className="mb-6 rounded-2xl border border-green-200/50 bg-white/95 p-6 shadow-xl backdrop-blur-sm">
-					<div className="flex gap-3">
-						<input
-							type="text"
-							value={newTodo}
-							onChange={(e) => setNewTodo(e.target.value)}
-							onKeyDown={(e) => {
-								if (e.key === "Enter") {
-									handleAddTodo();
-								}
-							}}
-							placeholder="What needs to be done?"
-							className="flex-1 rounded-xl border-2 border-green-200 bg-white/80 px-4 py-3 text-gray-800 placeholder-gray-500 transition-colors focus:border-green-400 focus:outline-none"
-						/>
-						<button
-							onClick={handleAddTodo}
-							disabled={!newTodo.trim()}
-							className="flex items-center gap-2 rounded-xl bg-linear-to-r from-green-500 to-green-600 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:from-green-600 hover:to-green-700 hover:shadow-xl disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400"
-						>
-							<Plus size={20} />
-							Add
-						</button>
-					</div>
+					<form
+						className="flex gap-3"
+						onSubmit={(e) => {
+							e.preventDefault();
+							void form.handleSubmit();
+						}}
+					>
+						<form.Field name="text">
+							{(field) => (
+								<input
+									type="text"
+									value={field.state.value}
+									onChange={(e) => field.handleChange(e.target.value)}
+									onBlur={field.handleBlur}
+									placeholder="What needs to be done?"
+									className="flex-1 rounded-xl border-2 border-green-200 bg-white/80 px-4 py-3 text-gray-800 placeholder-gray-500 transition-colors focus:border-green-400 focus:outline-none"
+								/>
+							)}
+						</form.Field>
+						<form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting] as const}>
+							{([canSubmit, isSubmitting]) => (
+								<button
+									type="submit"
+									disabled={!canSubmit || isSubmitting}
+									className="flex items-center gap-2 rounded-xl bg-linear-to-r from-green-500 to-green-600 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:from-green-600 hover:to-green-700 hover:shadow-xl disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400"
+								>
+									<Plus size={20} />
+									Add
+								</button>
+							)}
+						</form.Subscribe>
+					</form>
 				</div>
 
 				{/* Todos List */}
@@ -161,7 +162,7 @@ function ConvexTodos() {
 									}}
 								>
 									<button
-										onClick={() => handleToggleTodo(todo._id)}
+										onClick={() => toggleTodo({ id: todo._id })}
 										className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 ${
 											todo.completed
 												? "border-green-500 bg-green-500 text-white"
@@ -180,7 +181,7 @@ function ConvexTodos() {
 									</span>
 
 									<button
-										onClick={() => handleRemoveTodo(todo._id)}
+										onClick={() => removeTodo({ id: todo._id })}
 										className="shrink-0 rounded-lg p-2 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
 									>
 										<Trash2 size={18} />

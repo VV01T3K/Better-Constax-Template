@@ -9,7 +9,7 @@ export const productShape = {
 };
 
 export const todoShape = {
-	text: z.string(),
+	text: z.string().trim().min(1, "Todo text is required"),
 	completed: z.boolean(),
 	userId: z.string(),
 };
