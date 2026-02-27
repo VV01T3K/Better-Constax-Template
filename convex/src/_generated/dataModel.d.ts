@@ -93,22 +93,6 @@ export type DataModel = {
     searchIndexes: {};
     vectorIndexes: {};
   };
-  products: {
-    document: {
-      imageId: string;
-      price: number;
-      title: string;
-      _id: Id<"products">;
-      _creationTime: number;
-    };
-    fieldPaths: "_creationTime" | "_id" | "imageId" | "price" | "title";
-    indexes: {
-      by_id: ["_id"];
-      by_creation_time: ["_creationTime"];
-    };
-    searchIndexes: {};
-    vectorIndexes: {};
-  };
   session: {
     document: {
       createdAt: number;

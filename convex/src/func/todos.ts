@@ -7,7 +7,7 @@ import {
 	emptyMutationOutputSchema,
 	listTodosInputSchema,
 	listTodosOutputSchema,
-	todoIdInputSchema,
+	todoToggleInputSchema,
 } from "../schemas/app.zod";
 
 export const list = protectedQuery
@@ -33,7 +33,7 @@ export const add = protectedMutation
 	});
 
 export const toggle = protectedMutation
-	.input(todoIdInputSchema)
+	.input(todoToggleInputSchema)
 	.output(emptyMutationOutputSchema)
 	.mutation(async ({ ctx, input }) => {
 		const todo = await ctx.db.get(input.id);
@@ -59,7 +59,7 @@ export const toggle = protectedMutation
 	});
 
 export const remove = protectedMutation
-	.input(todoIdInputSchema)
+	.input(todoToggleInputSchema)
 	.output(emptyMutationOutputSchema)
 	.mutation(async ({ ctx, input }) => {
 		const todo = await ctx.db.get(input.id);

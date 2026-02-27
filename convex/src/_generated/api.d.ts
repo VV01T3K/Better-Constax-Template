@@ -40,18 +40,8 @@ export declare const api: {
           userId: string;
         }>
       >;
-      remove: FunctionReference<
-        "mutation",
-        "public",
-        { id: Id<"todos"> },
-        null
-      >;
-      toggle: FunctionReference<
-        "mutation",
-        "public",
-        { id: Id<"todos"> },
-        null
-      >;
+      remove: FunctionReference<"mutation", "public", { id: any }, null>;
+      toggle: FunctionReference<"mutation", "public", { id: any }, null>;
     };
   };
 };
