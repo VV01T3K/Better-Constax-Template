@@ -1,6 +1,4 @@
-import { CRPCError } from "better-convex/server";
-
-import { protectedMutation, protectedQuery } from "../../lib/crpc";
+import { assertOwnership, authMiddleware, c } from "../../lib/crpc";
 import {
 	addTodoInputSchema,
 	addTodoOutputSchema,
@@ -10,7 +8,9 @@ import {
 	todoToggleInputSchema,
 } from "../schemas/app.zod";
 
-export const list = protectedQuery
+export const list = c.query
+	.use(authMiddleware)
+	.meta({ auth: "required" })
 	.input(listTodosInputSchema)
 	.output(listTodosOutputSchema)
 	.query(async ({ ctx }) => {
@@ -21,7 +21,9 @@ export const list = protectedQuery
 			.collect();
 	});
 
-export const add = protectedMutation
+export const add = c.mutation
+	.use(authMiddleware)
+	.meta({ auth: "required" })
 	.input(addTodoInputSchema)
 	.output(addTodoOutputSchema)
 	.mutation(async ({ ctx, input }) => {
@@ -32,52 +34,24 @@ export const add = protectedMutation
 		});
 	});
 
-export const toggle = protectedMutation
+export const toggle = c.mutation
+	.use(authMiddleware)
+	.meta({ auth: "required" })
 	.input(todoToggleInputSchema)
 	.output(emptyMutationOutputSchema)
 	.mutation(async ({ ctx, input }) => {
-		const todo = await ctx.db.get(input.id);
-
-		if (!todo) {
-			throw new CRPCError({
-				code: "NOT_FOUND",
-				message: "Todo not found",
-			});
-		}
-
-		if (todo.userId !== ctx.userId) {
-			throw new CRPCError({
-				code: "FORBIDDEN",
-				message: "Cannot modify another user's todo",
-			});
-		}
-
-		await ctx.db.patch(input.id, {
-			completed: !todo.completed,
-		});
+		const todo = await assertOwnership(ctx, "todos", input.id);
+		await ctx.db.patch(todo._id, { completed: !todo.completed });
 		return null;
 	});
 
-export const remove = protectedMutation
+export const remove = c.mutation
+	.use(authMiddleware)
+	.meta({ auth: "required" })
 	.input(todoToggleInputSchema)
 	.output(emptyMutationOutputSchema)
 	.mutation(async ({ ctx, input }) => {
-		const todo = await ctx.db.get(input.id);
-
-		if (!todo) {
-			throw new CRPCError({
-				code: "NOT_FOUND",
-				message: "Todo not found",
-			});
-		}
-
-		if (todo.userId !== ctx.userId) {
-			throw new CRPCError({
-				code: "FORBIDDEN",
-				message: "Cannot delete another user's todo",
-			});
-		}
-
-		await ctx.db.delete(input.id);
+		const todo = await assertOwnership(ctx, "todos", input.id);
+		await ctx.db.delete(todo._id);
 		return null;
 	});

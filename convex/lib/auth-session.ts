@@ -23,15 +23,12 @@ const getValidatedIdentity = async (
 ): Promise<ValidatedAuth> => {
 	const identity = await ctx.auth.getUserIdentity();
 
-	if (
-		!identity ||
-		typeof identity.subject !== "string" ||
-		typeof identity.sessionId !== "string"
-	) {
+	if (!identity || typeof identity.subject !== "string" || typeof identity.sessionId !== "string") {
 		throw AUTH_REQUIRED_ERROR;
 	}
 
 	return {
+		// oxlint-disable-next-line no-unsafe-type-assertion
 		sessionId: identity.sessionId as Id<"session">,
 		userId: identity.subject,
 	};

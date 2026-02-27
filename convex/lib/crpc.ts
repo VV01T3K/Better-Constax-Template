@@ -1,58 +1,41 @@
 import { CRPCError } from "better-convex/server";
 
+import type { Doc, TableNames } from "../src/_generated/dataModel";
 import { initCRPC } from "../src/generated/server";
+import type { ValidatedAuth } from "./auth-session";
 import { validateQueryOrMutationAuth } from "./auth-session";
 
-const crpc = initCRPC.create();
+export const c = initCRPC.create();
 
-export const publicQuery = crpc.query;
-export const publicMutation = crpc.mutation;
-export const publicAction = crpc.action;
+export const authMiddleware = c.middleware<object, ValidatedAuth>(async ({ ctx, next }) => {
+	const validated = await validateQueryOrMutationAuth(
+		// oxlint-disable-next-line no-unsafe-type-assertion
+		ctx as Parameters<typeof validateQueryOrMutationAuth>[0],
+	);
 
-export const protectedQuery = crpc.query
-	.use(async ({ ctx, next }) => {
-		const validated = await validateQueryOrMutationAuth(ctx);
+	return next({
+		ctx: {
+			sessionId: validated.sessionId,
+			userId: validated.userId,
+		},
+	});
+});
 
-		return next({
-			ctx: {
-				...ctx,
-				sessionId: validated.sessionId,
-				userId: validated.userId,
-			},
-		});
-	})
-	.meta({ auth: "required" });
+export const assertOwnership = async <T extends TableNames>(
+	ctx: { db: { get: (id: Doc<T>["_id"]) => Promise<Doc<T> | null> }; userId: string },
+	table: T,
+	id: Doc<T>["_id"],
+): Promise<Doc<T>> => {
+	const doc = await ctx.db.get(id);
 
-export const protectedMutation = crpc.mutation
-	.use(async ({ ctx, next }) => {
-		const validated = await validateQueryOrMutationAuth(ctx);
+	if (!doc) {
+		throw new CRPCError({ code: "NOT_FOUND", message: `${table} not found` });
+	}
 
-		return next({
-			ctx: {
-				...ctx,
-				sessionId: validated.sessionId,
-				userId: validated.userId,
-			},
-		});
-	})
-	.meta({ auth: "required" });
+	// oxlint-disable-next-line no-unsafe-type-assertion
+	if ((doc as Record<string, unknown>).userId !== ctx.userId) {
+		throw new CRPCError({ code: "FORBIDDEN", message: `Not your ${table}` });
+	}
 
-export const protectedAction = crpc.action
-	.use(async ({ ctx, next }) => {
-		const identity = await ctx.auth.getUserIdentity();
-
-		if (!identity) {
-			throw new CRPCError({
-				code: "UNAUTHORIZED",
-				message: "Authentication required",
-			});
-		}
-
-		return next({
-			ctx: {
-				...ctx,
-				userId: identity.subject,
-			},
-		});
-	})
-	.meta({ auth: "required" });
+	return doc;
+};
