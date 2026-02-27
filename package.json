@@ -9,7 +9,7 @@
 		"dev": "bun --bun vite dev --port 3000 --host",
 		"build": "vite build",
 		"preview": "vite preview",
-		"postinstall": "node scripts/verify-patches.mjs",
+		"postinstall": "bun verify:patches",
 		"convex": "better-convex dev",
 		"convex:codegen": "better-convex codegen",
 		"convex:env:sync": "bunx better-convex env sync --auth",
@@ -20,7 +20,7 @@
 		"lint": "oxlint --type-aware --type-check --fix",
 		"format": "oxfmt",
 		"check": "oxfmt && oxlint --type-aware --type-check --fix && tsgo --noEmit",
-		"verify:patches": "node scripts/verify-patches.mjs"
+		"verify:patches": "bun run scripts/verify-patches.ts"
 	},
 	"dependencies": {
 		"@t3-oss/env-core": "^0.13.10",
