@@ -1,6 +1,7 @@
 import { CRPCError } from "better-convex/server";
 
 import { initCRPC } from "../src/generated/server";
+import { validateQueryOrMutationAuth } from "./auth-session";
 
 const crpc = initCRPC.create();
 
@@ -10,19 +11,13 @@ export const publicAction = crpc.action;
 
 export const protectedQuery = crpc.query
 	.use(async ({ ctx, next }) => {
-		const identity = await ctx.auth.getUserIdentity();
-
-		if (!identity) {
-			throw new CRPCError({
-				code: "UNAUTHORIZED",
-				message: "Authentication required",
-			});
-		}
+		const validated = await validateQueryOrMutationAuth(ctx);
 
 		return next({
 			ctx: {
 				...ctx,
-				userId: identity.subject,
+				sessionId: validated.sessionId,
+				userId: validated.userId,
 			},
 		});
 	})
@@ -30,19 +25,13 @@ export const protectedQuery = crpc.query
 
 export const protectedMutation = crpc.mutation
 	.use(async ({ ctx, next }) => {
-		const identity = await ctx.auth.getUserIdentity();
-
-		if (!identity) {
-			throw new CRPCError({
-				code: "UNAUTHORIZED",
-				message: "Authentication required",
-			});
-		}
+		const validated = await validateQueryOrMutationAuth(ctx);
 
 		return next({
 			ctx: {
 				...ctx,
-				userId: identity.subject,
+				sessionId: validated.sessionId,
+				userId: validated.userId,
 			},
 		});
 	})
