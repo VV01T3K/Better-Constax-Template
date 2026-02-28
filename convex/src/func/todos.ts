@@ -1,18 +1,10 @@
 import { assertOwnership, authMiddleware, c } from "../../lib/crpc";
-import {
-	addTodoInputSchema,
-	addTodoOutputSchema,
-	emptyMutationOutputSchema,
-	listTodosInputSchema,
-	listTodosOutputSchema,
-	todoToggleInputSchema,
-} from "../schemas/app.zod";
+import { todoSchema } from "../schemas/app.zod";
 
 export const list = c.query
-	.use(authMiddleware)
 	.meta({ auth: "required" })
-	.input(listTodosInputSchema)
-	.output(listTodosOutputSchema)
+	.use(authMiddleware)
+	.output(todoSchema.list.output)
 	.query(async ({ ctx }) => {
 		return await ctx.db
 			.query("todos")
@@ -22,10 +14,10 @@ export const list = c.query
 	});
 
 export const add = c.mutation
-	.use(authMiddleware)
 	.meta({ auth: "required" })
-	.input(addTodoInputSchema)
-	.output(addTodoOutputSchema)
+	.use(authMiddleware)
+	.input(todoSchema.add.input)
+	.output(todoSchema.add.output)
 	.mutation(async ({ ctx, input }) => {
 		return await ctx.db.insert("todos", {
 			text: input.text,
@@ -35,10 +27,9 @@ export const add = c.mutation
 	});
 
 export const toggle = c.mutation
-	.use(authMiddleware)
 	.meta({ auth: "required" })
-	.input(todoToggleInputSchema)
-	.output(emptyMutationOutputSchema)
+	.use(authMiddleware)
+	.input(todoSchema.toggle.input)
 	.mutation(async ({ ctx, input }) => {
 		const todo = await assertOwnership(ctx, "todos", input.id);
 		await ctx.db.patch(todo._id, { completed: !todo.completed });
@@ -46,10 +37,9 @@ export const toggle = c.mutation
 	});
 
 export const remove = c.mutation
-	.use(authMiddleware)
 	.meta({ auth: "required" })
-	.input(todoToggleInputSchema)
-	.output(emptyMutationOutputSchema)
+	.use(authMiddleware)
+	.input(todoSchema.remove.input)
 	.mutation(async ({ ctx, input }) => {
 		const todo = await assertOwnership(ctx, "todos", input.id);
 		await ctx.db.delete(todo._id);

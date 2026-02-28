@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Trash2, Plus, Check, Circle, LogOut } from "lucide-react";
 
-import { addTodoInputSchema } from "../../../convex/src/schemas/app.zod";
+import { todoSchema } from "../../../convex/src/schemas/app.zod";
 import { useSignOutMutationOptions } from "../../integrations/convex/auth-client";
 import { useCRPC } from "../../integrations/convex/crpc";
 import { getServerAuthState, getServerTodos } from "../../integrations/convex/server-fn";
@@ -56,11 +56,11 @@ function ConvexTodos() {
 			text: "",
 		},
 		validators: {
-			onMount: addTodoInputSchema,
-			onChange: addTodoInputSchema,
+			onMount: todoSchema.add.input,
+			onChange: todoSchema.add.input,
 		},
 		onSubmit: async ({ value, formApi }) => {
-			await addTodo(addTodoInputSchema.parse(value));
+			await addTodo(todoSchema.add.input.parse(value));
 			formApi.reset();
 		},
 	});

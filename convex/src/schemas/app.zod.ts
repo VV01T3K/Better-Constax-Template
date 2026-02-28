@@ -15,15 +15,24 @@ const todoIdSchema = z.custom<Id<"todos">>((val) => typeof val === "string", {
 
 export const todoDocSchema = z.object(withSystemFields("todos", todoShape));
 
-export const listTodosInputSchema = z.object({});
-export const listTodosOutputSchema = z.array(todoDocSchema);
-
-export const addTodoInputSchema = z.object({
-	text: todoShape.text,
-});
-export const addTodoOutputSchema = zid("todos");
-
-export const todoToggleInputSchema = z.object({
-	id: todoIdSchema,
-});
-export const emptyMutationOutputSchema = z.null();
+export const todoSchema = {
+	list: {
+		output: z.array(todoDocSchema),
+	},
+	add: {
+		input: z.object({
+			text: todoShape.text,
+		}),
+		output: zid("todos"),
+	},
+	toggle: {
+		input: z.object({
+			id: todoIdSchema,
+		}),
+	},
+	remove: {
+		input: z.object({
+			id: todoIdSchema,
+		}),
+	},
+} as const;
