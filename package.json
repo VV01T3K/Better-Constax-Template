@@ -12,6 +12,8 @@
 		"postinstall": "bun verify:patches",
 		"convex": "better-convex dev",
 		"convex:codegen": "better-convex codegen",
+		"convex:migrations:run": "mise exec -- bunx convex run migrations:run",
+		"convex:migrations:run:prod": "mise exec -- bunx convex run --prod migrations:run",
 		"convex:env:sync": "bunx better-convex env sync --auth",
 		"auth:schema:generate": "bunx @better-auth/cli generate --config convex/src/generated/auth.schema.config.ts --output convex/src/generated/authSchema.ts -y",
 		"auth:schema:check": "bun run auth:schema:generate && git diff --exit-code -- convex/src/generated/authSchema.ts",
@@ -23,6 +25,7 @@
 		"verify:patches": "bun run scripts/verify-patches.ts"
 	},
 	"dependencies": {
+		"@convex-dev/migrations": "^0.3.1",
 		"@t3-oss/env-core": "^0.13.10",
 		"@tailwindcss/vite": "^4.2.1",
 		"@tanstack/react-devtools": "^0.9.6",
