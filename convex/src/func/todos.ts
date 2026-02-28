@@ -1,5 +1,5 @@
 import { assertOwnership, authMiddleware, c } from "../../lib/crpc";
-import { todoSchema } from "../schemas/app.zod";
+import { todoSchema } from "../../shared/schemas/todos";
 
 export const list = c.query
 	.meta({ auth: "required" })

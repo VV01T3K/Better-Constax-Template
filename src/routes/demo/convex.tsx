@@ -1,9 +1,9 @@
+import { todoSchema } from "@convex/schemas/todos";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Trash2, Plus, Check, Circle, LogOut } from "lucide-react";
 
-import { todoSchema } from "../../../convex/src/schemas/app.zod";
 import { useSignOutMutationOptions } from "../../integrations/convex/auth-client";
 import { useCRPC } from "../../integrations/convex/crpc";
 import { getServerAuthState, getServerTodos } from "../../integrations/convex/server-fn";

@@ -1,7 +1,7 @@
 import { withSystemFields, zid } from "better-convex/server";
 import { z } from "zod";
 
-import type { Id } from "../_generated/dataModel";
+import type { Id } from "../../src/_generated/dataModel";
 
 // Zod-first app models; Convex validators are derived from these in `schema.ts`.
 export const todoShape = {
