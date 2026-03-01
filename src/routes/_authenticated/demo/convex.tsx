@@ -5,25 +5,21 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Trash2, Plus, Check, Circle, LogOut } from "lucide-react";
 
 import { useSignOutMutationOptions } from "../../../integrations/convex/auth-client";
-import { useCRPC } from "../../../integrations/convex/crpc";
-import { getServerTodos } from "../../../integrations/convex/server-fn";
+import { staticCRPC, useCRPC } from "../../../integrations/convex/crpc";
 
 export const Route = createFileRoute("/_authenticated/demo/convex")({
-	loader: async () => getServerTodos(),
+	loader: async ({ context }) => {
+		await context.queryClient.ensureQueryData(staticCRPC.func.todos.list.staticQueryOptions({}));
+	},
 	component: ConvexTodos,
 });
 
-type TodoList = ReturnType<typeof todoSchema.list.output.parse>;
-
-function useConvexTodosModel(initialTodos: TodoList) {
-	const crpc = useCRPC();
-	const { data: todos = initialTodos, isFetching } = useQuery({
-		...crpc.func.todos.list.queryOptions({}),
-		initialData: initialTodos,
-	});
-	const { mutateAsync: addTodo } = useMutation(crpc.func.todos.add.mutationOptions());
-	const { mutateAsync: toggleTodo } = useMutation(crpc.func.todos.toggle.mutationOptions());
-	const { mutateAsync: removeTodo } = useMutation(crpc.func.todos.remove.mutationOptions());
+function useConvexTodosModel() {
+	const c = useCRPC();
+	const { data: todos = [], isFetching } = useQuery(c.func.todos.list.queryOptions({}));
+	const { mutateAsync: addTodo } = useMutation(c.func.todos.add.mutationOptions());
+	const { mutateAsync: toggleTodo } = useMutation(c.func.todos.toggle.mutationOptions());
+	const { mutateAsync: removeTodo } = useMutation(c.func.todos.remove.mutationOptions());
 	const { mutateAsync: signOut, isPending: isSigningOut } = useMutation(
 		useSignOutMutationOptions({
 			onSuccess: () => {
@@ -63,7 +59,6 @@ function useConvexTodosModel(initialTodos: TodoList) {
 }
 
 function ConvexTodos() {
-	const initialTodos = Route.useLoaderData();
 	const {
 		todos,
 		isFetching,
@@ -74,7 +69,7 @@ function ConvexTodos() {
 		form,
 		completedCount,
 		totalCount,
-	} = useConvexTodosModel(initialTodos);
+	} = useConvexTodosModel();
 
 	return (
 		<div
