@@ -8,6 +8,4 @@ export const { CRPCProvider, useCRPC, useCRPCClient } = createCRPCContext({
 	convexSiteUrl: env.VITE_CONVEX_SITE_URL,
 });
 
-type StaticCRPCMeta = Parameters<typeof createCRPCOptionsProxy<typeof api>>[1];
-
-export const staticCRPC = createCRPCOptionsProxy(api, api as unknown as StaticCRPCMeta);
+export const staticCRPC = createCRPCOptionsProxy(api, api);

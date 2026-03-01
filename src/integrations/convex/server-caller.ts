@@ -24,8 +24,8 @@ const hasAuthCookie = (cookieHeader: string | null) =>
 const hasAuthHeader = (headers: Headers) =>
 	Boolean(
 		headers.get("authorization") ||
-			headers.get("better-auth-cookie") ||
-			headers.get("x-better-auth-cookie"),
+		headers.get("better-auth-cookie") ||
+		headers.get("x-better-auth-cookie"),
 	);
 
 const getTokenWithJwtCache = async (siteUrl: string, headers: Headers, opts?: unknown) => {
