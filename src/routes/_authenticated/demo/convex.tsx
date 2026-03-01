@@ -1,6 +1,6 @@
 import { todoSchema } from "@convex/schemas/todos";
 import { useForm } from "@tanstack/react-form";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Trash2, Plus, Check, Circle, LogOut } from "lucide-react";
 
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/demo/convex")({
 
 function ConvexTodos() {
 	const c = useCRPC();
-	const { data: todos = [], isFetching } = useQuery(c.func.todos.list.queryOptions({}));
+	const { data: todos, isFetching } = useSuspenseQuery(c.func.todos.list.queryOptions({}));
 	const { mutateAsync: addTodo } = useMutation(c.func.todos.add.mutationOptions());
 	const { mutateAsync: toggleTodo } = useMutation(c.func.todos.toggle.mutationOptions());
 	const { mutateAsync: removeTodo } = useMutation(c.func.todos.remove.mutationOptions());
@@ -101,11 +101,15 @@ function ConvexTodos() {
 								/>
 							)}
 						</form.Field>
-						<form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting] as const}>
-							{([canSubmit, isSubmitting]) => (
+						<form.Subscribe
+							selector={(state) =>
+								[state.values.text, state.canSubmit, state.isSubmitting] as const
+							}
+						>
+							{([text, canSubmit, isSubmitting]) => (
 								<button
 									type="submit"
-									disabled={!canSubmit || isSubmitting}
+									disabled={!text.trim() || !canSubmit || isSubmitting}
 									className="flex items-center gap-2 rounded-xl bg-linear-to-r from-green-500 to-green-600 px-6 py-3 font-semibold text-white shadow-lg transition-colors duration-200 hover:from-green-600 hover:to-green-700 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400"
 								>
 									<Plus size={20} />
