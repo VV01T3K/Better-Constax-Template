@@ -19,8 +19,11 @@ export const Route = createFileRoute("/auth")({
 	validateSearch: (search: Record<string, unknown>): AuthSearch => ({
 		redirect: typeof search.redirect === "string" ? search.redirect : DEFAULT_REDIRECT,
 	}),
-	beforeLoad: async ({ search }) => {
-		const { isAuthenticated } = await getServerAuthState();
+	beforeLoad: async ({ context, search }) => {
+		const isAuthenticated =
+			typeof context.isAuthenticated === "boolean"
+				? context.isAuthenticated
+				: (await getServerAuthState()).isAuthenticated;
 
 		const redirectTo =
 			typeof search.redirect === "string" && search.redirect.startsWith("/")

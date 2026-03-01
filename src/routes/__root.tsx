@@ -4,6 +4,7 @@ import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/reac
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import Header from "../components/Header";
+import { env } from "../env";
 import { getConvexQueryClient } from "../integrations/convex/client";
 import ConvexProvider from "../integrations/convex/provider";
 import { getServerAuthState } from "../integrations/convex/server-fn";
@@ -14,7 +15,26 @@ import appCss from "../styles.css?url";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
+	isAuthenticated?: boolean;
+	token?: string | null;
 }
+
+const toOrigin = (value: string) => new URL(value).origin;
+const toDnsPrefetchTarget = (origin: string) => `//${new URL(origin).host}`;
+
+const connectionHintLinks = Array.from(
+	new Set([env.VITE_SITE_URL, env.VITE_CONVEX_SITE_URL, env.VITE_CONVEX_URL].map(toOrigin)),
+).flatMap((origin) => [
+	{
+		rel: "dns-prefetch" as const,
+		href: toDnsPrefetchTarget(origin),
+	},
+	{
+		rel: "preconnect" as const,
+		href: origin,
+		crossOrigin: "anonymous" as const,
+	},
+]);
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
 	head: () => ({
@@ -35,6 +55,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 				rel: "stylesheet",
 				href: appCss,
 			},
+			...connectionHintLinks,
 		],
 	}),
 	beforeLoad: async ({ context }) => {
