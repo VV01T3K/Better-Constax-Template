@@ -93,7 +93,7 @@ function ConvexTodos() {
 				</div>
 
 				{/* Header Card */}
-				<div className="mb-6 rounded-2xl border border-green-200/50 bg-white/95 p-8 shadow-2xl backdrop-blur-sm">
+				<div className="mb-6 rounded-2xl border border-green-200/50 bg-white/95 p-8 shadow-2xl ">
 					<div className="text-center">
 						<h1 className="mb-2 text-4xl font-bold text-green-800">Convex Todos</h1>
 						<p className="text-lg text-green-600">Powered by real-time sync</p>
@@ -107,7 +107,7 @@ function ConvexTodos() {
 				</div>
 
 				{/* Add Todo Card */}
-				<div className="mb-6 rounded-2xl border border-green-200/50 bg-white/95 p-6 shadow-xl backdrop-blur-sm">
+				<div className="mb-6 rounded-2xl border border-green-200/50 bg-white/95 p-6 shadow-xl ">
 					<form
 						className="flex gap-3"
 						onSubmit={(e) => {
@@ -132,7 +132,7 @@ function ConvexTodos() {
 								<button
 									type="submit"
 									disabled={!canSubmit || isSubmitting}
-									className="flex items-center gap-2 rounded-xl bg-linear-to-r from-green-500 to-green-600 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:from-green-600 hover:to-green-700 hover:shadow-xl disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400"
+									className="flex items-center gap-2 rounded-xl bg-linear-to-r from-green-500 to-green-600 px-6 py-3 font-semibold text-white shadow-lg transition-colors duration-200 hover:from-green-600 hover:to-green-700 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400"
 								>
 									<Plus size={20} />
 									Add
@@ -143,7 +143,7 @@ function ConvexTodos() {
 				</div>
 
 				{/* Todos List */}
-				<div className="overflow-hidden rounded-2xl border border-green-200/50 bg-white/95 shadow-xl backdrop-blur-sm">
+				<div className="overflow-hidden rounded-2xl border border-green-200/50 bg-white/95 shadow-xl ">
 					{todos.length === 0 ? (
 						<div className="p-12 text-center">
 							<Circle size={48} className="mx-auto mb-4 text-green-300" />
@@ -175,7 +175,7 @@ function ConvexTodos() {
 									</button>
 
 									<span
-										className={`flex-1 text-lg transition-all duration-200 ${
+										className={`flex-1 text-lg transition-colors duration-200 ${
 											todo.completed ? "text-gray-500 line-through" : "text-gray-800"
 										}`}
 									>
