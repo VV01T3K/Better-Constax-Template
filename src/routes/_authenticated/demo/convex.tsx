@@ -2,9 +2,8 @@ import { todoSchema } from "@convex/schemas/todos";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Trash2, Plus, Check, Circle, LogOut } from "lucide-react";
+import { Trash2, Plus, Check, Circle } from "lucide-react";
 
-import { useSignOutMutationOptions } from "../../../integrations/convex/auth-client";
 import { staticCRPC, useCRPC } from "../../../integrations/convex/crpc";
 
 export const Route = createFileRoute("/_authenticated/demo/convex")({
@@ -20,13 +19,6 @@ function ConvexTodos() {
 	const { mutateAsync: addTodo } = useMutation(c.func.todos.add.mutationOptions());
 	const { mutateAsync: toggleTodo } = useMutation(c.func.todos.toggle.mutationOptions());
 	const { mutateAsync: removeTodo } = useMutation(c.func.todos.remove.mutationOptions());
-	const { mutateAsync: signOut, isPending: isSigningOut } = useMutation(
-		useSignOutMutationOptions({
-			onSuccess: () => {
-				window.location.assign("/auth?redirect=/demo/convex");
-			},
-		}),
-	);
 
 	const completedCount = todos.filter((todo) => todo.completed).length;
 	const totalCount = todos.length;
@@ -54,18 +46,6 @@ function ConvexTodos() {
 			}}
 		>
 			<div className="w-full max-w-2xl">
-				<div className="mb-6 flex justify-end">
-					<button
-						type="button"
-						onClick={() => void signOut()}
-						disabled={isSigningOut}
-						className="inline-flex items-center gap-2 rounded-lg border border-green-700/40 bg-white/90 px-3 py-2 text-sm font-semibold text-green-800 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
-					>
-						<LogOut size={16} />
-						{isSigningOut ? "Signing out..." : "Sign Out"}
-					</button>
-				</div>
-
 				{/* Header Card */}
 				<div className="mb-6 rounded-2xl border border-green-200/50 bg-white/95 p-8 shadow-2xl">
 					<div className="text-center">

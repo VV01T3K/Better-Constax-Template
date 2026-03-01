@@ -9,6 +9,9 @@ import { api as convexApi } from "../src/_generated/api.js";
 
 export const api = {
   func: {
+    session: {
+      me: createApiLeaf<"query", typeof import("../src/func/session").me>(convexApi["func"]["session"]["me"], { type: "query" }),
+    },
     todos: {
       add: createApiLeaf<"mutation", typeof import("../src/func/todos").add>(convexApi["func"]["todos"]["add"], { auth: "required", type: "mutation" }),
       list: createApiLeaf<"query", typeof import("../src/func/todos").list>(convexApi["func"]["todos"]["list"], { auth: "required", type: "query" }),

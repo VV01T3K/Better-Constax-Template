@@ -11,11 +11,6 @@ export const getServerAuthState = createServerFn({ method: "GET" }).handler(asyn
 	};
 });
 
-export const getServerIsAuthenticated = createServerFn({ method: "GET" }).handler(async () => {
-	const ctx = await getServerCallerContext();
-	return ctx.isAuthenticated;
-});
-
 export const getServerTodos = createServerFn({ method: "GET" }).handler(async () => {
 	const ctx = await getServerCallerContext();
 

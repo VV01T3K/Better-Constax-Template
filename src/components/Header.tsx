@@ -1,9 +1,42 @@
-import { Link } from "@tanstack/react-router";
-import { Globe, Home, Menu, Network, X } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link, useLocation, useRouter } from "@tanstack/react-router";
+import { Globe, Home, LogIn, LogOut, Menu, Network, X } from "lucide-react";
 import { useState } from "react";
+
+import { useSignOutMutationOptions } from "../integrations/convex/auth-client";
+import {
+	getAuthIdentityQueryOptions,
+	invalidateAuthIdentity,
+	setSignedOutAuthIdentity,
+} from "../integrations/convex/auth-state";
 
 export default function Header() {
 	const [isOpen, setIsOpen] = useState(false);
+	const router = useRouter();
+	const location = useLocation();
+	const queryClient = useQueryClient();
+	const { data: authIdentity } = useQuery(getAuthIdentityQueryOptions());
+	const isAuthenticated = authIdentity !== undefined && authIdentity !== null;
+	const isAuthRoute = location.pathname.startsWith("/auth");
+	const redirectTarget = isAuthRoute
+		? "/demo/convex"
+		: `${location.pathname}${location.search}${location.hash}`;
+
+	const { mutateAsync: signOut, isPending: isSigningOut } = useMutation(
+		useSignOutMutationOptions({
+			onSuccess: async () => {
+				await invalidateAuthIdentity(queryClient);
+				await setSignedOutAuthIdentity(queryClient);
+				await router.invalidate();
+				await router.navigate({
+					to: "/auth",
+					search: {
+						redirect: redirectTarget,
+					},
+				});
+			},
+		}),
+	);
 
 	return (
 		<>
@@ -20,6 +53,28 @@ export default function Header() {
 						<img src="/tanstack-word-logo-white.svg" alt="TanStack Logo" className="h-10" />
 					</Link>
 				</h1>
+				<div className="ml-auto">
+					{isAuthenticated ? (
+						<button
+							type="button"
+							onClick={() => void signOut()}
+							disabled={isSigningOut}
+							className="inline-flex items-center gap-2 rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-3 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+						>
+							<LogOut size={16} />
+							{isSigningOut ? "Signing out..." : "Sign Out"}
+						</button>
+					) : (
+						<Link
+							to="/auth"
+							search={{ redirect: redirectTarget }}
+							className="inline-flex items-center gap-2 rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-3 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-500/20"
+						>
+							<LogIn size={16} />
+							Sign In
+						</Link>
+					)}
+				</div>
 			</header>
 
 			<aside

@@ -1,5 +1,5 @@
-import { useMutation } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { LogIn, UserPlus } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -7,7 +7,13 @@ import {
 	useSignInMutationOptions,
 	useSignUpMutationOptions,
 } from "../integrations/convex/auth-client";
-import { getServerIsAuthenticated } from "../integrations/convex/server-fn";
+import {
+	ensureAuthIdentity,
+	getCachedAuthIdentity,
+	invalidateAuthIdentity,
+	isAuthenticatedFromIdentity,
+	warmAuthIdentity,
+} from "../integrations/convex/auth-state";
 
 type AuthSearch = {
 	redirect?: string;
@@ -20,25 +26,55 @@ export const Route = createFileRoute("/auth")({
 		redirect: typeof search.redirect === "string" ? search.redirect : DEFAULT_REDIRECT,
 	}),
 	beforeLoad: async ({ context, search }) => {
-		const isAuthenticated =
-			typeof context.isAuthenticated === "boolean"
-				? context.isAuthenticated
-				: await getServerIsAuthenticated();
-
 		const redirectTo =
 			typeof search.redirect === "string" && search.redirect.startsWith("/")
 				? search.redirect
 				: DEFAULT_REDIRECT;
 
-		if (isAuthenticated) {
-			throw redirect({ to: redirectTo });
+		if (typeof context.isAuthenticated === "boolean") {
+			if (context.isAuthenticated) {
+				throw redirect({ to: redirectTo });
+			}
+			return {
+				isAuthenticated: context.isAuthenticated,
+			};
 		}
+
+		const cachedAuthIdentity = getCachedAuthIdentity(context.queryClient);
+		const cachedIsAuthenticated = isAuthenticatedFromIdentity(cachedAuthIdentity);
+
+		if (typeof cachedIsAuthenticated === "boolean") {
+			if (cachedIsAuthenticated) {
+				throw redirect({ to: redirectTo });
+			}
+			return {
+				isAuthenticated: cachedIsAuthenticated,
+			};
+		}
+
+		if (import.meta.env.SSR) {
+			const authIdentity = await ensureAuthIdentity(context.queryClient);
+			if (authIdentity !== null) {
+				throw redirect({ to: redirectTo });
+			}
+
+			return {
+				isAuthenticated: false,
+			};
+		}
+
+		warmAuthIdentity(context.queryClient);
+		return {
+			isAuthenticated: undefined,
+		};
 	},
 	component: AuthPage,
 });
 
 function AuthPage() {
 	const { redirect: redirectSearch } = Route.useSearch();
+	const queryClient = useQueryClient();
+	const router = useRouter();
 	const redirectTo =
 		typeof redirectSearch === "string" && redirectSearch.startsWith("/")
 			? redirectSearch
@@ -51,16 +87,22 @@ function AuthPage() {
 
 	const signInMutation = useMutation(
 		useSignInMutationOptions({
-			onSuccess: () => {
-				window.location.assign(redirectTo);
+			onSuccess: async () => {
+				await invalidateAuthIdentity(queryClient);
+				warmAuthIdentity(queryClient);
+				await router.invalidate();
+				await router.navigate({ to: redirectTo });
 			},
 		}),
 	);
 
 	const signUpMutation = useMutation(
 		useSignUpMutationOptions({
-			onSuccess: () => {
-				window.location.assign(redirectTo);
+			onSuccess: async () => {
+				await invalidateAuthIdentity(queryClient);
+				warmAuthIdentity(queryClient);
+				await router.invalidate();
+				await router.navigate({ to: redirectTo });
 			},
 		}),
 	);

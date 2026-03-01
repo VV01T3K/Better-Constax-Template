@@ -21,6 +21,9 @@ import type { GenericId as Id } from "convex/values";
  */
 export declare const api: {
   func: {
+    session: {
+      me: FunctionReference<"query", "public", {}, null | { userId: string }>;
+    };
     todos: {
       add: FunctionReference<
         "mutation",

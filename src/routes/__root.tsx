@@ -5,6 +5,11 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import Header from "../components/Header";
 import { env } from "../env";
+import {
+	getCachedAuthIdentity,
+	isAuthenticatedFromIdentity,
+	warmAuthIdentity,
+} from "../integrations/convex/auth-state";
 import { getConvexQueryClient } from "../integrations/convex/client";
 import ConvexProvider from "../integrations/convex/provider";
 import { getServerAuthState } from "../integrations/convex/server-fn";
@@ -59,6 +64,16 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	}),
 	beforeLoad: async ({ context }) => {
 		if (!import.meta.env.SSR) {
+			const cachedAuthIdentity = getCachedAuthIdentity(context.queryClient);
+			const isAuthenticated = isAuthenticatedFromIdentity(cachedAuthIdentity);
+
+			if (typeof isAuthenticated === "boolean") {
+				return {
+					isAuthenticated,
+				};
+			}
+
+			warmAuthIdentity(context.queryClient);
 			return {};
 		}
 
