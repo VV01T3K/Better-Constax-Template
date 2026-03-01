@@ -6,6 +6,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import Header from "../components/Header";
 import { env } from "../env";
 import {
+	ensureAuthIdentity,
 	getCachedAuthIdentity,
 	isAuthenticatedFromIdentity,
 	warmAuthIdentity,
@@ -81,6 +82,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 		if (authState.token) {
 			getConvexQueryClient(context.queryClient).serverHttpClient?.setAuth(authState.token);
+			await ensureAuthIdentity(context.queryClient);
 		}
 
 		return authState;
