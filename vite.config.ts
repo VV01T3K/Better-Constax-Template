@@ -4,11 +4,13 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
+import devtoolsJson from "vite-plugin-devtools-json";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 const config = defineConfig({
 	plugins: [
 		devtools(),
+		devtoolsJson(),
 		nitro({ rollupConfig: { external: [/^@sentry\//] }, preset: "bun" }),
 		tsconfigPaths({ projects: ["./tsconfig.json"] }),
 		tailwindcss(),

@@ -18,8 +18,27 @@ export const authHandler = authBridge.handler;
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null;
 
+const hasAuthCookie = (cookieHeader: string | null) =>
+	Boolean(cookieHeader && /(better-auth|convex_jwt)/i.test(cookieHeader));
+
+const hasAuthHeader = (headers: Headers) =>
+	Boolean(
+		headers.get("authorization") ||
+			headers.get("better-auth-cookie") ||
+			headers.get("x-better-auth-cookie"),
+	);
+
 const getTokenWithJwtCache = async (siteUrl: string, headers: Headers, opts?: unknown) => {
 	const resolvedOpts = isRecord(opts) ? opts : {};
+	const cookieHeader = headers.get("cookie");
+	const hasAuthContext = hasAuthCookie(cookieHeader) || hasAuthHeader(headers);
+
+	if (!hasAuthContext) {
+		return {
+			isFresh: true,
+			token: undefined,
+		};
+	}
 
 	return getToken(siteUrl, headers, {
 		...resolvedOpts,

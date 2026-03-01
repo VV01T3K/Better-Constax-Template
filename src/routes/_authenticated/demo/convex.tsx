@@ -1,26 +1,14 @@
 import { todoSchema } from "@convex/schemas/todos";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Trash2, Plus, Check, Circle, LogOut } from "lucide-react";
 
-import { useSignOutMutationOptions } from "../../integrations/convex/auth-client";
-import { useCRPC } from "../../integrations/convex/crpc";
-import { getServerAuthState, getServerTodos } from "../../integrations/convex/server-fn";
+import { useSignOutMutationOptions } from "../../../integrations/convex/auth-client";
+import { useCRPC } from "../../../integrations/convex/crpc";
+import { getServerTodos } from "../../../integrations/convex/server-fn";
 
-export const Route = createFileRoute("/demo/convex")({
-	beforeLoad: async ({ location }) => {
-		const { isAuthenticated } = await getServerAuthState();
-
-		if (!isAuthenticated) {
-			throw redirect({
-				to: "/auth",
-				search: {
-					redirect: location.pathname,
-				},
-			});
-		}
-	},
+export const Route = createFileRoute("/_authenticated/demo/convex")({
 	loader: async () => {
 		const initialTodos = await getServerTodos();
 
@@ -35,7 +23,7 @@ function ConvexTodos() {
 	const { data: todos = initialTodos, isPending } = useQuery({
 		...crpc.func.todos.list.queryOptions({}),
 		initialData: initialTodos,
-	});
+	})
 	const { mutateAsync: addTodo } = useMutation(crpc.func.todos.add.mutationOptions());
 	const { mutateAsync: toggleTodo } = useMutation(crpc.func.todos.toggle.mutationOptions());
 	const { mutateAsync: removeTodo } = useMutation(crpc.func.todos.remove.mutationOptions());
@@ -45,10 +33,10 @@ function ConvexTodos() {
 				window.location.assign("/auth?redirect=/demo/convex");
 			},
 		}),
-	);
+	)
 
 	const todoItems = todos;
-	const completedCount = todoItems.filter((todo) => todo.completed).length;
+	const completedCount = todoItems.filter((todo: (typeof todoItems)[number]) => todo.completed).length;
 	const totalCount = todoItems.length;
 
 	const form = useForm({
@@ -63,7 +51,7 @@ function ConvexTodos() {
 			await addTodo(todoSchema.add.input.parse(value));
 			formApi.reset();
 		},
-	});
+	})
 
 	return (
 		<div
@@ -105,7 +93,7 @@ function ConvexTodos() {
 					<form
 						className="flex gap-3"
 						onSubmit={(e) => {
-							e.preventDefault();
+							e.preventDefault()
 							void form.handleSubmit();
 						}}
 					>
@@ -151,7 +139,7 @@ function ConvexTodos() {
 						</div>
 					) : (
 						<div className="divide-y divide-green-100">
-							{todoItems.map((todo, index) => (
+							{todoItems.map((todo: (typeof todoItems)[number], index: number) => (
 								<div
 									key={todo._id}
 									className={`flex items-center gap-4 p-4 transition-colors hover:bg-green-50/50 ${
@@ -200,5 +188,5 @@ function ConvexTodos() {
 				</div>
 			</div>
 		</div>
-	);
+	)
 }

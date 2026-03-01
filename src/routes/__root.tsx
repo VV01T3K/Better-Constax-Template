@@ -38,6 +38,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 		],
 	}),
 	beforeLoad: async ({ context }) => {
+		if (!import.meta.env.SSR) {
+			return {};
+		}
+
 		const authState = await getServerAuthState();
 
 		if (authState.token) {

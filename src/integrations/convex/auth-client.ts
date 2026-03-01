@@ -9,6 +9,9 @@ const baseURL = typeof window === "undefined" ? env.VITE_SITE_URL : window.locat
 export const authClient = createAuthClient({
 	baseURL,
 	basePath: "/api/auth",
+	fetchOptions: {
+		credentials: "include",
+	},
 	sessionOptions: {
 		refetchOnWindowFocus: false,
 	},
