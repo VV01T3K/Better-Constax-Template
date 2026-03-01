@@ -1,17 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 
-import { createContext } from "./server-caller";
-
-const createCallerContext = async () => {
-	const { getRequestHeaders } = await import("@tanstack/react-start/server");
-
-	return createContext({
-		headers: new Headers(getRequestHeaders()),
-	});
-};
+import { getServerCallerContext } from "./server-caller";
 
 export const getServerAuthState = createServerFn({ method: "GET" }).handler(async () => {
-	const ctx = await createCallerContext();
+	const ctx = await getServerCallerContext();
 
 	return {
 		isAuthenticated: ctx.isAuthenticated,
@@ -19,8 +11,13 @@ export const getServerAuthState = createServerFn({ method: "GET" }).handler(asyn
 	};
 });
 
+export const getServerIsAuthenticated = createServerFn({ method: "GET" }).handler(async () => {
+	const ctx = await getServerCallerContext();
+	return ctx.isAuthenticated;
+});
+
 export const getServerTodos = createServerFn({ method: "GET" }).handler(async () => {
-	const ctx = await createCallerContext();
+	const ctx = await getServerCallerContext();
 
 	if (!ctx.isAuthenticated) {
 		return [];

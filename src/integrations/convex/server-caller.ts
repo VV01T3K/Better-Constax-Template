@@ -56,3 +56,14 @@ export const { createContext, createCaller } = createCallerFactory({
 		getToken: getTokenWithJwtCache,
 	},
 });
+
+export const createCallerContextFromHeaders = (headers: Headers) =>
+	createContext({
+		headers,
+	});
+
+export const getServerCallerContext = async () => {
+	const { getRequestHeaders } = await import("@tanstack/react-start/server");
+
+	return createCallerContextFromHeaders(new Headers(getRequestHeaders()));
+};

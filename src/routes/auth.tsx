@@ -7,7 +7,7 @@ import {
 	useSignInMutationOptions,
 	useSignUpMutationOptions,
 } from "../integrations/convex/auth-client";
-import { getServerAuthState } from "../integrations/convex/server-fn";
+import { getServerIsAuthenticated } from "../integrations/convex/server-fn";
 
 type AuthSearch = {
 	redirect?: string;
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/auth")({
 		const isAuthenticated =
 			typeof context.isAuthenticated === "boolean"
 				? context.isAuthenticated
-				: (await getServerAuthState()).isAuthenticated;
+				: await getServerIsAuthenticated();
 
 		const redirectTo =
 			typeof search.redirect === "string" && search.redirect.startsWith("/")

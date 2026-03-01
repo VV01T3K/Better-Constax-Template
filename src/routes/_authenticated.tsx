@@ -1,13 +1,13 @@
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
-import { getServerAuthState } from "../integrations/convex/server-fn";
+import { getServerIsAuthenticated } from "../integrations/convex/server-fn";
 
 export const Route = createFileRoute("/_authenticated")({
 	beforeLoad: async ({ context, location }) => {
 		const isAuthenticated =
 			typeof context.isAuthenticated === "boolean"
 				? context.isAuthenticated
-				: (await getServerAuthState()).isAuthenticated;
+				: await getServerIsAuthenticated();
 
 		if (!isAuthenticated) {
 			throw redirect({
