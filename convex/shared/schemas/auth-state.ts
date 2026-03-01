@@ -6,6 +6,7 @@ export const authStateSchema = {
 			z.null(),
 			z.object({
 				userId: z.string(),
+				name: z.string(),
 			}),
 		]),
 	},

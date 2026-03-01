@@ -6,6 +6,7 @@ const AUTH_STATE_STALE_TIME_MS = 30_000;
 
 export type AuthIdentity = {
 	userId: string;
+	name: string;
 } | null;
 
 const getBaseAuthIdentityQueryOptions = () => staticCRPC.func.session.me.staticQueryOptions({});

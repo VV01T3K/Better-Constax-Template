@@ -55,15 +55,18 @@ export default function Header() {
 				</h1>
 				<div className="ml-auto">
 					{isAuthenticated ? (
-						<button
-							type="button"
-							onClick={() => void signOut()}
-							disabled={isSigningOut}
-							className="inline-flex items-center gap-2 rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-3 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-500/20 disabled:cursor-not-allowed disabled:opacity-60"
-						>
-							<LogOut size={16} />
-							{isSigningOut ? "Signing out..." : "Sign Out"}
-						</button>
+						<div className="flex items-center gap-3">
+							<span className="max-w-37.5 truncate text-sm text-cyan-200">{authIdentity.name}</span>
+							<button
+								type="button"
+								onClick={() => void signOut()}
+								disabled={isSigningOut}
+								className="inline-flex items-center gap-2 rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-3 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+							>
+								<LogOut size={16} />
+								{isSigningOut ? "Signing out..." : "Sign Out"}
+							</button>
+						</div>
 					) : (
 						<Link
 							to="/auth"
