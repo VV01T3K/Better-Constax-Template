@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_authenticated/demo/convex")({
 	component: ConvexTodos,
 });
 
-function useConvexTodosModel() {
+function ConvexTodos() {
 	const c = useCRPC();
 	const { data: todos = [], isFetching } = useQuery(c.func.todos.list.queryOptions({}));
 	const { mutateAsync: addTodo } = useMutation(c.func.todos.add.mutationOptions());
@@ -44,32 +44,6 @@ function useConvexTodosModel() {
 			formApi.reset();
 		},
 	});
-
-	return {
-		todos,
-		isFetching,
-		toggleTodo,
-		removeTodo,
-		signOut,
-		isSigningOut,
-		form,
-		completedCount,
-		totalCount,
-	};
-}
-
-function ConvexTodos() {
-	const {
-		todos,
-		isFetching,
-		toggleTodo,
-		removeTodo,
-		signOut,
-		isSigningOut,
-		form,
-		completedCount,
-		totalCount,
-	} = useConvexTodosModel();
 
 	return (
 		<div
