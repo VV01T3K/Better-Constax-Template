@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { LogIn, UserPlus } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import {
 	useSignInMutationOptions,
@@ -108,10 +108,7 @@ function AuthPage() {
 	);
 
 	const isPending = signInMutation.isPending || signUpMutation.isPending;
-	const errorMessage = useMemo(
-		() => signInMutation.error?.message ?? signUpMutation.error?.message ?? null,
-		[signInMutation.error?.message, signUpMutation.error?.message],
-	);
+	const errorMessage = signInMutation.error?.message ?? signUpMutation.error?.message ?? null;
 
 	return (
 		<div
