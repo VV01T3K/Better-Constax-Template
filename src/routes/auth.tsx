@@ -9,10 +9,7 @@ import {
 } from "../integrations/convex/auth-client";
 import {
 	ensureAuthIdentity,
-	getCachedAuthIdentity,
-	invalidateAuthIdentity,
-	isAuthenticatedFromIdentity,
-	warmAuthIdentity,
+	refreshAuthIdentity,
 } from "../integrations/convex/auth-state";
 
 type AuthSearch = {
@@ -31,42 +28,11 @@ export const Route = createFileRoute("/auth")({
 				? search.redirect
 				: DEFAULT_REDIRECT;
 
-		if (typeof context.isAuthenticated === "boolean") {
-			if (context.isAuthenticated) {
-				throw redirect({ to: redirectTo });
-			}
-			return {
-				isAuthenticated: context.isAuthenticated,
-			};
+		const authIdentity = await ensureAuthIdentity(context.queryClient);
+
+		if (authIdentity) {
+			throw redirect({ to: redirectTo });
 		}
-
-		const cachedAuthIdentity = getCachedAuthIdentity(context.queryClient);
-		const cachedIsAuthenticated = isAuthenticatedFromIdentity(cachedAuthIdentity);
-
-		if (typeof cachedIsAuthenticated === "boolean") {
-			if (cachedIsAuthenticated) {
-				throw redirect({ to: redirectTo });
-			}
-			return {
-				isAuthenticated: cachedIsAuthenticated,
-			};
-		}
-
-		if (import.meta.env.SSR) {
-			const authIdentity = await ensureAuthIdentity(context.queryClient);
-			if (authIdentity !== null) {
-				throw redirect({ to: redirectTo });
-			}
-
-			return {
-				isAuthenticated: false,
-			};
-		}
-
-		warmAuthIdentity(context.queryClient);
-		return {
-			isAuthenticated: undefined,
-		};
 	},
 	component: AuthPage,
 });
@@ -88,8 +54,7 @@ function AuthPage() {
 	const signInMutation = useMutation(
 		useSignInMutationOptions({
 			onSuccess: async () => {
-				await invalidateAuthIdentity(queryClient);
-				warmAuthIdentity(queryClient);
+				await refreshAuthIdentity(queryClient);
 				await router.invalidate();
 				await router.navigate({ to: redirectTo });
 			},
@@ -99,8 +64,7 @@ function AuthPage() {
 	const signUpMutation = useMutation(
 		useSignUpMutationOptions({
 			onSuccess: async () => {
-				await invalidateAuthIdentity(queryClient);
-				warmAuthIdentity(queryClient);
+				await refreshAuthIdentity(queryClient);
 				await router.invalidate();
 				await router.navigate({ to: redirectTo });
 			},

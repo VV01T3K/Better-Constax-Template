@@ -16,26 +16,18 @@ export const getAuthIdentityQueryOptions = () => ({
 	staleTime: AUTH_STATE_STALE_TIME_MS,
 });
 
-export const getAuthIdentityQueryKey = () => getBaseAuthIdentityQueryOptions().queryKey;
-
-export const getCachedAuthIdentity = (queryClient: QueryClient): AuthIdentity | undefined =>
-	queryClient.getQueryData<AuthIdentity>(getAuthIdentityQueryKey());
-
-export const isAuthenticatedFromIdentity = (
-	identity: AuthIdentity | undefined,
-): boolean | undefined => {
-	if (identity === undefined) {
-		return undefined;
-	}
-
-	return identity !== null;
-};
+const getAuthIdentityQueryKey = () => getBaseAuthIdentityQueryOptions().queryKey;
 
 export const ensureAuthIdentity = (queryClient: QueryClient): Promise<AuthIdentity> =>
 	queryClient.ensureQueryData(getAuthIdentityQueryOptions());
 
 export const warmAuthIdentity = (queryClient: QueryClient) => {
 	void ensureAuthIdentity(queryClient).catch(() => undefined);
+};
+
+export const refreshAuthIdentity = async (queryClient: QueryClient) => {
+	await invalidateAuthIdentity(queryClient);
+	warmAuthIdentity(queryClient);
 };
 
 export const invalidateAuthIdentity = async (queryClient: QueryClient) => {
