@@ -16,7 +16,7 @@ type AuthSearch = {
 	redirect?: string;
 };
 
-const DEFAULT_REDIRECT = "/demo/convex";
+const DEFAULT_REDIRECT = "/";
 
 export const Route = createFileRoute("/auth")({
 	validateSearch: (search: Record<string, unknown>): AuthSearch => ({
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/auth")({
 		const authIdentity = await ensureAuthIdentity(context.queryClient);
 
 		if (authIdentity) {
-			throw redirect({ to: redirectTo });
+			throw redirect({ to: redirectTo as string });
 		}
 	},
 	component: AuthPage,
@@ -45,6 +45,7 @@ function AuthPage() {
 		typeof redirectSearch === "string" && redirectSearch.startsWith("/")
 			? redirectSearch
 			: DEFAULT_REDIRECT;
+	const redirectPath = redirectTo.split("?")[0] || DEFAULT_REDIRECT;
 
 	const [mode, setMode] = useState<"sign-in" | "sign-up">("sign-in");
 	const [name, setName] = useState("");
@@ -56,7 +57,7 @@ function AuthPage() {
 			onSuccess: async () => {
 				await refreshAuthIdentity(queryClient);
 				await router.invalidate();
-				await router.navigate({ to: redirectTo });
+				await router.navigate({ to: redirectPath as string });
 			},
 		}),
 	);
@@ -66,7 +67,7 @@ function AuthPage() {
 			onSuccess: async () => {
 				await refreshAuthIdentity(queryClient);
 				await router.invalidate();
-				await router.navigate({ to: redirectTo });
+				await router.navigate({ to: redirectPath as string });
 			},
 		}),
 	);

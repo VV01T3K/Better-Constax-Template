@@ -27,7 +27,7 @@ export const warmAuthIdentity = (queryClient: QueryClient) => {
 
 export const refreshAuthIdentity = async (queryClient: QueryClient) => {
 	await invalidateAuthIdentity(queryClient);
-	warmAuthIdentity(queryClient);
+	await ensureAuthIdentity(queryClient);
 };
 
 export const invalidateAuthIdentity = async (queryClient: QueryClient) => {
