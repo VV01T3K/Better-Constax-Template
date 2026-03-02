@@ -18,9 +18,7 @@ export default function Header() {
 	const { data: authIdentity } = useQuery(getAuthIdentityQueryOptions());
 	const isAuthenticated = authIdentity !== undefined && authIdentity !== null;
 	const isAuthRoute = location.pathname.startsWith("/auth");
-	const redirectTarget = isAuthRoute
-		? "/demo/convex"
-		: `${location.pathname}${location.search}${location.hash}`;
+	const redirectTarget = isAuthRoute ? "/demo/convex" : location.href;
 
 	const { mutateAsync: signOut, isPending: isSigningOut } = useMutation(
 		useSignOutMutationOptions({
