@@ -15,7 +15,7 @@ const config = defineConfig({
 	plugins: [
 		devtools(),
 		devtoolsJson({ normalizeForWindowsContainer: true }),
-		nitro({ rolldownConfig: { external: [/^@sentry\//] }, preset: "bun" }),
+		nitro({ rolldownConfig: { external: ["bun", /^@sentry\//] }, preset: "bun" }),
 		tailwindcss(),
 		tanstackStart(),
 		viteReact({
