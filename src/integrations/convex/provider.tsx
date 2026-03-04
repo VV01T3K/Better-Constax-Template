@@ -1,10 +1,15 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouteContext, useRouter } from "@tanstack/react-router";
-import { useCallback } from "react";
 import { ConvexAuthProvider } from "better-convex/auth/client";
+import { useCallback } from "react";
 
 import { authClient } from "./auth-client";
-import { invalidateAuthIdentity, setSignedOutAuthIdentity } from "./auth-state";
+import {
+	getAuthRouteNavigateOptions,
+	getRedirectTargetFromRouterLocation,
+	isProtectedRouteMatch,
+} from "./auth-redirect";
+import { markSignedOutAuthIdentity } from "./auth-state";
 import { convexClient, getConvexQueryClient } from "./client";
 import { CRPCProvider } from "./crpc";
 
@@ -16,9 +21,15 @@ export default function AppConvexProvider({ children }: { children: React.ReactN
 
 	const handleUnauthorized = useCallback(() => {
 		void (async () => {
-			await invalidateAuthIdentity(queryClient);
-			await setSignedOutAuthIdentity(queryClient);
-			await router.invalidate();
+			await markSignedOutAuthIdentity(queryClient);
+
+			if (!isProtectedRouteMatch(router.state.matches)) {
+				return;
+			}
+
+			const redirectTarget = getRedirectTargetFromRouterLocation(router.state.location);
+
+			await router.navigate(getAuthRouteNavigateOptions(redirectTarget));
 		})();
 	}, [queryClient, router]);
 

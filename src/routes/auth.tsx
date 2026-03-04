@@ -8,30 +8,30 @@ import {
 	useSignUpMutationOptions,
 } from "../integrations/convex/auth-client";
 import {
+	DEFAULT_REDIRECT_TARGET,
+	type RedirectTarget,
+	sanitizeRedirectTarget,
+} from "../integrations/convex/auth-redirect";
+import {
 	ensureAuthIdentity,
-	refreshAuthIdentity,
+	refreshAuthIdentityUntilAuthenticated,
 } from "../integrations/convex/auth-state";
 
 type AuthSearch = {
-	redirect?: string;
+	redirect: RedirectTarget;
 };
 
-const DEFAULT_REDIRECT = "/";
-
 export const Route = createFileRoute("/auth")({
-	validateSearch: (search: Record<string, unknown>): AuthSearch => ({
-		redirect: typeof search.redirect === "string" ? search.redirect : DEFAULT_REDIRECT,
-	}),
+	validateSearch: (search: Record<string, unknown>): AuthSearch => {
+		return { redirect: sanitizeRedirectTarget(search.redirect) };
+	},
 	beforeLoad: async ({ context, search }) => {
-		const redirectTo =
-			typeof search.redirect === "string" && search.redirect.startsWith("/")
-				? search.redirect
-				: DEFAULT_REDIRECT;
+		const redirectTo = sanitizeRedirectTarget(search.redirect);
 
 		const authIdentity = await ensureAuthIdentity(context.queryClient);
 
 		if (authIdentity) {
-			throw redirect({ to: redirectTo as string });
+			throw redirect({ href: redirectTo });
 		}
 	},
 	component: AuthPage,
@@ -41,23 +41,27 @@ function AuthPage() {
 	const { redirect: redirectSearch } = Route.useSearch();
 	const queryClient = useQueryClient();
 	const router = useRouter();
-	const redirectTo =
-		typeof redirectSearch === "string" && redirectSearch.startsWith("/")
-			? redirectSearch
-			: DEFAULT_REDIRECT;
-	const redirectPath = redirectTo.split("?")[0] || DEFAULT_REDIRECT;
+	const redirectTarget = sanitizeRedirectTarget(redirectSearch ?? DEFAULT_REDIRECT_TARGET);
 
 	const [mode, setMode] = useState<"sign-in" | "sign-up">("sign-in");
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
+	const completeAuthAndNavigate = async (failureMessage: string) => {
+		const authIdentity = await refreshAuthIdentityUntilAuthenticated(queryClient);
+
+		if (!authIdentity) {
+			throw new Error(failureMessage);
+		}
+
+		await router.navigate({ href: redirectTarget, replace: true });
+	};
+
 	const signInMutation = useMutation(
 		useSignInMutationOptions({
 			onSuccess: async () => {
-				await refreshAuthIdentity(queryClient);
-				await router.invalidate();
-				await router.navigate({ to: redirectPath as string });
+				await completeAuthAndNavigate("We couldn't complete sign-in yet. Please try again.");
 			},
 		}),
 	);
@@ -65,9 +69,7 @@ function AuthPage() {
 	const signUpMutation = useMutation(
 		useSignUpMutationOptions({
 			onSuccess: async () => {
-				await refreshAuthIdentity(queryClient);
-				await router.invalidate();
-				await router.navigate({ to: redirectPath as string });
+				await completeAuthAndNavigate("We couldn't complete sign-up yet. Please try again.");
 			},
 		}),
 	);

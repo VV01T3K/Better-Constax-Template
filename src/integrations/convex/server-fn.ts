@@ -10,4 +10,3 @@ export const getServerAuthState = createServerFn({ method: "GET" }).handler(asyn
 		token: ctx.token ?? null,
 	};
 });
-

@@ -5,9 +5,15 @@ import { useState } from "react";
 
 import { useSignOutMutationOptions } from "../integrations/convex/auth-client";
 import {
+	DEFAULT_REDIRECT_TARGET,
+	getAuthRedirectSearch,
+	getAuthRouteNavigateOptions,
+	getRedirectTargetFromRouterLocation,
+	isAuthPath,
+} from "../integrations/convex/auth-redirect";
+import {
 	getAuthIdentityQueryOptions,
-	invalidateAuthIdentity,
-	setSignedOutAuthIdentity,
+	markSignedOutAuthIdentity,
 } from "../integrations/convex/auth-state";
 
 export default function Header() {
@@ -17,21 +23,16 @@ export default function Header() {
 	const queryClient = useQueryClient();
 	const { data: authIdentity } = useQuery(getAuthIdentityQueryOptions());
 	const isAuthenticated = authIdentity !== undefined && authIdentity !== null;
-	const isAuthRoute = location.pathname.startsWith("/auth");
-	const redirectTarget = isAuthRoute ? "/" : location.pathname;
+	const isAuthRoute = isAuthPath(location.pathname);
+	const locationTarget = getRedirectTargetFromRouterLocation(location);
+	const redirectTarget = isAuthRoute ? DEFAULT_REDIRECT_TARGET : locationTarget;
+	const signInRedirectSearch = getAuthRedirectSearch(redirectTarget);
 
 	const { mutateAsync: signOut, isPending: isSigningOut } = useMutation(
 		useSignOutMutationOptions({
 			onSuccess: async () => {
-				await invalidateAuthIdentity(queryClient);
-				await setSignedOutAuthIdentity(queryClient);
-				await router.invalidate();
-				await router.navigate({
-					to: "/auth",
-					search: {
-						redirect: redirectTarget,
-					},
-				});
+				await markSignedOutAuthIdentity(queryClient);
+				await router.navigate(getAuthRouteNavigateOptions(redirectTarget));
 			},
 		}),
 	);
@@ -68,7 +69,7 @@ export default function Header() {
 					) : (
 						<Link
 							to="/auth"
-							search={{ redirect: redirectTarget }}
+							search={signInRedirectSearch}
 							className="inline-flex items-center gap-2 rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-3 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-500/20"
 						>
 							<LogIn size={16} />
