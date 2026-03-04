@@ -12,6 +12,7 @@ github-cli = "latest"
 [hooks]
 postinstall = '''
   bun pm pkg set packageManager=bun@$(bun --version) && test -d node_modules || bun install
+  bunx playwright install chromium
 '''
 
 [tasks.docker]
