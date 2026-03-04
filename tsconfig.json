@@ -1,15 +1,15 @@
 {
 	"include": ["**/*.ts", "**/*.tsx"],
 	"compilerOptions": {
-		"target": "ES2022",
+		"target": "ES2025",
 		"jsx": "react-jsx",
 		"module": "ESNext",
 		"paths": {
 			"@/*": ["./src/*"],
-			"@convex/*": ["./convex/shared/*", "./convex/src/_generated/*"]
+			"@convex/*": ["./convex/shared/*"]
 		},
-		"lib": ["ES2022", "DOM", "DOM.Iterable"],
-		"types": ["vite/client"],
+		"lib": ["ES2025", "DOM"],
+		"types": ["vite/client", "vitest/globals"],
 
 		/* Bundler mode */
 		"moduleResolution": "bundler",
