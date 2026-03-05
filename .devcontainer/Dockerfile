@@ -5,6 +5,7 @@ USER vscode
 
 RUN curl https://mise.run/zsh | sh
 ENV PATH="/home/vscode/.local/bin:${PATH}"
+RUN mise exec bun -- bun x playwright install chromium
 RUN mise use -g claude@latest codex@latest opencode@latest
 COPY mise.toml /tmp/mise.toml
 RUN cd /tmp && mise trust && mise install -y
