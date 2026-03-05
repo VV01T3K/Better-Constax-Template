@@ -1,6 +1,6 @@
 import { convexBetterAuthReactStart } from "@convex-dev/better-auth/react-start";
 import { getToken } from "@convex-dev/better-auth/utils";
-import { api } from "@convex/api";
+import { api } from "@repo/convex/api";
 import { createCallerFactory } from "better-convex/server";
 
 import { env } from "../../env";

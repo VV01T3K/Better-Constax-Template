@@ -4,7 +4,7 @@ import authConfig from "./auth.config";
 import { getSharedAuthOptions, getSiteUrl } from "./config/auth.shared";
 
 // Keep this root entrypoint because better-convex codegen/runtime expects
-// `convex/src/auth.ts` to default export `defineAuth(...)`.
+// `src/auth.ts` to default export `defineAuth(...)`.
 const siteUrl = getSiteUrl();
 
 export default defineAuth(() => ({

@@ -1,4 +1,4 @@
-import { api } from "@convex/api";
+import { api } from "@repo/convex/api";
 import { createCRPCContext, createCRPCOptionsProxy } from "better-convex/react";
 
 import { env } from "../../env";

@@ -57,6 +57,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 		],
 	}),
 	beforeLoad: async ({ context }) => {
+		const convexQueryClient = getConvexQueryClient(context.queryClient);
+
 		if (!import.meta.env.SSR) {
 			warmAuthIdentity(context.queryClient);
 			return {};
@@ -65,11 +67,19 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 		const authState = await getServerAuthState();
 
 		if (authState.token) {
-			getConvexQueryClient(context.queryClient).serverHttpClient?.setAuth(authState.token);
+			convexQueryClient.serverHttpClient?.setAuth(authState.token);
 			await ensureAuthIdentity(context.queryClient);
 		}
 
 		return { token: authState.token };
+	},
+	errorComponent: ({ error }) => {
+		const message = error instanceof Error ? error.message : "Unexpected route error";
+		return (
+			<div className="p-4 text-red-700" role="alert">
+				{message}
+			</div>
+		);
 	},
 	shellComponent: RootDocument,
 });

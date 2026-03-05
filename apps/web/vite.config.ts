@@ -6,9 +6,9 @@ import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
 
 const config = defineConfig({
+	envDir: `${import.meta.dirname}/../..`,
 	resolve: {
 		alias: {
-			"@convex": `${import.meta.dirname}/convex/shared`,
 			"@": `${import.meta.dirname}/src`,
 		},
 	},

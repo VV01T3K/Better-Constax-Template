@@ -1,4 +1,4 @@
-import { todoSchema } from "@convex/schemas/todos";
+import { todoSchema } from "@repo/convex/schemas/todos";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";

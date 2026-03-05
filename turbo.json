@@ -1,0 +1,47 @@
+{
+	"$schema": "https://turbo.build/schema.json",
+	"globalDependencies": [
+		".env",
+		".env.*",
+		".env.local",
+		".oxfmtrc.json",
+		".oxlintrc.json",
+		"apps/**/tsconfig.json",
+		"packages/**/tsconfig.json",
+		"package.json",
+		"bun.lock"
+	],
+	"tasks": {
+		"dev": {
+			"cache": false,
+			"persistent": true
+		},
+		"convex": {
+			"cache": false,
+			"persistent": true
+		},
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": [".output/**", "dist/**", "build/**"],
+			"env": ["VITE_APP_TITLE", "VITE_CONVEX_SITE_URL", "VITE_CONVEX_URL", "VITE_SITE_URL"]
+		},
+		"test": {
+			"dependsOn": ["^test"],
+			"outputs": []
+		},
+		"lint": {
+			"dependsOn": ["^lint"],
+			"outputs": []
+		},
+		"check": {
+			"dependsOn": ["^check"],
+			"outputs": []
+		},
+		"format": {
+			"cache": false
+		},
+		"fix": {
+			"cache": false
+		}
+	}
+}

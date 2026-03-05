@@ -1,7 +1,7 @@
 {
-	"$schema": "./node_modules/convex/schemas/convex.schema.json",
+	"$schema": "../../node_modules/convex/schemas/convex.schema.json",
 	"typescriptCompiler": "tsgo",
-	"functions": "convex/src",
+	"functions": "src",
 	"codegen": {
 		"staticApi": true,
 		"staticDataModel": true
