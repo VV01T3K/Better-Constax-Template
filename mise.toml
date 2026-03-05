@@ -25,3 +25,7 @@ experimental = true
 
 [settings.npm]
 package_manager = "bun"
+
+[shell_alias]
+npm = "bun"
+npx = "bunx"
