@@ -6,7 +6,7 @@ const AUTH_STATE_STALE_TIME_MS = 30_000;
 const AUTH_REFRESH_RETRY_ATTEMPTS = 4;
 const AUTH_REFRESH_RETRY_DELAY_MS = 75;
 
-export type AuthIdentity = {
+type AuthIdentity = {
 	userId: string;
 	name: string;
 } | null;
@@ -30,7 +30,7 @@ export const warmAuthIdentity = (queryClient: QueryClient) => {
 	void ensureAuthIdentity(queryClient).catch(() => undefined);
 };
 
-export const refreshAuthIdentity = async (queryClient: QueryClient) => {
+const refreshAuthIdentity = async (queryClient: QueryClient) => {
 	await invalidateAuthIdentity(queryClient);
 	return ensureAuthIdentity(queryClient);
 };
@@ -70,7 +70,7 @@ export const refreshAuthIdentityUntilAuthenticated = async (
 	return authIdentity;
 };
 
-export const invalidateAuthIdentity = async (queryClient: QueryClient) => {
+const invalidateAuthIdentity = async (queryClient: QueryClient) => {
 	const queryKey = getAuthIdentityQueryKey();
 	await queryClient.cancelQueries({ queryKey });
 	queryClient.removeQueries({ queryKey, exact: true });
