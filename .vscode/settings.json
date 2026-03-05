@@ -72,5 +72,9 @@
 	},
 	"oxc.typeAware": true,
 	"oxc.fixKind": "safe_fix_or_suggestion",
-	"bun.test.enable": false
+	"bun.test.enable": false,
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.oxc": "explicit"
+	}
 }
