@@ -35,7 +35,6 @@
 		}
 	},
 	"onCreateCommand": "mise trust && mise install",
-	"mounts": ["source=debian-mise-cache,target=/home/vscode/.local/share/mise,type=volume"],
 	"forwardPorts": [3000, 3001]
 	// "customizations": {},
 }
