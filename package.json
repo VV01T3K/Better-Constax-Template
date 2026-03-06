@@ -16,7 +16,7 @@
 		"convex:env": "convex env set BETTER_AUTH_SECRET=$(openssl rand -base64 32) && convex env set SITE_URL http://localhost:3000 && convex env set BETTER_AUTH_ADMIN_EMAILS admin@gmail.com"
 	},
 	"dependencies": {
-		"@convex-dev/better-auth": "0.10.11",
+		"@convex-dev/better-auth": "0.10.13",
 		"@convex-dev/react-query": "0.1.0",
 		"@faker-js/faker": "^10.3.0",
 		"@t3-oss/env-core": "^0.13.10",
@@ -39,7 +39,7 @@
 		"convex-helpers": "^0.1.113",
 		"file-type": "^21.3.0",
 		"hono": "^4.12.2",
-		"lucide-react": "^0.575.0",
+		"lucide-react": "^0.577.0",
 		"neverthrow": "^8.2.0",
 		"nitro": "catalog:",
 		"react": "^19.2.4",
