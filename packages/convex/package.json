@@ -29,10 +29,10 @@
 		"convex:env": "SITE_URL=http://localhost:3000 && convex env set BETTER_AUTH_SECRET=$(openssl rand -base64 32) && convex env set SITE_URL $SITE_URL && convex env set BETTER_AUTH_ADMIN_EMAILS admin@gmail.com && convex run generated/auth:getLatestJwks | convex env set JWKS && (grep -q '^VITE_SITE_URL=' ../../.env.local && sed -i \"s|^VITE_SITE_URL=.*|VITE_SITE_URL=$SITE_URL|\" ../../.env.local || printf \"\\nVITE_SITE_URL=%s\\n\" \"$SITE_URL\" >> ../../.env.local)"
 	},
 	"dependencies": {
-		"@convex-dev/better-auth": "0.10.12",
+		"@convex-dev/better-auth": "0.10.13",
 		"@convex-dev/migrations": "^0.3.1",
 		"better-auth": "1.4.21",
-		"better-convex": "0.9.0",
+		"better-convex": "0.10.0",
 		"convex": "^1.32.0",
 		"convex-helpers": "^0.1.114",
 		"zod": "^4.3.6"
