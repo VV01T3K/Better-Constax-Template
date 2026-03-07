@@ -28,6 +28,9 @@ const config = defineConfig(({ mode }) => ({
 		}),
 		VitePWA({
 			registerType: "autoUpdate",
+			devOptions: {
+				enabled: true,
+			},
 			workbox: {
 				globPatterns: ["**/*.{js,css,html,ico,png,jpg,jpeg,webp,avif,svg,woff2}"],
 				navigateFallback: null,
@@ -46,14 +49,14 @@ const config = defineConfig(({ mode }) => ({
 						type: "image/x-icon",
 					},
 					{
-						src: "logo192.avif",
-						type: "image/avif",
+						src: "logo192.png",
+						type: "image/png",
 						sizes: "192x192",
 						purpose: "any maskable",
 					},
 					{
-						src: "logo512.avif",
-						type: "image/avif",
+						src: "logo512.png",
+						type: "image/png",
 						sizes: "512x512",
 						purpose: "any maskable",
 					},

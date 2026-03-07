@@ -8,6 +8,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "turbo run dev --parallel",
+		"convex": "bun run --cwd packages/convex --silent convex",
 		"preview": "turbo run preview --filter=@repo/web --parallel",
 		"build": "turbo run build",
 		"test": "turbo run test",

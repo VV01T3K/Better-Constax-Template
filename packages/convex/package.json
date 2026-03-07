@@ -13,8 +13,8 @@
 		}
 	},
 	"scripts": {
-		"dev": "bun run --env-file ../../.env.local convex",
-		"convex": "better-convex dev",
+		"dev": "better-convex dev",
+		"convex": "better-convex dev --once",
 		"convex:codegen": "better-convex codegen",
 		"build": "tsgo --noEmit",
 		"lint": "oxlint --type-aware --type-check src lib shared",

@@ -35,25 +35,21 @@ const connectionHintLinks = Array.from(
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
 	head: () => {
-		const pwaLinks = import.meta.env.PROD
-			? [
-					{
-						rel: "manifest" as const,
-						href: "/manifest.webmanifest",
-					},
-					{
-						rel: "apple-touch-icon" as const,
-						href: "/logo192.avif",
-					},
-				]
-			: [];
-		const pwaScripts = import.meta.env.PROD
-			? [
-					{
-						src: "/registerSW.js",
-					},
-				]
-			: [];
+		const pwaLinks = [
+			{
+				rel: "manifest" as const,
+				href: "/manifest.webmanifest",
+			},
+			{
+				rel: "apple-touch-icon" as const,
+				href: "/logo192.png",
+			},
+		];
+		const pwaScripts = [
+			{
+				src: "/registerSW.js",
+			},
+		];
 
 		return {
 			meta: [
