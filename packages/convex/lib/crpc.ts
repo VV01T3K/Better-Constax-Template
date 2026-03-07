@@ -22,7 +22,9 @@ export const authMiddleware = c.middleware<object, ValidatedAuth>(async ({ ctx, 
 	});
 });
 
-export const assertOwnership = async <T extends TableNames>(
+export const assertOwnership = async <
+	T extends { [K in TableNames]: Doc<K> extends { userId: string } ? K : never }[TableNames],
+>(
 	ctx: { db: { get: (id: Doc<T>["_id"]) => Promise<Doc<T> | null> }; userId: string },
 	table: T,
 	id: Doc<T>["_id"],
@@ -33,8 +35,7 @@ export const assertOwnership = async <T extends TableNames>(
 		throw new CRPCError({ code: "NOT_FOUND", message: `${table} not found` });
 	}
 
-	// oxlint-disable-next-line no-unsafe-type-assertion
-	if ((doc as Record<string, unknown>).userId !== ctx.userId) {
+	if ((doc as Doc<T> & { userId: string }).userId !== ctx.userId) {
 		throw new CRPCError({ code: "FORBIDDEN", message: `Not your ${table}` });
 	}
 

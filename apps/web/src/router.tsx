@@ -1,12 +1,12 @@
 /* @refresh reload */
 import { QueryClient } from "@tanstack/react-query";
-import { createRouter as createTanStackRouter } from "@tanstack/react-router";
+import { createRouter as createTanStackRouter, useRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
+import { useEffect } from "react";
 
 import { routeTree } from "./routeTree.gen";
 
 type AppRouter = ReturnType<typeof createTanStackRouter>;
-let activeRouter: AppRouter | undefined;
 
 type NotFoundLogProps = {
 	routeId?: string;
@@ -22,10 +22,9 @@ const stringifyLog = (value: unknown) => {
 	}
 };
 
-function logNotFound(props: NotFoundLogProps) {
-	const latestLocation = activeRouter?.latestLocation;
-	const matchedRouteIds =
-		activeRouter?.state.matches?.map((match) => match.routeId ?? match.id) ?? null;
+function logNotFound(props: NotFoundLogProps, router?: AppRouter) {
+	const latestLocation = router?.latestLocation;
+	const matchedRouteIds = router?.state.matches?.map((match) => match.routeId ?? match.id) ?? null;
 
 	const basePayload = {
 		routeId: props.routeId ?? null,
@@ -48,7 +47,10 @@ function logNotFound(props: NotFoundLogProps) {
 }
 
 function DefaultNotFoundComponent(props: NotFoundLogProps) {
-	logNotFound(props);
+	const router = useRouter();
+	useEffect(() => {
+		logNotFound(props, router);
+	}, []); // oxlint-disable-line react-hooks/exhaustive-deps
 
 	return <p>Not Found</p>;
 }
@@ -71,8 +73,6 @@ export function getRouter() {
 		router,
 		queryClient,
 	});
-
-	activeRouter = router;
 
 	return router;
 }

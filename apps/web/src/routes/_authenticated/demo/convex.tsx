@@ -110,19 +110,17 @@ function ConvexTodos() {
 						</div>
 					) : (
 						<div className="divide-y divide-green-100">
-							{todos.map((todo, index) => (
+							{todos.map((todo) => (
 								<div
 									key={todo._id}
 									className={`flex items-center gap-4 p-4 transition-colors hover:bg-green-50/50 ${
 										todo.completed ? "opacity-75" : ""
 									}`}
-									style={{
-										animationDelay: `${index * 50}ms`,
-									}}
 								>
 									<button
 										type="button"
 										onClick={() => void toggleTodo({ id: todo._id })}
+										aria-label={todo.completed ? "Mark as incomplete" : "Mark as complete"}
 										className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 ${
 											todo.completed
 												? "border-green-500 bg-green-500 text-white"

@@ -121,7 +121,7 @@ function AuthPage() {
 						await signUpMutation.mutateAsync({
 							email,
 							password,
-							name: name.trim() || email.split("@")[0] || "User",
+							name: name.trim(),
 						});
 					}}
 				>

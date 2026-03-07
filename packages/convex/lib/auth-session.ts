@@ -5,18 +5,8 @@ import type { MutationCtx, QueryCtx } from "../src/generated/server";
 
 export type ValidatedAuth = {
 	sessionId: Id<"session">;
-	userId: string;
+	userId: Id<"user">;
 };
-
-const AUTH_REQUIRED_ERROR = new CRPCError({
-	code: "UNAUTHORIZED",
-	message: "Authentication required",
-});
-
-const SESSION_INVALID_ERROR = new CRPCError({
-	code: "UNAUTHORIZED",
-	message: "Session invalid",
-});
 
 const getValidatedIdentity = async (
 	ctx: Pick<QueryCtx, "auth"> | Pick<MutationCtx, "auth">,
@@ -24,19 +14,26 @@ const getValidatedIdentity = async (
 	const identity = await ctx.auth.getUserIdentity();
 
 	if (!identity || typeof identity.subject !== "string" || typeof identity.sessionId !== "string") {
-		throw AUTH_REQUIRED_ERROR;
+		throw new CRPCError({
+			code: "UNAUTHORIZED",
+			message: "Authentication required",
+		});
 	}
 
 	return {
 		// oxlint-disable-next-line no-unsafe-type-assertion
 		sessionId: identity.sessionId as Id<"session">,
-		userId: identity.subject,
+		// oxlint-disable-next-line no-unsafe-type-assertion
+		userId: identity.subject as Id<"user">,
 	};
 };
 
-const assertActiveSession = (session: unknown, userId: string) => {
+const assertActiveSession = (session: unknown, userId: Id<"user">) => {
 	if (!session || typeof session !== "object") {
-		throw SESSION_INVALID_ERROR;
+		throw new CRPCError({
+			code: "UNAUTHORIZED",
+			message: "Session invalid",
+		});
 	}
 
 	const expiresAt = (session as { expiresAt?: unknown }).expiresAt;
@@ -48,7 +45,10 @@ const assertActiveSession = (session: unknown, userId: string) => {
 		typeof sessionUserId !== "string" ||
 		sessionUserId !== userId
 	) {
-		throw SESSION_INVALID_ERROR;
+		throw new CRPCError({
+			code: "UNAUTHORIZED",
+			message: "Session invalid",
+		});
 	}
 };
 

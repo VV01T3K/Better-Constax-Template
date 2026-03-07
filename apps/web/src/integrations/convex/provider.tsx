@@ -9,7 +9,7 @@ import {
 	getRedirectTargetFromRouterLocation,
 	isProtectedRouteMatch,
 } from "./auth-redirect";
-import { markSignedOutAuthIdentity } from "./auth-state";
+import { prepareSignedOutSession } from "./auth-state";
 import { convexClient, getConvexQueryClient } from "./client";
 import { CRPCProvider } from "./crpc";
 
@@ -21,7 +21,7 @@ export default function AppConvexProvider({ children }: { children: React.ReactN
 
 	const handleUnauthorized = useCallback(() => {
 		void (async () => {
-			await markSignedOutAuthIdentity(queryClient);
+			await prepareSignedOutSession(queryClient);
 
 			if (!isProtectedRouteMatch(router.state.matches)) {
 				return;

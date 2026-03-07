@@ -2,12 +2,11 @@ import { z } from "zod";
 
 export const authStateSchema = {
 	me: {
-		output: z.union([
-			z.null(),
-			z.object({
+		output: z
+			.object({
 				userId: z.string(),
 				name: z.string(),
-			}),
-		]),
+			})
+			.nullable(),
 	},
 } as const;

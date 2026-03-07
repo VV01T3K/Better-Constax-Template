@@ -6,10 +6,17 @@ const AUTH_STATE_STALE_TIME_MS = 30_000;
 const AUTH_REFRESH_RETRY_ATTEMPTS = 4;
 const AUTH_REFRESH_RETRY_DELAY_MS = 75;
 
-type AuthIdentity = {
+export type AuthIdentity = {
 	userId: string;
 	name: string;
 } | null;
+
+export type SignedOutSessionSnapshot = {
+	authIdentity: AuthIdentity | undefined;
+};
+
+const isSignedOutSessionSnapshot = (value: unknown): value is SignedOutSessionSnapshot =>
+	typeof value === "object" && value !== null && "authIdentity" in value;
 
 const getBaseAuthIdentityQueryOptions = () => staticCRPC.func.session.me.staticQueryOptions({});
 
@@ -80,4 +87,34 @@ export const markSignedOutAuthIdentity = async (queryClient: QueryClient) => {
 	const queryKey = getAuthIdentityQueryKey();
 	await queryClient.cancelQueries({ queryKey });
 	queryClient.setQueryData(queryKey, null);
+};
+
+export const prepareSignedOutSession = async (
+	queryClient: QueryClient,
+): Promise<SignedOutSessionSnapshot> => {
+	const queryKey = getAuthIdentityQueryKey();
+	const snapshot = {
+		authIdentity: queryClient.getQueryData<AuthIdentity>(queryKey),
+	};
+
+	await queryClient.cancelQueries();
+	queryClient.removeQueries();
+	queryClient.setQueryData(queryKey, null);
+
+	return snapshot;
+};
+
+export const restoreSignedOutSession = (
+	queryClient: QueryClient,
+	snapshot: unknown,
+) => {
+	const queryKey = getAuthIdentityQueryKey();
+	const authIdentity = isSignedOutSessionSnapshot(snapshot) ? snapshot.authIdentity : undefined;
+
+	if (authIdentity === undefined) {
+		queryClient.removeQueries({ queryKey, exact: true });
+		return;
+	}
+
+	queryClient.setQueryData(queryKey, authIdentity);
 };

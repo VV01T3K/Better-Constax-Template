@@ -26,15 +26,15 @@
 			"env": ["VITE_APP_TITLE", "VITE_CONVEX_SITE_URL", "VITE_CONVEX_URL", "VITE_SITE_URL"]
 		},
 		"test": {
-			"dependsOn": ["^test"],
+			"dependsOn": ["^build"],
 			"outputs": []
 		},
 		"lint": {
-			"dependsOn": ["^lint"],
+			"dependsOn": ["^build"],
 			"outputs": []
 		},
 		"check": {
-			"dependsOn": ["^check"],
+			"dependsOn": ["^build"],
 			"outputs": []
 		},
 		"format": {

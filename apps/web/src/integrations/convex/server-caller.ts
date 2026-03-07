@@ -16,7 +16,7 @@ const authBridge = convexBetterAuthReactStart({
 export const authHandler = authBridge.handler;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
-	typeof value === "object" && value !== null;
+	typeof value === "object" && value !== null && !Array.isArray(value);
 
 const hasAuthCookie = (cookieHeader: string | null) =>
 	Boolean(cookieHeader && /(better-auth|convex_jwt)/i.test(cookieHeader));

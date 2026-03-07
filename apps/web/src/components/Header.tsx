@@ -10,10 +10,13 @@ import {
 	getAuthRouteNavigateOptions,
 	getRedirectTargetFromRouterLocation,
 	isAuthPath,
+	isProtectedRouteMatch,
 } from "../integrations/convex/auth-redirect";
 import {
 	getAuthIdentityQueryOptions,
 	markSignedOutAuthIdentity,
+	prepareSignedOutSession,
+	restoreSignedOutSession,
 } from "../integrations/convex/auth-state";
 
 export default function Header() {
@@ -28,14 +31,30 @@ export default function Header() {
 	const redirectTarget = isAuthRoute ? DEFAULT_REDIRECT_TARGET : locationTarget;
 	const signInRedirectSearch = getAuthRedirectSearch(redirectTarget);
 
-	const { mutateAsync: signOut, isPending: isSigningOut } = useMutation(
-		useSignOutMutationOptions({
-			onSuccess: async () => {
-				await markSignedOutAuthIdentity(queryClient);
+	const signOutMutationOptions = useSignOutMutationOptions({
+		onMutate: async () => {
+			const snapshot = await prepareSignedOutSession(queryClient);
+
+			if (isProtectedRouteMatch(router.state.matches)) {
 				await router.navigate(getAuthRouteNavigateOptions(redirectTarget));
-			},
-		}),
-	);
+			}
+
+			return snapshot;
+		},
+		onSuccess: async () => {
+			await markSignedOutAuthIdentity(queryClient);
+
+			if (isProtectedRouteMatch(router.state.matches)) {
+				await router.navigate(getAuthRouteNavigateOptions(redirectTarget));
+			}
+		},
+		onError: (error, _variables, snapshot) => {
+			restoreSignedOutSession(queryClient, snapshot);
+			// oxlint-disable-next-line eslint/no-console
+			console.error("[Header] Sign-out failed:", error);
+		},
+	});
+	const { mutateAsync: signOut, isPending: isSigningOut } = useMutation(signOutMutationOptions);
 
 	return (
 		<>
