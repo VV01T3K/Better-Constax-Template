@@ -1,10 +1,13 @@
 # Dependencies
 node_modules
+**/node_modules
 
 # Build output
-.output
-dist
-build
+.turbo
+.tanstack
+**/.output
+**/dist
+**/build
 *.tsbuildinfo
 
 # Environment files
@@ -31,9 +34,7 @@ coverage
 .git
 .gitignore
 
-# Docker (self)
-Dockerfile*
-docker
+# Docker
 .dockerignore
 
 # CI & tooling config
@@ -47,11 +48,6 @@ docker
 .oxlintrc*
 .oxfmt*
 .cta.json
-
-# Convex — exclude all, then allow only what the Vite build imports
-convex
-!convex/_generated
-!convex/schemas
 
 # Docs
 README.md
