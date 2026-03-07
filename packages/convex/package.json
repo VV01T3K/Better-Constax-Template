@@ -24,7 +24,7 @@
 		"convex:migrations:run": "mise exec -- bunx convex run migrations:run",
 		"convex:migrations:run:prod": "mise exec -- bunx convex run --prod migrations:run",
 		"convex:env:sync": "better-convex env sync --auth",
-		"auth:schema:generate": "bunx @better-auth/cli generate --config src/generated/auth.schema.config.ts --output src/generated/authSchema.ts -y",
+		"auth:schema:generate": "bunx @better-auth/cli@1.4.21 generate --config src/generated/auth.schema.config.ts --output src/generated/authSchema.ts -y",
 		"auth:schema:check": "bun run auth:schema:generate && git diff --exit-code -- src/generated/authSchema.ts",
 		"convex:env": "SITE_URL=http://localhost:3000 && convex env set BETTER_AUTH_SECRET=$(openssl rand -base64 32) && convex env set SITE_URL $SITE_URL && convex env set BETTER_AUTH_ADMIN_EMAILS admin@gmail.com && convex run generated/auth:getLatestJwks | convex env set JWKS && (grep -q '^VITE_SITE_URL=' ../../.env.local && sed -i \"s|^VITE_SITE_URL=.*|VITE_SITE_URL=$SITE_URL|\" ../../.env.local || printf \"\\nVITE_SITE_URL=%s\\n\" \"$SITE_URL\" >> ../../.env.local)"
 	},
@@ -38,7 +38,6 @@
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
-		"@better-auth/cli": "1.4.21",
 		"@types/node": "^25.3.3",
 		"@typescript/native-preview": "^7.0.0-dev.20260304.1"
 	}
