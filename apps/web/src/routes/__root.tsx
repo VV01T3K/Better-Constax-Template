@@ -35,27 +35,55 @@ const connectionHintLinks = Array.from(
 ]);
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
-	head: () => ({
-		meta: [
-			{
-				charSet: "utf-8",
-			},
-			{
-				name: "viewport",
-				content: "width=device-width, initial-scale=1",
-			},
-			{
-				title: "TanStack Start Starter",
-			},
-		],
-		links: [
-			{
-				rel: "stylesheet",
-				href: appCss,
-			},
-			...connectionHintLinks,
-		],
-	}),
+	head: () => {
+		const pwaLinks = import.meta.env.PROD
+			? [
+					{
+						rel: "manifest" as const,
+						href: "/manifest.webmanifest",
+					},
+					{
+						rel: "apple-touch-icon" as const,
+						href: "/logo192.avif",
+					},
+				]
+			: [];
+		const pwaScripts = import.meta.env.PROD
+			? [
+					{
+						src: "/registerSW.js",
+					},
+				]
+			: [];
+
+		return {
+			meta: [
+				{
+					charSet: "utf-8",
+				},
+				{
+					name: "viewport",
+					content: "width=device-width, initial-scale=1",
+				},
+				{
+					name: "theme-color",
+					content: "#000000",
+				},
+				{
+					title: "TanStack Start Starter",
+				},
+			],
+			links: [
+				{
+					rel: "stylesheet",
+					href: appCss,
+				},
+				...connectionHintLinks,
+				...pwaLinks,
+			],
+			scripts: pwaScripts,
+		};
+	},
 	beforeLoad: async ({ context }) => {
 		const convexQueryClient = getConvexQueryClient(context.queryClient);
 

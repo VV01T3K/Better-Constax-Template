@@ -4,6 +4,7 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
 
 const config = defineConfig({
 	envDir: `${import.meta.dirname}/../..`,
@@ -20,6 +21,47 @@ const config = defineConfig({
 		viteReact({
 			babel: {
 				plugins: ["babel-plugin-react-compiler"],
+			},
+		}),
+		VitePWA({
+			registerType: "autoUpdate",
+			workbox: {
+				globPatterns: ["**/*.{js,css,html,ico,png,jpg,jpeg,webp,avif,svg,woff2}"],
+				navigateFallback: null,
+				swDest: ".output/public/sw.js",
+				globDirectory: ".output/public",
+			},
+			manifest: {
+				short_name: "TanStack App",
+				name: "TanStack Start Starter",
+				description:
+					"A modern full-stack application built with TanStack Start, React 19, and Convex",
+				icons: [
+					{
+						src: "favicon.ico",
+						sizes: "64x64 32x32 24x24 16x16",
+						type: "image/x-icon",
+					},
+					{
+						src: "logo192.avif",
+						type: "image/avif",
+						sizes: "192x192",
+						purpose: "any maskable",
+					},
+					{
+						src: "logo512.avif",
+						type: "image/avif",
+						sizes: "512x512",
+						purpose: "any maskable",
+					},
+				],
+				start_url: "/",
+				scope: "/",
+				display: "standalone",
+				orientation: "portrait-primary",
+				theme_color: "#000000",
+				background_color: "#ffffff",
+				categories: ["productivity", "utilities"],
 			},
 		}),
 	],

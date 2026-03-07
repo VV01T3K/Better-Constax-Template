@@ -50,7 +50,7 @@ function App() {
 				<div className="relative mx-auto max-w-5xl">
 					<div className="mb-6 flex items-center justify-center gap-6">
 						<img
-							src="/tanstack-circle-logo.png"
+							src="/tanstack-circle-logo.avif"
 							alt="TanStack Logo"
 							className="h-24 w-24 md:h-32 md:w-32"
 						/>
