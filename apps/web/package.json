@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "bun --bun vite dev --port 3000 --host",
 		"build": "tsgo -noEmit && bun --bun vite build",
-		"preview": "bun --bun vite preview",
+		"preview": "bun --bun vite preview --host",
 		"test": "bun --bun vitest run",
 		"test:unit": "bun --bun vitest run --project unit",
 		"test:browser": "bun --bun vitest run --project browser",

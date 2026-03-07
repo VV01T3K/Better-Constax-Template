@@ -8,14 +8,15 @@
 	"type": "module",
 	"scripts": {
 		"dev": "turbo run dev --parallel",
+		"preview": "turbo run preview --filter=@repo/web --parallel",
 		"build": "turbo run build",
 		"test": "turbo run test",
-		"postinstall": "bun run verify:patches",
 		"lint": "turbo run lint",
 		"format": "turbo run format",
 		"fix": "turbo run fix",
 		"check": "turbo run check",
-		"verify:patches": "bun run scripts/verify-patches.ts"
+		"verify:patches": "bun run scripts/verify-patches.ts",
+		"postinstall": "bun run verify:patches"
 	},
 	"devDependencies": {
 		"@tanstack/eslint-plugin-query": "^5.91.4",

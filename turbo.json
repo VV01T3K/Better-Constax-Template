@@ -16,6 +16,11 @@
 			"cache": false,
 			"persistent": true
 		},
+		"preview": {
+			"cache": false,
+			"persistent": true,
+			"dependsOn": ["build"]
+		},
 		"convex": {
 			"cache": false,
 			"persistent": true
@@ -25,8 +30,10 @@
 			"outputs": [".output/**", "dist/**", "build/**"],
 			"env": ["VITE_APP_TITLE", "VITE_CONVEX_SITE_URL", "VITE_CONVEX_URL", "VITE_SITE_URL"]
 		},
+		"@repo/convex#build": {
+			"outputs": []
+		},
 		"test": {
-			"dependsOn": ["^build"],
 			"outputs": []
 		},
 		"lint": {
@@ -37,11 +44,7 @@
 			"dependsOn": ["^build"],
 			"outputs": []
 		},
-		"format": {
-			"cache": false
-		},
-		"fix": {
-			"cache": false
-		}
+		"format": {},
+		"fix": {}
 	}
 }
