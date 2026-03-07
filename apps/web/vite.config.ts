@@ -6,7 +6,10 @@ import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
-const config = defineConfig({
+const config = defineConfig(({ mode }) => ({
+	define: {
+		"process.env.NODE_ENV": JSON.stringify(mode),
+	},
 	envDir: `${import.meta.dirname}/../..`,
 	resolve: {
 		alias: {
@@ -65,6 +68,6 @@ const config = defineConfig({
 			},
 		}),
 	],
-});
+}));
 
 export default config;

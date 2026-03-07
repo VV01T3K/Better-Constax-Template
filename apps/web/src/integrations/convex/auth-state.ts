@@ -104,10 +104,7 @@ export const prepareSignedOutSession = async (
 	return snapshot;
 };
 
-export const restoreSignedOutSession = (
-	queryClient: QueryClient,
-	snapshot: unknown,
-) => {
+export const restoreSignedOutSession = (queryClient: QueryClient, snapshot: unknown) => {
 	const queryKey = getAuthIdentityQueryKey();
 	const authIdentity = isSignedOutSessionSnapshot(snapshot) ? snapshot.authIdentity : undefined;
 
