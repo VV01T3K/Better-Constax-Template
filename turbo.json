@@ -33,6 +33,9 @@
 		"@repo/convex#build": {
 			"outputs": []
 		},
+		"@repo/ui#build": {
+			"outputs": []
+		},
 		"test": {
 			"outputs": []
 		},

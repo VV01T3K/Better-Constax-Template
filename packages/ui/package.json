@@ -1,0 +1,37 @@
+{
+	"name": "@repo/ui",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./components/*": {
+			"types": "./src/components/*.tsx",
+			"default": "./src/components/*.tsx"
+		},
+		"./hooks/*": {
+			"types": "./src/hooks/*.ts",
+			"default": "./src/hooks/*.ts"
+		},
+		"./lib/*": {
+			"types": "./src/lib/*.ts",
+			"default": "./src/lib/*.ts"
+		},
+		"./styles/*": "./src/styles/*"
+	},
+	"scripts": {
+		"build": "tsgo --noEmit",
+		"lint": "oxlint --type-aware --type-check src",
+		"format": "oxfmt",
+		"fix": "oxfmt && oxlint --type-aware --type-check --fix src",
+		"check": "oxfmt --check && bun run lint && tsgo --noEmit"
+	},
+	"dependencies": {
+		"clsx": "^2.1.1",
+		"tailwind-merge": "^3.5.0"
+	},
+	"devDependencies": {
+		"@types/node": "^25.3.3",
+		"@types/react": "^19.2.14",
+		"@types/react-dom": "^19.2.3",
+		"@typescript/native-preview": "^7.0.0-dev.20260304.1"
+	}
+}

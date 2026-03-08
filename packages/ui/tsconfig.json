@@ -5,19 +5,14 @@
 		"jsx": "react-jsx",
 		"module": "ESNext",
 		"paths": {
-			"@/*": ["./src/*"],
-			"@repo/ui/*": ["../../packages/ui/src/*"]
+			"@repo/ui/*": ["./src/*"]
 		},
 		"lib": ["ES2025", "DOM"],
-		"types": ["node", "vite/client", "vitest/globals"],
-
-		/* Bundler mode */
+		"types": ["node"],
 		"moduleResolution": "bundler",
 		"allowImportingTsExtensions": true,
 		"verbatimModuleSyntax": true,
 		"noEmit": true,
-
-		/* Linting */
 		"skipLibCheck": true,
 		"strict": true,
 		"strictFunctionTypes": false,
@@ -26,5 +21,5 @@
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedSideEffectImports": true
 	},
-	"exclude": ["../../packages/convex/src/generated/**/*.runtime.ts", "node_modules"]
+	"exclude": ["node_modules"]
 }

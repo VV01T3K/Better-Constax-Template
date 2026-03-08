@@ -66,7 +66,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 				},
 				{
 					name: "theme-color",
-					content: "#000000",
+					content: "#1f1813",
 				},
 				{
 					title: "TanStack Start Starter",
@@ -113,11 +113,11 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en">
+		<html lang="en" className="dark">
 			<head>
 				<HeadContent />
 			</head>
-			<body>
+			<body className="dark">
 				<ConvexProvider>
 					<Header />
 					{children}
