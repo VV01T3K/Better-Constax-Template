@@ -7,28 +7,19 @@
 	"tailwind-fold.autoFold": false,
 	"css.lint.unknownAtRules": "ignore",
 	"files.watcherExclude": {
-		"**/routeTree.gen.ts": true,
-		".claude/**": true,
-		".agents/**": true,
-		".cursor/**": true
+		"**/routeTree.gen.ts": true
 	},
 	"search.exclude": {
 		"**/routeTree.gen.ts": true,
 		"**/bun.lock": true,
 		"**/_generated/**": true,
-		"**/betterAuth/generatedSchema.ts": true,
-		".claude/**": true,
-		".agents/**": true,
-		".cursor/**": true
+		"**/betterAuth/generatedSchema.ts": true
 	},
 	"files.readonlyInclude": {
 		"**/routeTree.gen.ts": true,
 		"**/bun.lock": true,
 		"**/_generated/**": true,
-		"**/betterAuth/generatedSchema.ts": true,
-		".claude/**": true,
-		".agents/**": true,
-		".cursor/**": true
+		"**/betterAuth/generatedSchema.ts": true
 	},
 	"editor.formatOnSave": true,
 	"[javascript]": {
