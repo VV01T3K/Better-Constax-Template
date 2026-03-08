@@ -7,6 +7,8 @@ import {
 	ZapIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Button } from "@repo/ui/components/button";
+import { Card, CardContent } from "@repo/ui/components/card";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({ component: App });
@@ -14,7 +16,7 @@ export const Route = createFileRoute("/")({ component: App });
 function App() {
 	const features = [
 		{
-			icon: <HugeiconsIcon icon={ZapIcon} size={48} strokeWidth={2} className="text-cyan-400" />,
+			icon: <HugeiconsIcon icon={ZapIcon} size={48} strokeWidth={2} className="text-primary" />,
 			title: "Powerful Server Functions",
 			description:
 				"Write server-side code that seamlessly integrates with your client components. Type-safe, secure, and simple.",
@@ -25,7 +27,7 @@ function App() {
 					icon={ServerStack01Icon}
 					size={48}
 					strokeWidth={2}
-					className="text-cyan-400"
+					className="text-primary"
 				/>
 			),
 			title: "Flexible Server Side Rendering",
@@ -33,30 +35,28 @@ function App() {
 				"Full-document SSR, streaming, and progressive enhancement out of the box. Control exactly what renders where.",
 		},
 		{
-			icon: (
-				<HugeiconsIcon icon={Route01Icon} size={48} strokeWidth={2} className="text-cyan-400" />
-			),
+			icon: <HugeiconsIcon icon={Route01Icon} size={48} strokeWidth={2} className="text-primary" />,
 			title: "API Routes",
 			description:
 				"Build type-safe API endpoints alongside your application. No separate backend needed.",
 		},
 		{
 			icon: (
-				<HugeiconsIcon icon={Shield01Icon} size={48} strokeWidth={2} className="text-cyan-400" />
+				<HugeiconsIcon icon={Shield01Icon} size={48} strokeWidth={2} className="text-primary" />
 			),
 			title: "Strongly Typed Everything",
 			description:
 				"End-to-end type safety from server to client. Catch errors before they reach production.",
 		},
 		{
-			icon: <HugeiconsIcon icon={WaveIcon} size={48} strokeWidth={2} className="text-cyan-400" />,
+			icon: <HugeiconsIcon icon={WaveIcon} size={48} strokeWidth={2} className="text-primary" />,
 			title: "Full Streaming Support",
 			description:
 				"Stream data from server to client progressively. Perfect for AI applications and real-time updates.",
 		},
 		{
 			icon: (
-				<HugeiconsIcon icon={SparklesIcon} size={48} strokeWidth={2} className="text-cyan-400" />
+				<HugeiconsIcon icon={SparklesIcon} size={48} strokeWidth={2} className="text-primary" />
 			),
 			title: "Next Generation Ready",
 			description:
@@ -65,9 +65,9 @@ function App() {
 	];
 
 	return (
-		<div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900">
+		<div className="bg-background min-h-screen">
 			<section className="relative overflow-hidden px-6 py-20 text-center">
-				<div className="absolute inset-0 bg-linear-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10"></div>
+				<div className="bg-primary/5 absolute inset-0" />
 				<div className="relative mx-auto max-w-5xl">
 					<div className="mb-6 flex items-center justify-center gap-6">
 						<img
@@ -75,34 +75,25 @@ function App() {
 							alt="TanStack Logo"
 							className="h-24 w-24 md:h-32 md:w-32"
 						/>
-						<h1 className="text-6xl font-black tracking-[-0.08em] text-white md:text-7xl">
-							<span className="text-gray-300">TANSTACK</span>{" "}
-							<span className="bg-linear-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-								START
-							</span>
+						<h1 className="text-foreground text-6xl font-black tracking-[-0.08em] md:text-7xl">
+							<span className="text-muted-foreground">TANSTACK</span>{" "}
+							<span className="text-primary">START</span>
 						</h1>
 					</div>
-					<p className="mb-4 text-2xl font-light text-gray-300 md:text-3xl">
+					<p className="text-muted-foreground mb-4 text-2xl font-light md:text-3xl">
 						The framework for next generation AI applications
 					</p>
-					<p className="mx-auto mb-8 max-w-3xl text-lg text-gray-400">
+					<p className="text-muted-foreground mx-auto mb-8 max-w-3xl text-lg">
 						Full-stack framework powered by TanStack Router for React and Solid. Build modern
 						applications with server functions, streaming, and type safety.
 					</p>
 					<div className="flex flex-col items-center gap-4">
-						<a
-							href="https://tanstack.com/start"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="rounded-lg bg-cyan-500 px-8 py-3 font-semibold text-white shadow-lg shadow-cyan-500/50 transition-colors hover:bg-cyan-600"
-						>
-							Documentation
+						<a href="https://tanstack.com/start" target="_blank" rel="noopener noreferrer">
+							<Button size="lg">Documentation</Button>
 						</a>
-						<p className="mt-2 text-sm text-gray-400">
+						<p className="text-muted-foreground mt-2 text-sm">
 							Begin your TanStack Start journey by editing{" "}
-							<code className="rounded bg-slate-700 px-2 py-1 text-cyan-400">
-								/src/routes/index.tsx
-							</code>
+							<code className="bg-muted text-primary rounded px-2 py-1">/src/routes/index.tsx</code>
 						</p>
 					</div>
 				</div>
@@ -111,14 +102,16 @@ function App() {
 			<section className="mx-auto max-w-7xl px-6 py-16">
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 					{features.map((feature) => (
-						<div
+						<Card
 							key={feature.title}
-							className="rounded-xl border border-slate-700 bg-slate-800/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-cyan-500/50 hover:shadow-lg hover:shadow-cyan-500/10"
+							className="hover:border-primary/50 hover:shadow-primary/10 transition-all duration-300 hover:shadow-lg"
 						>
-							<div className="mb-4">{feature.icon}</div>
-							<h3 className="mb-3 text-xl font-semibold text-white">{feature.title}</h3>
-							<p className="leading-relaxed text-gray-400">{feature.description}</p>
-						</div>
+							<CardContent>
+								<div className="mb-4">{feature.icon}</div>
+								<h3 className="text-card-foreground mb-3 text-xl font-semibold">{feature.title}</h3>
+								<p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+							</CardContent>
+						</Card>
 					))}
 				</div>
 			</section>

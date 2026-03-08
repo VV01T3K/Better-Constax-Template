@@ -1,6 +1,17 @@
-import { Add01Icon, CircleIcon, Delete02Icon, Tick02Icon } from "@hugeicons/core-free-icons";
+import { Add01Icon, CircleIcon, Delete02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { todoSchema } from "@repo/convex/schemas/todos";
+import { Button } from "@repo/ui/components/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@repo/ui/components/card";
+import { Checkbox } from "@repo/ui/components/checkbox";
+import { Input } from "@repo/ui/components/input";
+import { Item, ItemActions, ItemContent, ItemTitle } from "@repo/ui/components/item";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -39,133 +50,121 @@ function ConvexTodos() {
 	});
 
 	return (
-		<div
-			className="flex min-h-screen items-center justify-center p-4"
-			style={{
-				background:
-					"linear-gradient(135deg, #667a56 0%, #8fbc8f 25%, #90ee90 50%, #98fb98 75%, #f0fff0 100%)",
-			}}
-		>
+		<div className="bg-background flex min-h-screen items-center justify-center p-4">
 			<div className="w-full max-w-2xl">
 				{/* Header Card */}
-				<div className="mb-6 rounded-2xl border border-green-200/50 bg-white/95 p-8 shadow-2xl">
-					<div className="text-center">
-						<h1 className="mb-2 text-4xl font-bold text-green-800">Convex Todos</h1>
-						<p className="text-lg text-green-600">Powered by real-time sync</p>
-						{totalCount > 0 && (
-							<div className="mt-4 flex justify-center space-x-6 text-sm">
-								<span className="font-medium text-green-700">{completedCount} completed</span>
-								<span className="text-gray-600">{totalCount - completedCount} remaining</span>
+				<Card className="mb-6">
+					<CardHeader className="text-center">
+						<CardTitle className="text-4xl font-bold">Convex Todos</CardTitle>
+						<CardDescription className="text-lg">Powered by real-time sync</CardDescription>
+					</CardHeader>
+					{totalCount > 0 && (
+						<CardContent>
+							<div className="flex justify-center space-x-6 text-sm">
+								<span className="text-primary font-medium">{completedCount} completed</span>
+								<span className="text-muted-foreground">
+									{totalCount - completedCount} remaining
+								</span>
 							</div>
-						)}
-					</div>
-				</div>
+						</CardContent>
+					)}
+				</Card>
 
 				{/* Add Todo Card */}
-				<div className="mb-6 rounded-2xl border border-green-200/50 bg-white/95 p-6 shadow-xl">
-					<form
-						className="flex gap-3"
-						onSubmit={(e) => {
-							e.preventDefault();
-							void form.handleSubmit();
-						}}
-					>
-						<form.Field name="text">
-							{(field) => (
-								<input
-									type="text"
-									value={field.state.value}
-									onChange={(e) => field.handleChange(e.target.value)}
-									onBlur={field.handleBlur}
-									placeholder="What needs to be done?"
-									className="flex-1 rounded-xl border-2 border-green-200 bg-white/80 px-4 py-3 text-gray-800 placeholder-gray-500 transition-colors focus:border-green-400 focus:outline-none"
-								/>
-							)}
-						</form.Field>
-						<form.Subscribe
-							selector={(state) =>
-								[state.values.text, state.canSubmit, state.isSubmitting] as const
-							}
+				<Card className="mb-6">
+					<CardContent>
+						<form
+							className="flex gap-3"
+							onSubmit={(e) => {
+								e.preventDefault();
+								void form.handleSubmit();
+							}}
 						>
-							{([text, canSubmit, isSubmitting]) => (
-								<button
-									type="submit"
-									disabled={!text.trim() || !canSubmit || isSubmitting}
-									className="flex items-center gap-2 rounded-xl bg-linear-to-r from-green-500 to-green-600 px-6 py-3 font-semibold text-white shadow-lg transition-colors duration-200 hover:from-green-600 hover:to-green-700 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400"
-								>
-									<HugeiconsIcon icon={Add01Icon} size={20} strokeWidth={2} />
-									Add
-								</button>
-							)}
-						</form.Subscribe>
-					</form>
-				</div>
+							<form.Field name="text">
+								{(field) => (
+									<Input
+										type="text"
+										value={field.state.value}
+										onChange={(e) => field.handleChange(e.target.value)}
+										onBlur={field.handleBlur}
+										placeholder="What needs to be done?"
+										className="flex-1"
+									/>
+								)}
+							</form.Field>
+							<form.Subscribe
+								selector={(state) =>
+									[state.values.text, state.canSubmit, state.isSubmitting] as const
+								}
+							>
+								{([text, canSubmit, isSubmitting]) => (
+									<Button type="submit" disabled={!text.trim() || !canSubmit || isSubmitting}>
+										<HugeiconsIcon icon={Add01Icon} size={20} strokeWidth={2} />
+										Add
+									</Button>
+								)}
+							</form.Subscribe>
+						</form>
+					</CardContent>
+				</Card>
 
 				{/* Todos List */}
-				<div className="overflow-hidden rounded-2xl border border-green-200/50 bg-white/95 shadow-xl">
+				<Card>
 					{todos.length === 0 ? (
-						<div className="p-12 text-center">
+						<CardContent className="p-12 text-center">
 							<HugeiconsIcon
 								icon={CircleIcon}
 								size={48}
 								strokeWidth={2}
-								className="mx-auto mb-4 text-green-300"
+								className="text-muted-foreground mx-auto mb-4"
 							/>
-							<h3 className="mb-2 text-xl font-semibold text-green-800">No todos yet</h3>
-							<p className="text-green-600">Add your first todo above to get started!</p>
-						</div>
+							<h3 className="text-card-foreground mb-2 text-xl font-semibold">No todos yet</h3>
+							<p className="text-muted-foreground">Add your first todo above to get started!</p>
+						</CardContent>
 					) : (
-						<div className="divide-y divide-green-100">
+						<CardContent className="flex flex-col gap-0">
 							{todos.map((todo) => (
-								<div
+								<Item
 									key={todo._id}
-									className={`flex items-center gap-4 p-4 transition-colors hover:bg-green-50/50 ${
-										todo.completed ? "opacity-75" : ""
-									}`}
+									variant="outline"
+									className={todo.completed ? "opacity-75" : ""}
 								>
-									<button
-										type="button"
-										onClick={() => void toggleTodo({ id: todo._id })}
+									<Checkbox
+										checked={todo.completed}
+										onCheckedChange={() => void toggleTodo({ id: todo._id })}
 										aria-label={todo.completed ? "Mark as incomplete" : "Mark as complete"}
-										className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 ${
-											todo.completed
-												? "border-green-500 bg-green-500 text-white"
-												: "border-green-300 text-transparent hover:border-green-400 hover:text-green-400"
-										}`}
-									>
-										<HugeiconsIcon icon={Tick02Icon} size={14} strokeWidth={2} />
-									</button>
-
-									<span
-										className={`flex-1 text-lg transition-colors duration-200 ${
-											todo.completed ? "text-gray-500 line-through" : "text-gray-800"
-										}`}
-									>
-										{todo.text}
-									</span>
-
-									<button
-										type="button"
-										onClick={() => void removeTodo({ id: todo._id })}
-										className="shrink-0 rounded-lg p-2 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
-									>
-										<HugeiconsIcon icon={Delete02Icon} size={18} strokeWidth={2} />
-									</button>
-								</div>
+									/>
+									<ItemContent>
+										<ItemTitle
+											className={todo.completed ? "text-muted-foreground line-through" : ""}
+										>
+											{todo.text}
+										</ItemTitle>
+									</ItemContent>
+									<ItemActions>
+										<Button
+											variant="destructive"
+											size="icon-xs"
+											onClick={() => void removeTodo({ id: todo._id })}
+										>
+											<HugeiconsIcon icon={Delete02Icon} size={18} strokeWidth={2} />
+										</Button>
+									</ItemActions>
+								</Item>
 							))}
-						</div>
+						</CardContent>
 					)}
-				</div>
+				</Card>
 
 				{/* Footer */}
 				<div className="mt-6 text-center">
-					<p className="text-sm text-green-700/80">
+					<p className="text-muted-foreground text-sm">
 						Built with Better Convex • Real-time updates • Always in sync
 					</p>
 				</div>
 
 				{isFetching && (
-					<p className="mt-3 text-center text-xs font-medium text-green-700/80">Syncing...</p>
+					<p className="text-muted-foreground mt-3 text-center text-xs font-medium">Syncing...</p>
 				)}
 			</div>
 		</div>

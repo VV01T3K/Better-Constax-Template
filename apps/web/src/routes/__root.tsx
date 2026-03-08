@@ -103,7 +103,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	errorComponent: ({ error }) => {
 		const message = error instanceof Error ? error.message : "Unexpected route error";
 		return (
-			<div className="p-4 text-red-700" role="alert">
+			<div className="text-destructive p-4" role="alert">
 				{message}
 			</div>
 		);

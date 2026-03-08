@@ -1,3 +1,5 @@
+import { Card, CardContent } from "@repo/ui/components/card";
+import { Item, ItemContent, ItemTitle } from "@repo/ui/components/item";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -18,26 +20,21 @@ function TanStackQueryDemo() {
 	});
 
 	return (
-		<div
-			className="flex min-h-screen items-center justify-center bg-linear-to-br from-purple-100 to-blue-100 p-4 text-white"
-			style={{
-				backgroundImage:
-					"radial-gradient(50% 50% at 95% 5%, #f4a460 0%, #8b4513 70%, #1a0f0a 100%)",
-			}}
-		>
-			<div className="w-full max-w-2xl rounded-xl border-8 border-black/10 bg-black/50 p-8 shadow-xl backdrop-blur-md">
-				<h1 className="mb-4 text-2xl">TanStack Query Simple Promise Handling</h1>
-				<ul className="mb-4 space-y-2">
-					{data.map((todo) => (
-						<li
-							key={todo.id}
-							className="rounded-lg border border-white/20 bg-white/10 p-3 shadow-md backdrop-blur-sm"
-						>
-							<span className="text-lg text-white">{todo.name}</span>
-						</li>
-					))}
-				</ul>
-			</div>
+		<div className="bg-background flex min-h-screen items-center justify-center p-4">
+			<Card className="w-full max-w-2xl">
+				<CardContent className="flex flex-col gap-4">
+					<h1 className="text-2xl font-medium">TanStack Query Simple Promise Handling</h1>
+					<div className="flex flex-col gap-2">
+						{data.map((todo) => (
+							<Item key={todo.id} variant="outline">
+								<ItemContent>
+									<ItemTitle>{todo.name}</ItemTitle>
+								</ItemContent>
+							</Item>
+						))}
+					</div>
+				</CardContent>
+			</Card>
 		</div>
 	);
 }

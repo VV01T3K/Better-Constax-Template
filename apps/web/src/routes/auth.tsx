@@ -1,5 +1,10 @@
 import { Login01Icon, UserAdd01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Button } from "@repo/ui/components/button";
+import { Card, CardContent } from "@repo/ui/components/card";
+import { Input } from "@repo/ui/components/input";
+import { Label } from "@repo/ui/components/label";
+import { Tabs, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
@@ -79,99 +84,101 @@ function AuthPage() {
 	const errorMessage = signInMutation.error?.message ?? signUpMutation.error?.message ?? null;
 
 	return (
-		<div
-			className="flex min-h-screen items-center justify-center p-4"
-			style={{
-				background: "linear-gradient(140deg, #0f172a 0%, #1e293b 40%, #334155 100%)",
-			}}
-		>
-			<div className="w-full max-w-md rounded-2xl border border-slate-600/60 bg-slate-900/85 p-8 shadow-2xl backdrop-blur">
-				<h1 className="mb-2 text-3xl font-bold text-white">Welcome Back</h1>
-				<p className="mb-8 text-sm text-slate-300">Authenticate to access your protected todos.</p>
+		<div className="bg-background flex min-h-screen items-center justify-center p-4">
+			<Card className="w-full max-w-md">
+				<CardContent className="flex flex-col gap-6">
+					<div>
+						<h1 className="text-card-foreground mb-2 text-3xl font-bold">Welcome Back</h1>
+						<p className="text-muted-foreground text-sm">
+							Authenticate to access your protected todos.
+						</p>
+					</div>
 
-				<div className="mb-6 grid grid-cols-2 rounded-xl bg-slate-800 p-1">
-					<button
-						type="button"
-						onClick={() => setMode("sign-in")}
-						className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
-							mode === "sign-in" ? "bg-cyan-500 text-white" : "text-slate-300 hover:text-white"
-						}`}
+					<Tabs
+						value={mode}
+						onValueChange={(v) => {
+							if (v === "sign-in" || v === "sign-up") {
+								setMode(v);
+							}
+						}}
 					>
-						Sign In
-					</button>
-					<button
-						type="button"
-						onClick={() => setMode("sign-up")}
-						className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
-							mode === "sign-up" ? "bg-cyan-500 text-white" : "text-slate-300 hover:text-white"
-						}`}
+						<TabsList className="grid w-full grid-cols-2">
+							<TabsTrigger value="sign-in">Sign In</TabsTrigger>
+							<TabsTrigger value="sign-up">Sign Up</TabsTrigger>
+						</TabsList>
+					</Tabs>
+
+					<form
+						className="flex flex-col gap-4"
+						onSubmit={async (e) => {
+							e.preventDefault();
+							if (mode === "sign-in") {
+								await signInMutation.mutateAsync({ email, password });
+								return;
+							}
+
+							await signUpMutation.mutateAsync({
+								email,
+								password,
+								name: name.trim(),
+							});
+						}}
 					>
-						Sign Up
-					</button>
-				</div>
-
-				<form
-					className="space-y-4"
-					onSubmit={async (e) => {
-						e.preventDefault();
-						if (mode === "sign-in") {
-							await signInMutation.mutateAsync({ email, password });
-							return;
-						}
-
-						await signUpMutation.mutateAsync({
-							email,
-							password,
-							name: name.trim(),
-						});
-					}}
-				>
-					{mode === "sign-up" && (
-						<input
-							required
-							value={name}
-							onChange={(e) => setName(e.target.value)}
-							placeholder="Name"
-							className="w-full rounded-lg border border-slate-600 bg-slate-800 px-4 py-3 text-white placeholder:text-slate-400 focus:border-cyan-400 focus:outline-none"
-						/>
-					)}
-					<input
-						required
-						type="email"
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
-						placeholder="Email"
-						className="w-full rounded-lg border border-slate-600 bg-slate-800 px-4 py-3 text-white placeholder:text-slate-400 focus:border-cyan-400 focus:outline-none"
-					/>
-					<input
-						required
-						type="password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						placeholder="Password"
-						className="w-full rounded-lg border border-slate-600 bg-slate-800 px-4 py-3 text-white placeholder:text-slate-400 focus:border-cyan-400 focus:outline-none"
-					/>
-
-					<button
-						type="submit"
-						disabled={isPending}
-						className="flex w-full items-center justify-center gap-2 rounded-lg bg-cyan-500 px-4 py-3 font-semibold text-white transition hover:bg-cyan-600 disabled:cursor-not-allowed disabled:bg-slate-600"
-					>
-						{mode === "sign-in" ? (
-							<HugeiconsIcon icon={Login01Icon} size={18} strokeWidth={2} />
-						) : (
-							<HugeiconsIcon icon={UserAdd01Icon} size={18} strokeWidth={2} />
+						{mode === "sign-up" && (
+							<div className="flex flex-col gap-1.5">
+								<Label htmlFor="name">Name</Label>
+								<Input
+									id="name"
+									required
+									value={name}
+									onChange={(e) => setName(e.target.value)}
+									placeholder="Name"
+								/>
+							</div>
 						)}
-						{isPending ? "Please wait..." : mode === "sign-in" ? "Sign In" : "Create Account"}
-					</button>
-				</form>
+						<div className="flex flex-col gap-1.5">
+							<Label htmlFor="email">Email</Label>
+							<Input
+								id="email"
+								required
+								type="email"
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
+								placeholder="Email"
+							/>
+						</div>
+						<div className="flex flex-col gap-1.5">
+							<Label htmlFor="password">Password</Label>
+							<Input
+								id="password"
+								required
+								type="password"
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+								placeholder="Password"
+							/>
+						</div>
 
-				{errorMessage && (
-					<p className="mt-4 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">
-						{errorMessage}
-					</p>
-				)}
-			</div>
+						<Button type="submit" disabled={isPending} className="w-full" size="lg">
+							{mode === "sign-in" ? (
+								<HugeiconsIcon icon={Login01Icon} size={18} strokeWidth={2} />
+							) : (
+								<HugeiconsIcon icon={UserAdd01Icon} size={18} strokeWidth={2} />
+							)}
+							{isPending ? "Please wait..." : mode === "sign-in" ? "Sign In" : "Create Account"}
+						</Button>
+					</form>
+
+					{errorMessage && (
+						<div
+							role="alert"
+							className="border-destructive/40 bg-destructive/10 text-destructive rounded-lg border px-3 py-2 text-sm"
+						>
+							{errorMessage}
+						</div>
+					)}
+				</CardContent>
+			</Card>
 		</div>
 	);
 }

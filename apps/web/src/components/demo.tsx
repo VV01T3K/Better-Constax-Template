@@ -262,7 +262,7 @@ export function Demo() {
 								</AlertDialog>
 								<ButtonGroup>
 									<Button variant="outline">Button Group</Button>
-									<DropdownMenu>
+									<DropdownMenu modal={false}>
 										<DropdownMenuTrigger render={<Button variant="outline" size="icon" />}>
 											<HugeiconsIcon icon={ArrowUp01Icon} strokeWidth={2} />
 										</DropdownMenuTrigger>
