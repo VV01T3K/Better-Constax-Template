@@ -1,6 +1,16 @@
+import {
+	AiNetworkIcon,
+	Cancel01Icon,
+	GlobeIcon,
+	Home01Icon,
+	Layers01Icon,
+	Login01Icon,
+	Logout01Icon,
+	Menu01Icon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useLocation, useRouter } from "@tanstack/react-router";
-import { Globe, Home, Layers3, LogIn, LogOut, Menu, Network, X } from "lucide-react";
 import { useState } from "react";
 
 import { useSignOutMutationOptions } from "../integrations/convex/auth-client";
@@ -64,7 +74,7 @@ export default function Header() {
 					className="rounded-lg p-2 transition-colors hover:bg-gray-700"
 					aria-label="Open menu"
 				>
-					<Menu size={24} />
+					<HugeiconsIcon icon={Menu01Icon} size={24} strokeWidth={2} />
 				</button>
 				<h1 className="ml-4 text-xl font-semibold">
 					<Link to="/">
@@ -81,7 +91,7 @@ export default function Header() {
 								disabled={isSigningOut}
 								className="inline-flex items-center gap-2 rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-3 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-500/20 disabled:cursor-not-allowed disabled:opacity-60"
 							>
-								<LogOut size={16} />
+								<HugeiconsIcon icon={Logout01Icon} size={16} strokeWidth={2} />
 								{isSigningOut ? "Signing out..." : "Sign Out"}
 							</button>
 						</div>
@@ -91,7 +101,7 @@ export default function Header() {
 							search={signInRedirectSearch}
 							className="inline-flex items-center gap-2 rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-3 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-500/20"
 						>
-							<LogIn size={16} />
+							<HugeiconsIcon icon={Login01Icon} size={16} strokeWidth={2} />
 							Sign In
 						</Link>
 					)}
@@ -110,7 +120,7 @@ export default function Header() {
 						className="rounded-lg p-2 transition-colors hover:bg-gray-800"
 						aria-label="Close menu"
 					>
-						<X size={24} />
+						<HugeiconsIcon icon={Cancel01Icon} size={24} strokeWidth={2} />
 					</button>
 				</div>
 
@@ -124,7 +134,7 @@ export default function Header() {
 								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
 						}}
 					>
-						<Home size={20} />
+						<HugeiconsIcon icon={Home01Icon} size={20} strokeWidth={2} />
 						<span className="font-medium">Home</span>
 					</Link>
 
@@ -139,7 +149,7 @@ export default function Header() {
 								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
 						}}
 					>
-						<Network size={20} />
+						<HugeiconsIcon icon={AiNetworkIcon} size={20} strokeWidth={2} />
 						<span className="font-medium">TanStack Query</span>
 					</Link>
 
@@ -152,7 +162,7 @@ export default function Header() {
 								"flex items-center gap-3 rounded-lg bg-cyan-600 p-3 transition-colors hover:bg-cyan-700 mb-2",
 						}}
 					>
-						<Layers3 size={20} />
+						<HugeiconsIcon icon={Layers01Icon} size={20} strokeWidth={2} />
 						<span className="font-medium">shadcn Demo</span>
 					</Link>
 
@@ -165,7 +175,7 @@ export default function Header() {
 								"flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
 						}}
 					>
-						<Globe size={20} />
+						<HugeiconsIcon icon={GlobeIcon} size={20} strokeWidth={2} />
 						<span className="font-medium">Convex</span>
 					</Link>
 

@@ -1,8 +1,9 @@
+import { Add01Icon, CircleIcon, Delete02Icon, Tick02Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { todoSchema } from "@repo/convex/schemas/todos";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Trash2, Plus, Check, Circle } from "lucide-react";
 
 import { staticCRPC, useCRPC } from "../../../integrations/convex/crpc";
 
@@ -92,7 +93,7 @@ function ConvexTodos() {
 									disabled={!text.trim() || !canSubmit || isSubmitting}
 									className="flex items-center gap-2 rounded-xl bg-linear-to-r from-green-500 to-green-600 px-6 py-3 font-semibold text-white shadow-lg transition-colors duration-200 hover:from-green-600 hover:to-green-700 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400"
 								>
-									<Plus size={20} />
+									<HugeiconsIcon icon={Add01Icon} size={20} strokeWidth={2} />
 									Add
 								</button>
 							)}
@@ -104,7 +105,12 @@ function ConvexTodos() {
 				<div className="overflow-hidden rounded-2xl border border-green-200/50 bg-white/95 shadow-xl">
 					{todos.length === 0 ? (
 						<div className="p-12 text-center">
-							<Circle size={48} className="mx-auto mb-4 text-green-300" />
+							<HugeiconsIcon
+								icon={CircleIcon}
+								size={48}
+								strokeWidth={2}
+								className="mx-auto mb-4 text-green-300"
+							/>
 							<h3 className="mb-2 text-xl font-semibold text-green-800">No todos yet</h3>
 							<p className="text-green-600">Add your first todo above to get started!</p>
 						</div>
@@ -127,7 +133,7 @@ function ConvexTodos() {
 												: "border-green-300 text-transparent hover:border-green-400 hover:text-green-400"
 										}`}
 									>
-										<Check size={14} />
+										<HugeiconsIcon icon={Tick02Icon} size={14} strokeWidth={2} />
 									</button>
 
 									<span
@@ -143,7 +149,7 @@ function ConvexTodos() {
 										onClick={() => void removeTodo({ id: todo._id })}
 										className="shrink-0 rounded-lg p-2 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
 									>
-										<Trash2 size={18} />
+										<HugeiconsIcon icon={Delete02Icon} size={18} strokeWidth={2} />
 									</button>
 								</div>
 							))}

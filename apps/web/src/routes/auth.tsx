@@ -1,6 +1,7 @@
+import { Login01Icon, UserAdd01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
-import { LogIn, UserPlus } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -156,7 +157,11 @@ function AuthPage() {
 						disabled={isPending}
 						className="flex w-full items-center justify-center gap-2 rounded-lg bg-cyan-500 px-4 py-3 font-semibold text-white transition hover:bg-cyan-600 disabled:cursor-not-allowed disabled:bg-slate-600"
 					>
-						{mode === "sign-in" ? <LogIn size={18} /> : <UserPlus size={18} />}
+						{mode === "sign-in" ? (
+							<HugeiconsIcon icon={Login01Icon} size={18} strokeWidth={2} />
+						) : (
+							<HugeiconsIcon icon={UserAdd01Icon} size={18} strokeWidth={2} />
+						)}
 						{isPending ? "Please wait..." : mode === "sign-in" ? "Sign In" : "Create Account"}
 					</button>
 				</form>
