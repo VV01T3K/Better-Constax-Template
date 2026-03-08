@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
+import { Route as DemoTanstackFormRouteImport } from './routes/demo/tanstack-form'
 import { Route as DemoShadcnRouteImport } from './routes/demo/shadcn'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AuthenticatedDemoConvexRouteImport } from './routes/_authenticated/demo/convex'
@@ -36,6 +37,11 @@ const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
   path: '/demo/tanstack-query',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DemoTanstackFormRoute = DemoTanstackFormRouteImport.update({
+  id: '/demo/tanstack-form',
+  path: '/demo/tanstack-form',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DemoShadcnRoute = DemoShadcnRouteImport.update({
   id: '/demo/shadcn',
   path: '/demo/shadcn',
@@ -56,6 +62,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/demo/shadcn': typeof DemoShadcnRoute
+  '/demo/tanstack-form': typeof DemoTanstackFormRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/convex': typeof AuthenticatedDemoConvexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/demo/shadcn': typeof DemoShadcnRoute
+  '/demo/tanstack-form': typeof DemoTanstackFormRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/convex': typeof AuthenticatedDemoConvexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -74,6 +82,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
   '/demo/shadcn': typeof DemoShadcnRoute
+  '/demo/tanstack-form': typeof DemoTanstackFormRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/_authenticated/demo/convex': typeof AuthenticatedDemoConvexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -84,6 +93,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/demo/shadcn'
+    | '/demo/tanstack-form'
     | '/demo/tanstack-query'
     | '/demo/convex'
     | '/api/auth/$'
@@ -92,6 +102,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/demo/shadcn'
+    | '/demo/tanstack-form'
     | '/demo/tanstack-query'
     | '/demo/convex'
     | '/api/auth/$'
@@ -101,6 +112,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/demo/shadcn'
+    | '/demo/tanstack-form'
     | '/demo/tanstack-query'
     | '/_authenticated/demo/convex'
     | '/api/auth/$'
@@ -111,6 +123,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
   DemoShadcnRoute: typeof DemoShadcnRoute
+  DemoTanstackFormRoute: typeof DemoTanstackFormRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -143,6 +156,13 @@ declare module '@tanstack/react-router' {
       path: '/demo/tanstack-query'
       fullPath: '/demo/tanstack-query'
       preLoaderRoute: typeof DemoTanstackQueryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/tanstack-form': {
+      id: '/demo/tanstack-form'
+      path: '/demo/tanstack-form'
+      fullPath: '/demo/tanstack-form'
+      preLoaderRoute: typeof DemoTanstackFormRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/shadcn': {
@@ -186,6 +206,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
   DemoShadcnRoute: DemoShadcnRoute,
+  DemoTanstackFormRoute: DemoTanstackFormRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
