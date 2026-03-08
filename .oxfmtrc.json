@@ -8,14 +8,14 @@
 		"functions": ["clsx", "cn", "cva", "tw"]
 	},
 	"ignorePatterns": [
-		"node_modules",
-		"dist",
-		".output",
+		"**/node_modules/**",
+		"**/dist/**",
+		"**/.output/**",
 		"**/*.gen.*",
 		".claude/**",
 		".agents/**",
 		".cursor/**",
-		".turbo",
+		"**/.turbo/**",
 		"**/routeTree.gen.ts",
 		"**/bun.lock",
 		"**/_generated/**",
