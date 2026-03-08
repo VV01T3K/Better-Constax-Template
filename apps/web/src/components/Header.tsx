@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useLocation, useRouter } from "@tanstack/react-router";
-import { Globe, Home, LogIn, LogOut, Menu, Network, X } from "lucide-react";
+import { Globe, Home, Layers3, LogIn, LogOut, Menu, Network, X } from "lucide-react";
 import { useState } from "react";
 
 import { useSignOutMutationOptions } from "../integrations/convex/auth-client";
@@ -141,6 +141,19 @@ export default function Header() {
 					>
 						<Network size={20} />
 						<span className="font-medium">TanStack Query</span>
+					</Link>
+
+					<Link
+						to="/demo/shadcn"
+						onClick={() => setIsOpen(false)}
+						className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
+						activeProps={{
+							className:
+								"flex items-center gap-3 rounded-lg bg-cyan-600 p-3 transition-colors hover:bg-cyan-700 mb-2",
+						}}
+					>
+						<Layers3 size={20} />
+						<span className="font-medium">shadcn Demo</span>
 					</Link>
 
 					<Link
