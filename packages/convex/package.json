@@ -32,7 +32,7 @@
 		"@convex-dev/better-auth": "0.10.13",
 		"@convex-dev/migrations": "^0.3.1",
 		"better-auth": "1.4.21",
-		"better-convex": "0.10.0",
+		"better-convex": "0.10.1",
 		"convex": "^1.32.0",
 		"convex-helpers": "^0.1.114",
 		"zod": "^4.3.6"

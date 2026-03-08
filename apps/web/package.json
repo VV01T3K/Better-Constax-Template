@@ -33,7 +33,7 @@
 		"@tanstack/react-start": "^1.166.2",
 		"@tanstack/router-plugin": "^1.166.2",
 		"better-auth": "1.4.21",
-		"better-convex": "0.10.0",
+		"better-convex": "0.10.1",
 		"convex": "^1.32.0",
 		"lucide-react": "^0.577.0",
 		"nitro": "npm:nitro-nightly@^3.0.1-20260227-181935-bfbb207c",
