@@ -4,10 +4,8 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
       args:
-        VITE_APP_TITLE: ${VITE_APP_TITLE:-Better Constax}
         VITE_CONVEX_SITE_URL: ${VITE_CONVEX_SITE_URL}
         VITE_CONVEX_URL: ${VITE_CONVEX_URL}
-        VITE_SITE_URL: ${VITE_SITE_URL}
     env_file:
       - .env.local
     environment:

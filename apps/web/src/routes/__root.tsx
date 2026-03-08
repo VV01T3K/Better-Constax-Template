@@ -20,7 +20,7 @@ const toOrigin = (value: string) => new URL(value).origin;
 const toDnsPrefetchTarget = (origin: string) => `//${new URL(origin).host}`;
 
 const connectionHintLinks = Array.from(
-	new Set([env.VITE_SITE_URL, env.VITE_CONVEX_SITE_URL, env.VITE_CONVEX_URL].map(toOrigin)),
+	new Set([env.VITE_CONVEX_SITE_URL, env.VITE_CONVEX_URL].map(toOrigin)),
 ).flatMap((origin) => [
 	{
 		rel: "dns-prefetch" as const,

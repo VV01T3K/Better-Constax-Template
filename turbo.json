@@ -28,7 +28,7 @@
 		"build": {
 			"dependsOn": ["^build"],
 			"outputs": [".output/**", "dist/**", "build/**"],
-			"env": ["VITE_APP_TITLE", "VITE_CONVEX_SITE_URL", "VITE_CONVEX_URL", "VITE_SITE_URL"]
+			"env": ["VITE_CONVEX_SITE_URL", "VITE_CONVEX_URL"]
 		},
 		"@repo/convex#build": {
 			"outputs": []
