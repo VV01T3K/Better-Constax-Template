@@ -1,13 +1,13 @@
 services:
   web:
     build:
-      context: .
+      context: ..
       dockerfile: apps/web/Dockerfile
       args:
         VITE_CONVEX_SITE_URL: ${VITE_CONVEX_SITE_URL}
         VITE_CONVEX_URL: ${VITE_CONVEX_URL}
     env_file:
-      - .env.local
+      - ../.env.local
     environment:
       HOST: 0.0.0.0
       PORT: 8080
