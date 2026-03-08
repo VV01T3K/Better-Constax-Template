@@ -1,5 +1,3 @@
-import { Login01Icon, UserAdd01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "@repo/ui/components/button";
 import { Card, CardContent } from "@repo/ui/components/card";
 import { Input } from "@repo/ui/components/input";
@@ -7,6 +5,7 @@ import { Label } from "@repo/ui/components/label";
 import { Tabs, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
+import { LogIn, UserPlus } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -160,11 +159,7 @@ function AuthPage() {
 						</div>
 
 						<Button type="submit" disabled={isPending} className="w-full" size="lg">
-							{mode === "sign-in" ? (
-								<HugeiconsIcon icon={Login01Icon} size={18} strokeWidth={2} />
-							) : (
-								<HugeiconsIcon icon={UserAdd01Icon} size={18} strokeWidth={2} />
-							)}
+							{mode === "sign-in" ? <LogIn size={18} /> : <UserPlus size={18} />}
 							{isPending ? "Please wait..." : mode === "sign-in" ? "Sign In" : "Create Account"}
 						</Button>
 					</form>

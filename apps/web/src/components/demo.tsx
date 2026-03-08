@@ -1,26 +1,6 @@
 "use client";
 
 import {
-	Copy01Icon,
-	AlertCircleIcon,
-	Delete02Icon,
-	Share03Icon,
-	ShoppingBag01Icon,
-	MoreHorizontalCircle01Icon,
-	Loading03Icon,
-	PlusSignIcon,
-	MinusSignIcon,
-	ArrowLeft02Icon,
-	ArrowRight02Icon,
-	Tick02Icon,
-	ArrowDown01Icon,
-	ArrowRight01Icon,
-	Search01Icon,
-	Settings01Icon,
-	ArrowUp01Icon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
 	AlertDialog,
 	AlertDialogAction,
 	AlertDialogCancel,
@@ -63,6 +43,25 @@ import { RadioGroup, RadioGroupItem } from "@repo/ui/components/radio-group";
 import { Slider } from "@repo/ui/components/slider";
 import { Switch } from "@repo/ui/components/switch";
 import { Textarea } from "@repo/ui/components/textarea";
+import {
+	AlertCircle,
+	ArrowDown,
+	ArrowLeft,
+	ArrowRight,
+	ArrowUp,
+	Check,
+	ChevronRight,
+	Copy,
+	Loader2,
+	Minus,
+	MoreHorizontal,
+	Plus,
+	Search,
+	Settings,
+	Share2,
+	ShoppingBag,
+	Trash2,
+} from "lucide-react";
 import * as React from "react";
 
 type ColorSwatchStyle = React.CSSProperties & Record<"--color", string>;
@@ -126,52 +125,52 @@ export function Demo() {
 						<CardContent>
 							<div className="grid grid-cols-8 place-items-center gap-4">
 								<Card className="ring-border flex size-8 items-center justify-center rounded-md p-0 ring *:[svg]:size-4">
-									<HugeiconsIcon icon={Copy01Icon} strokeWidth={2} />
+									<Copy />
 								</Card>
 								<Card className="ring-border flex size-8 items-center justify-center rounded-md p-0 ring *:[svg]:size-4">
-									<HugeiconsIcon icon={AlertCircleIcon} strokeWidth={2} />
+									<AlertCircle />
 								</Card>
 								<Card className="ring-border flex size-8 items-center justify-center rounded-md p-0 ring *:[svg]:size-4">
-									<HugeiconsIcon icon={Delete02Icon} strokeWidth={2} />
+									<Trash2 />
 								</Card>
 								<Card className="ring-border flex size-8 items-center justify-center rounded-md p-0 ring *:[svg]:size-4">
-									<HugeiconsIcon icon={Share03Icon} strokeWidth={2} />
+									<Share2 />
 								</Card>
 								<Card className="ring-border flex size-8 items-center justify-center rounded-md p-0 ring *:[svg]:size-4">
-									<HugeiconsIcon icon={ShoppingBag01Icon} strokeWidth={2} />
+									<ShoppingBag />
 								</Card>
 								<Card className="ring-border flex size-8 items-center justify-center rounded-md p-0 ring *:[svg]:size-4">
-									<HugeiconsIcon icon={MoreHorizontalCircle01Icon} strokeWidth={2} />
+									<MoreHorizontal />
 								</Card>
 								<Card className="ring-border flex size-8 items-center justify-center rounded-md p-0 ring *:[svg]:size-4">
-									<HugeiconsIcon icon={Loading03Icon} strokeWidth={2} />
+									<Loader2 />
 								</Card>
 								<Card className="ring-border flex size-8 items-center justify-center rounded-md p-0 ring *:[svg]:size-4">
-									<HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} />
+									<Plus />
 								</Card>
 								<Card className="ring-border flex size-8 items-center justify-center rounded-md p-0 ring *:[svg]:size-4">
-									<HugeiconsIcon icon={MinusSignIcon} strokeWidth={2} />
+									<Minus />
 								</Card>
 								<Card className="ring-border flex size-8 items-center justify-center rounded-md p-0 ring *:[svg]:size-4">
-									<HugeiconsIcon icon={ArrowLeft02Icon} strokeWidth={2} />
+									<ArrowLeft />
 								</Card>
 								<Card className="ring-border flex size-8 items-center justify-center rounded-md p-0 ring *:[svg]:size-4">
-									<HugeiconsIcon icon={ArrowRight02Icon} strokeWidth={2} />
+									<ArrowRight />
 								</Card>
 								<Card className="ring-border flex size-8 items-center justify-center rounded-md p-0 ring *:[svg]:size-4">
-									<HugeiconsIcon icon={Tick02Icon} strokeWidth={2} />
+									<Check />
 								</Card>
 								<Card className="ring-border flex size-8 items-center justify-center rounded-md p-0 ring *:[svg]:size-4">
-									<HugeiconsIcon icon={ArrowDown01Icon} strokeWidth={2} />
+									<ArrowDown />
 								</Card>
 								<Card className="ring-border flex size-8 items-center justify-center rounded-md p-0 ring *:[svg]:size-4">
-									<HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
+									<ChevronRight />
 								</Card>
 								<Card className="ring-border flex size-8 items-center justify-center rounded-md p-0 ring *:[svg]:size-4">
-									<HugeiconsIcon icon={Search01Icon} strokeWidth={2} />
+									<Search />
 								</Card>
 								<Card className="ring-border flex size-8 items-center justify-center rounded-md p-0 ring *:[svg]:size-4">
-									<HugeiconsIcon icon={Settings01Icon} strokeWidth={2} />
+									<Settings />
 								</Card>
 							</div>
 						</CardContent>
@@ -216,7 +215,7 @@ export function Demo() {
 										<InputGroupInput placeholder="Name" />
 										<InputGroupAddon align="inline-end">
 											<InputGroupText>
-												<HugeiconsIcon icon={Search01Icon} strokeWidth={2} />
+												<Search />
 											</InputGroupText>
 										</InputGroupAddon>
 									</InputGroup>
@@ -264,7 +263,7 @@ export function Demo() {
 									<Button variant="outline">Button Group</Button>
 									<DropdownMenu modal={false}>
 										<DropdownMenuTrigger render={<Button variant="outline" size="icon" />}>
-											<HugeiconsIcon icon={ArrowUp01Icon} strokeWidth={2} />
+											<ArrowUp />
 										</DropdownMenuTrigger>
 										<DropdownMenuContent align="end" side="top" className="w-40">
 											<DropdownMenuGroup>

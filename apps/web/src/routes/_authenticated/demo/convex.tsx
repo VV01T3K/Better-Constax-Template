@@ -1,5 +1,3 @@
-import { Add01Icon, CircleIcon, Delete02Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { todoSchema } from "@repo/convex/schemas/todos";
 import { Button } from "@repo/ui/components/button";
 import {
@@ -15,6 +13,7 @@ import { Item, ItemActions, ItemContent, ItemTitle } from "@repo/ui/components/i
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { Circle, Plus, Trash2 } from "lucide-react";
 
 import { staticCRPC, useCRPC } from "../../../integrations/convex/crpc";
 
@@ -99,7 +98,7 @@ function ConvexTodos() {
 							>
 								{([text, canSubmit, isSubmitting]) => (
 									<Button type="submit" disabled={!text.trim() || !canSubmit || isSubmitting}>
-										<HugeiconsIcon icon={Add01Icon} size={20} strokeWidth={2} />
+										<Plus size={20} />
 										Add
 									</Button>
 								)}
@@ -112,12 +111,7 @@ function ConvexTodos() {
 				<Card>
 					{todos.length === 0 ? (
 						<CardContent className="p-12 text-center">
-							<HugeiconsIcon
-								icon={CircleIcon}
-								size={48}
-								strokeWidth={2}
-								className="text-muted-foreground mx-auto mb-4"
-							/>
+							<Circle size={48} strokeWidth={2} className="text-muted-foreground mx-auto mb-4" />
 							<h3 className="text-card-foreground mb-2 text-xl font-semibold">No todos yet</h3>
 							<p className="text-muted-foreground">Add your first todo above to get started!</p>
 						</CardContent>
@@ -147,7 +141,7 @@ function ConvexTodos() {
 											size="icon-xs"
 											onClick={() => void removeTodo({ id: todo._id })}
 										>
-											<HugeiconsIcon icon={Delete02Icon} size={18} strokeWidth={2} />
+											<Trash2 size={18} />
 										</Button>
 									</ItemActions>
 								</Item>

@@ -1,63 +1,44 @@
-import {
-	Route01Icon,
-	ServerStack01Icon,
-	Shield01Icon,
-	SparklesIcon,
-	WaveIcon,
-	ZapIcon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "@repo/ui/components/button";
 import { Card, CardContent } from "@repo/ui/components/card";
 import { createFileRoute } from "@tanstack/react-router";
+import { Route as RouteIcon, Server, Shield, Sparkles, Waves, Zap } from "lucide-react";
 
 export const Route = createFileRoute("/")({ component: App });
 
 function App() {
 	const features = [
 		{
-			icon: <HugeiconsIcon icon={ZapIcon} size={48} strokeWidth={2} className="text-primary" />,
+			icon: <Zap size={48} className="text-primary" />,
 			title: "Powerful Server Functions",
 			description:
 				"Write server-side code that seamlessly integrates with your client components. Type-safe, secure, and simple.",
 		},
 		{
-			icon: (
-				<HugeiconsIcon
-					icon={ServerStack01Icon}
-					size={48}
-					strokeWidth={2}
-					className="text-primary"
-				/>
-			),
+			icon: <Server size={48} className="text-primary" />,
 			title: "Flexible Server Side Rendering",
 			description:
 				"Full-document SSR, streaming, and progressive enhancement out of the box. Control exactly what renders where.",
 		},
 		{
-			icon: <HugeiconsIcon icon={Route01Icon} size={48} strokeWidth={2} className="text-primary" />,
+			icon: <RouteIcon size={48} className="text-primary" />,
 			title: "API Routes",
 			description:
 				"Build type-safe API endpoints alongside your application. No separate backend needed.",
 		},
 		{
-			icon: (
-				<HugeiconsIcon icon={Shield01Icon} size={48} strokeWidth={2} className="text-primary" />
-			),
+			icon: <Shield size={48} className="text-primary" />,
 			title: "Strongly Typed Everything",
 			description:
 				"End-to-end type safety from server to client. Catch errors before they reach production.",
 		},
 		{
-			icon: <HugeiconsIcon icon={WaveIcon} size={48} strokeWidth={2} className="text-primary" />,
+			icon: <Waves size={48} className="text-primary" />,
 			title: "Full Streaming Support",
 			description:
 				"Stream data from server to client progressively. Perfect for AI applications and real-time updates.",
 		},
 		{
-			icon: (
-				<HugeiconsIcon icon={SparklesIcon} size={48} strokeWidth={2} className="text-primary" />
-			),
+			icon: <Sparkles size={48} className="text-primary" />,
 			title: "Next Generation Ready",
 			description:
 				"Built from the ground up for modern web applications. Deploy anywhere JavaScript runs.",

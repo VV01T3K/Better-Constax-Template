@@ -1,13 +1,3 @@
-import {
-	AiNetworkIcon,
-	GlobeIcon,
-	Home01Icon,
-	Layers01Icon,
-	Login01Icon,
-	Logout01Icon,
-	Menu01Icon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "@repo/ui/components/button";
 import { Separator } from "@repo/ui/components/separator";
 import {
@@ -19,6 +9,7 @@ import {
 } from "@repo/ui/components/sheet";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useLocation, useRouter } from "@tanstack/react-router";
+import { Globe, Home, Layers3, LogIn, LogOut, Menu, Network } from "lucide-react";
 import { useState } from "react";
 
 import { useSignOutMutationOptions } from "../integrations/convex/auth-client";
@@ -38,10 +29,10 @@ import {
 } from "../integrations/convex/auth-state";
 
 const navLinks = [
-	{ to: "/", label: "Home", icon: Home01Icon },
-	{ to: "/demo/tanstack-query", label: "TanStack Query", icon: AiNetworkIcon },
-	{ to: "/demo/shadcn", label: "shadcn Demo", icon: Layers01Icon },
-	{ to: "/demo/convex", label: "Convex", icon: GlobeIcon },
+	{ to: "/", label: "Home", icon: Home },
+	{ to: "/demo/tanstack-query", label: "TanStack Query", icon: Network },
+	{ to: "/demo/shadcn", label: "shadcn Demo", icon: Layers3 },
+	{ to: "/demo/convex", label: "Convex", icon: Globe },
 ] as const;
 
 export default function Header() {
@@ -84,8 +75,8 @@ export default function Header() {
 	return (
 		<header className="border-border bg-card text-card-foreground flex items-center border-b p-4">
 			<Sheet open={isOpen} onOpenChange={setIsOpen}>
-				<SheetTrigger render={<Button variant="ghost" size="icon" aria-label="Open menu" />}>
-					<HugeiconsIcon icon={Menu01Icon} size={24} strokeWidth={2} />
+				<SheetTrigger render={<Button variant="ghost" size="icon-lg" aria-label="Open menu" />}>
+					<Menu className="size-6.5" />
 				</SheetTrigger>
 				<SheetContent side="left" className="w-80">
 					<SheetHeader>
@@ -104,7 +95,7 @@ export default function Header() {
 										"flex items-center gap-3 rounded-sm p-3 bg-primary text-primary-foreground transition-colors hover:bg-primary/90",
 								}}
 							>
-								<HugeiconsIcon icon={link.icon} size={20} strokeWidth={2} />
+								<link.icon size={20} />
 								<span className="font-medium">{link.label}</span>
 							</Link>
 						))}
@@ -130,7 +121,7 @@ export default function Header() {
 							onClick={() => void signOut()}
 							disabled={isSigningOut}
 						>
-							<HugeiconsIcon icon={Logout01Icon} size={16} strokeWidth={2} />
+							<LogOut size={16} />
 							{isSigningOut ? "Signing out..." : "Sign Out"}
 						</Button>
 					</div>
@@ -140,7 +131,7 @@ export default function Header() {
 						size="sm"
 						render={<Link to="/auth" search={signInRedirectSearch} />}
 					>
-						<HugeiconsIcon icon={Login01Icon} size={16} strokeWidth={2} />
+						<LogIn size={16} />
 						Sign In
 					</Button>
 				)}
