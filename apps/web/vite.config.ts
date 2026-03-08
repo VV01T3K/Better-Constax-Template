@@ -28,9 +28,6 @@ const config = defineConfig(({ mode }) => ({
 		}),
 		VitePWA({
 			registerType: "autoUpdate",
-			devOptions: {
-				enabled: true,
-			},
 			workbox: {
 				globPatterns: ["**/*.{js,css,html,ico,png,jpg,jpeg,webp,avif,svg,woff2}"],
 				navigateFallback: null,

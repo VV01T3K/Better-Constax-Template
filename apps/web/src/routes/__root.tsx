@@ -35,21 +35,25 @@ const connectionHintLinks = Array.from(
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
 	head: () => {
-		const pwaLinks = [
-			{
-				rel: "manifest" as const,
-				href: "/manifest.webmanifest",
-			},
-			{
-				rel: "apple-touch-icon" as const,
-				href: "/logo192.png",
-			},
-		];
-		const pwaScripts = [
-			{
-				src: "/registerSW.js",
-			},
-		];
+		const pwaLinks = !env.DEV
+			? [
+					{
+						rel: "manifest" as const,
+						href: "/manifest.webmanifest",
+					},
+					{
+						rel: "apple-touch-icon" as const,
+						href: "/logo192.png",
+					},
+				]
+			: [];
+		const pwaScripts = !env.DEV
+			? [
+					{
+						src: "/registerSW.js",
+					},
+				]
+			: [];
 
 		return {
 			meta: [
@@ -82,7 +86,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	beforeLoad: async ({ context }) => {
 		const convexQueryClient = getConvexQueryClient(context.queryClient);
 
-		if (!import.meta.env.SSR) {
+		if (!env.SSR) {
 			warmAuthIdentity(context.queryClient);
 			return {};
 		}
@@ -108,8 +112,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-	const showDevtools = import.meta.env.DEV;
-
 	return (
 		<html lang="en">
 			<head>
@@ -119,7 +121,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<ConvexProvider>
 					<Header />
 					{children}
-					{showDevtools ? <RootDevtools /> : null}
+					{env.DEV ? <RootDevtools /> : null}
 				</ConvexProvider>
 				<Scripts />
 			</body>

@@ -4,6 +4,7 @@ import { createRouter as createTanStackRouter, useRouter } from "@tanstack/react
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 import { useEffect } from "react";
 
+import { env } from "./env";
 import { routeTree } from "./routeTree.gen";
 
 type AppRouter = ReturnType<typeof createTanStackRouter>;
@@ -30,7 +31,7 @@ function logNotFound(props: NotFoundLogProps, router?: AppRouter) {
 		routeId: props.routeId ?? null,
 		isNotFound: props.isNotFound ?? null,
 		data: props.data ?? null,
-		environment: import.meta.env.SSR ? "server" : "client",
+		environment: env.SSR ? "server" : "client",
 		url:
 			typeof window !== "undefined"
 				? `${window.location.pathname}${window.location.search}${window.location.hash}`

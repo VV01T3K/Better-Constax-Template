@@ -3,6 +3,12 @@ import { z } from "zod";
 
 export const env = createEnv({
 	server: {},
+	shared: {
+		DEV: z.boolean(),
+		MODE: z.string(),
+		PROD: z.boolean(),
+		SSR: z.boolean(),
+	},
 
 	/**
 	 * The prefix that client-side variables must have. This is enforced both at
@@ -19,7 +25,14 @@ export const env = createEnv({
 	 * What object holds the environment variables at runtime. This is usually
 	 * `process.env` or `import.meta.env`.
 	 */
-	runtimeEnv: import.meta.env,
+	runtimeEnvStrict: {
+		DEV: import.meta.env.DEV,
+		MODE: import.meta.env.MODE,
+		PROD: import.meta.env.PROD,
+		SSR: import.meta.env.SSR,
+		VITE_CONVEX_SITE_URL: import.meta.env.VITE_CONVEX_SITE_URL,
+		VITE_CONVEX_URL: import.meta.env.VITE_CONVEX_URL,
+	},
 
 	/**
 	 * By default, this library will feed the environment variables directly to
