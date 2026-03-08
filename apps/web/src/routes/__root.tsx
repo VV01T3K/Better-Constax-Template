@@ -9,7 +9,7 @@ import ConvexProvider from "../integrations/convex/provider";
 import { getServerAuthState } from "../integrations/convex/server-fn";
 import { RootDevtools } from "../integrations/tanstack/devtools";
 
-import appCss from "../styles.css?url";
+import appCss from "@repo/ui/globals.css?url";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
