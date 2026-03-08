@@ -65,6 +65,8 @@ import { Switch } from "@repo/ui/components/switch";
 import { Textarea } from "@repo/ui/components/textarea";
 import * as React from "react";
 
+type ColorSwatchStyle = React.CSSProperties & Record<"--color", string>;
+
 export function Demo() {
 	const [sliderValue, setSliderValue] = React.useState<number[]>([500]);
 	const handleSliderValueChange = React.useCallback((value: number | readonly number[]) => {
@@ -102,21 +104,21 @@ export function Demo() {
 									"--chart-3",
 									"--chart-4",
 									"--chart-5",
-								].map((variant) => (
-									<div key={variant} className="flex flex-col flex-wrap items-center gap-2">
-										<div
-											className="after:border-border relative aspect-square w-full rounded-lg bg-(--color) after:absolute after:inset-0 after:rounded-lg after:border after:mix-blend-darken dark:after:mix-blend-lighten"
-											style={
-												{
-													"--color": `var(${variant})`,
-												} as React.CSSProperties
-											}
-										/>
-										<div className="hidden max-w-14 truncate font-mono text-[0.60rem] md:block">
-											{variant}
+								].map((variant) => {
+									const colorStyle: ColorSwatchStyle = { "--color": `var(${variant})` };
+
+									return (
+										<div key={variant} className="flex flex-col flex-wrap items-center gap-2">
+											<div
+												className="after:border-border relative aspect-square w-full rounded-lg bg-(--color) after:absolute after:inset-0 after:rounded-lg after:border after:mix-blend-darken dark:after:mix-blend-lighten"
+												style={colorStyle}
+											/>
+											<div className="hidden max-w-14 truncate font-mono text-[0.60rem] md:block">
+												{variant}
+											</div>
 										</div>
-									</div>
-								))}
+									);
+								})}
 							</div>
 						</CardContent>
 					</Card>
