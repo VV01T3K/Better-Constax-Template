@@ -98,8 +98,10 @@ export const prepareSignedOutSession = async (
 	};
 
 	await queryClient.cancelQueries();
-	queryClient.removeQueries();
 	queryClient.setQueryData(queryKey, null);
+	queryClient.removeQueries({
+		predicate: (query) => query.queryKey[0] !== queryKey[0] || query.queryKey[1] !== queryKey[1],
+	});
 
 	return snapshot;
 };

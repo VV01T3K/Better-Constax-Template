@@ -61,6 +61,7 @@ export function NavUser({ authIdentity }: { authIdentity: AuthIdentity }) {
 	const signOutMutationOptions = useSignOutMutationOptions({
 		onMutate: async () => {
 			const snapshot = await prepareSignedOutSession(queryClient);
+			await router.invalidate();
 
 			if (isProtectedRouteMatch(router.state.matches)) {
 				await router.navigate(getAuthRouteNavigateOptions(redirectTarget));
@@ -70,6 +71,7 @@ export function NavUser({ authIdentity }: { authIdentity: AuthIdentity }) {
 		},
 		onSuccess: async () => {
 			await markSignedOutAuthIdentity(queryClient);
+			await router.invalidate();
 
 			if (isProtectedRouteMatch(router.state.matches)) {
 				await router.navigate(getAuthRouteNavigateOptions(redirectTarget));

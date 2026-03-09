@@ -22,6 +22,7 @@ export default function AppConvexProvider({ children }: { children: React.ReactN
 	const handleUnauthorized = useCallback(() => {
 		void (async () => {
 			await prepareSignedOutSession(queryClient);
+			await router.invalidate();
 
 			if (!isProtectedRouteMatch(router.state.matches)) {
 				return;
