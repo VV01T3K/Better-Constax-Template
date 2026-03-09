@@ -14,10 +14,10 @@ export const fileShape = {
 	fileName: z.string().trim().min(1, "File name is required"),
 	fileType: z.string().trim().min(1, "File type is required"),
 	fileSize: z
-	.number()
-	.int()
-	.nonnegative()
-	.max(MAX_FILE_SIZE_BYTES, `File size must be ${MAX_FILE_SIZE_LABEL} or less`),
+		.number()
+		.int()
+		.nonnegative()
+		.max(MAX_FILE_SIZE_BYTES, `File size must be ${MAX_FILE_SIZE_LABEL} or less`),
 	detectedFileType: z.string().trim().min(1).optional(),
 	typeSource: fileTypeSourceSchema.optional(),
 };
