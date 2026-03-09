@@ -1,0 +1,5 @@
+@import "@repo/ui/globals.css";
+
+@source "../**/*.{ts,tsx}";
+
+/* App-scoped theme overrides belong after the shared UI theme import. */

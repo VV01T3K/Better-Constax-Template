@@ -77,6 +77,7 @@ export function NavUser({ authIdentity }: { authIdentity: AuthIdentity }) {
 					<Button
 						variant="outline"
 						className="w-full"
+						nativeButton={false}
 						render={<Link to="/auth" search={signInRedirectSearch} />}
 					>
 						<LogInIcon />

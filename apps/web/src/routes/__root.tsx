@@ -12,7 +12,7 @@ import ConvexProvider from "../integrations/convex/provider";
 import { getServerAuthState } from "../integrations/convex/server-fn";
 import { RootDevtools } from "../integrations/tanstack/devtools";
 
-import appCss from "@repo/ui/globals.css?url";
+import appCss from "../styles/app.css?url";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -116,7 +116,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en" className="dark">
+		<html lang="en" className="dark" data-app-theme="web">
 			<head>
 				<HeadContent />
 			</head>
