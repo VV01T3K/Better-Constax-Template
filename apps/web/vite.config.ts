@@ -10,7 +10,8 @@ const config = defineConfig(({ mode }) => ({
 	define: {
 		"process.env.NODE_ENV": JSON.stringify(mode),
 	},
-	envDir: `${import.meta.dirname}/../..`,
+	envDir: `${import.meta.dirname}/../../packages/convex`,
+	envPrefix: ["VITE_", "CONVEX_"],
 	resolve: {
 		alias: {
 			"@": `${import.meta.dirname}/src`,

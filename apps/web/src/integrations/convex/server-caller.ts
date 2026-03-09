@@ -5,12 +5,12 @@ import { createCallerFactory } from "better-convex/server";
 
 import { env } from "../../env";
 
-process.env.NEXT_PUBLIC_CONVEX_URL ??= env.VITE_CONVEX_URL;
-process.env.NEXT_PUBLIC_CONVEX_SITE_URL ??= env.VITE_CONVEX_SITE_URL;
+process.env.NEXT_PUBLIC_CONVEX_URL ??= env.CONVEX_URL;
+process.env.NEXT_PUBLIC_CONVEX_SITE_URL ??= env.CONVEX_SITE_URL;
 
 const authBridge = convexBetterAuthReactStart({
-	convexUrl: env.VITE_CONVEX_URL,
-	convexSiteUrl: env.VITE_CONVEX_SITE_URL,
+	convexUrl: env.CONVEX_URL,
+	convexSiteUrl: env.CONVEX_SITE_URL,
 });
 
 export const authHandler = authBridge.handler;
@@ -51,7 +51,7 @@ const getTokenWithJwtCache = async (siteUrl: string, headers: Headers, opts?: un
 
 export const { createContext, createCaller } = createCallerFactory({
 	api,
-	convexSiteUrl: env.VITE_CONVEX_SITE_URL,
+	convexSiteUrl: env.CONVEX_SITE_URL,
 	auth: {
 		getToken: getTokenWithJwtCache,
 	},

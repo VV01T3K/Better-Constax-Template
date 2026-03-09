@@ -14,11 +14,11 @@ export const env = createEnv({
 	 * The prefix that client-side variables must have. This is enforced both at
 	 * a type-level and at runtime.
 	 */
-	clientPrefix: "VITE_",
+	clientPrefix: "CONVEX_",
 
 	client: {
-		VITE_CONVEX_SITE_URL: z.url(),
-		VITE_CONVEX_URL: z.url(),
+		CONVEX_SITE_URL: z.url(),
+		CONVEX_URL: z.url(),
 	},
 
 	/**
@@ -30,8 +30,8 @@ export const env = createEnv({
 		MODE: import.meta.env.MODE,
 		PROD: import.meta.env.PROD,
 		SSR: import.meta.env.SSR,
-		VITE_CONVEX_SITE_URL: import.meta.env.VITE_CONVEX_SITE_URL,
-		VITE_CONVEX_URL: import.meta.env.VITE_CONVEX_URL,
+		CONVEX_SITE_URL: import.meta.env.CONVEX_SITE_URL,
+		CONVEX_URL: import.meta.env.CONVEX_URL,
 	},
 
 	/**

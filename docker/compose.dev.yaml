@@ -4,8 +4,8 @@ services:
       context: ..
       dockerfile: apps/web/Dockerfile
       args:
-        VITE_CONVEX_SITE_URL: ${VITE_CONVEX_SITE_URL}
-        VITE_CONVEX_URL: ${VITE_CONVEX_URL}
+        CONVEX_SITE_URL: ${CONVEX_SITE_URL}
+        CONVEX_URL: ${CONVEX_URL}
     env_file:
       - ../.env.local
     environment:

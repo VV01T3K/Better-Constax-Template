@@ -5,7 +5,7 @@ import { env } from "../../env";
 
 export const { CRPCProvider, useCRPC, useCRPCClient } = createCRPCContext({
 	api,
-	convexSiteUrl: env.VITE_CONVEX_SITE_URL,
+	convexSiteUrl: env.CONVEX_SITE_URL,
 });
 
 export const staticCRPC = createCRPCOptionsProxy(api, api);

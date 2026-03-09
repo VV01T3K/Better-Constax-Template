@@ -22,11 +22,11 @@ RUN --mount=type=cache,target=/root/.bun/install/cache \
 
 FROM installer AS builder
 
-ARG VITE_CONVEX_URL
-ARG VITE_CONVEX_SITE_URL
+ARG CONVEX_URL
+ARG CONVEX_SITE_URL
 
-ENV VITE_CONVEX_URL=${VITE_CONVEX_URL}
-ENV VITE_CONVEX_SITE_URL=${VITE_CONVEX_SITE_URL}
+ENV CONVEX_URL=${CONVEX_URL}
+ENV CONVEX_SITE_URL=${CONVEX_SITE_URL}
 
 COPY --from=pruner /repo/out/full/ ./
 RUN bunx turbo@2.5.6 run build --filter=@repo/web
