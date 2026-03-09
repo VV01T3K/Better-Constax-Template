@@ -3,6 +3,7 @@ import { TooltipProvider } from "@repo/ui/components/tooltip";
 import { HotkeysProvider } from "@tanstack/react-hotkeys";
 import type { QueryClient } from "@tanstack/react-query";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
+import { lazy, Suspense } from "react";
 
 import { ThemeProvider } from "../components/ThemeProvider";
 import { ThemeToaster } from "../components/ThemeToaster";
@@ -11,7 +12,6 @@ import { ensureAuthIdentity, warmAuthIdentity } from "../integrations/convex/aut
 import { getConvexQueryClient } from "../integrations/convex/client";
 import ConvexProvider from "../integrations/convex/provider";
 import { getServerAuthState } from "../integrations/convex/server-fn";
-import { RootDevtools } from "../integrations/tanstack/devtools";
 
 import appCss from "../styles/app.css?url";
 
@@ -36,6 +36,13 @@ const connectionHintLinks = Array.from(
 		crossOrigin: "anonymous" as const,
 	},
 ]);
+
+const RootDevtools = import.meta.env.DEV
+	? lazy(async () => {
+			const module = await import("../integrations/tanstack/devtools");
+			return { default: module.RootDevtools };
+		})
+	: null;
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
 	head: () => {
@@ -130,7 +137,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 							<TooltipProvider>{children}</TooltipProvider>
 						</HotkeysProvider>
 						<ThemeToaster />
-						{env.DEV ? <RootDevtools /> : null}
+						{RootDevtools ? (
+							<Suspense fallback={null}>
+								<RootDevtools />
+							</Suspense>
+						) : null}
 					</ConvexProvider>
 				</ThemeProvider>
 				<Scripts />
