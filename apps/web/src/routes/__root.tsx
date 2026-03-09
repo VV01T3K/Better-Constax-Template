@@ -54,7 +54,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 					},
 					{
 						rel: "apple-touch-icon" as const,
-						href: "/logo192.png",
+						href: "/logo192.webp",
 					},
 				]
 			: [];
