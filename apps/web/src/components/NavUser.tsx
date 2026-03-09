@@ -34,7 +34,6 @@ import {
 	prepareSignedOutSession,
 	restoreSignedOutSession,
 } from "../integrations/convex/auth-state";
-import { ThemeMenu } from "./ThemeMenu";
 
 function UserMenuAvatar() {
 	return (
@@ -133,7 +132,6 @@ export function NavUser({ authIdentity }: { authIdentity: AuthIdentity }) {
 							</DropdownMenuLabel>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
-						<ThemeMenu />
 						<DropdownMenuItem onClick={() => void signOut()} disabled={isSigningOut}>
 							<LogOutIcon />
 							{isSigningOut ? "Signing out..." : "Sign Out"}

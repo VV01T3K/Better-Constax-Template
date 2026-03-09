@@ -12,6 +12,8 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@repo/ui/compon
 import { Link } from "@tanstack/react-router";
 import { ChevronsUpDownIcon, Layers3Icon } from "lucide-react";
 
+import { ThemeMenu } from "./ThemeMenu";
+
 export function TeamSwitcher() {
 	return (
 		<SidebarMenu>
@@ -53,6 +55,7 @@ export function TeamSwitcher() {
 							</DropdownMenuLabel>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
+						<ThemeMenu />
 						<DropdownMenuGroup>
 							<DropdownMenuItem render={<Link to="/" />}>Open workspace</DropdownMenuItem>
 							<DropdownMenuItem disabled>Single-workspace template</DropdownMenuItem>
