@@ -1,4 +1,5 @@
 import { Alert, AlertDescription } from "@repo/ui/components/alert";
+import { Toaster } from "@repo/ui/components/sonner";
 import { TooltipProvider } from "@repo/ui/components/tooltip";
 import { HotkeysProvider } from "@tanstack/react-hotkeys";
 import type { QueryClient } from "@tanstack/react-query";
@@ -126,6 +127,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 					<HotkeysProvider>
 						<TooltipProvider>{children}</TooltipProvider>
 					</HotkeysProvider>
+					<Toaster />
 					{env.DEV ? <RootDevtools /> : null}
 				</ConvexProvider>
 				<Scripts />

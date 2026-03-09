@@ -1,4 +1,6 @@
+import { Button } from "@repo/ui/components/button";
 import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
 
 import { Demo } from "../../../components/demo";
 
@@ -7,5 +9,12 @@ export const Route = createFileRoute("/_app/demo/shadcn")({
 });
 
 function ShadcnDemoPage() {
-	return <Demo />;
+	return (
+		<>
+			<Button variant="outline" onClick={() => toast("Hello from Sonner!")}>
+				Test Toast
+			</Button>
+			<Demo />
+		</>
+	);
 }

@@ -11,9 +11,9 @@
 		"test:browser": "bun --bun vitest run --project browser",
 		"test:watch": "bun --bun vitest",
 		"test:coverage": "bun --bun vitest run --coverage",
-		"lint": "bun --bun oxlint --type-aware --type-check src",
+		"lint": "bun --bun oxlint --deny-warnings --type-aware --type-check src",
 		"format": "oxfmt",
-		"fix": "oxfmt && bun --bun oxlint --type-aware --type-check --fix src",
+		"fix": "oxfmt && bun --bun oxlint --deny-warnings --type-aware --type-check --fix src",
 		"check": "oxfmt --check && bun lint && tsgo --noEmit"
 	},
 	"dependencies": {
