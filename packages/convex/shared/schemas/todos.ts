@@ -17,7 +17,7 @@ export const todoDocSchema = z.object(withSystemFields("todos", todoShape));
 
 export const todoSchema = {
 	list: {
-		output: z.array(todoDocSchema),
+		output: z.array(todoDocSchema.omit({ userId: true })),
 	},
 	add: {
 		input: z.object({

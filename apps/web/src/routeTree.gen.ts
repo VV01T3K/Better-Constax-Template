@@ -18,6 +18,7 @@ import { Route as AppAuthenticatedRouteImport } from './routes/_app/_authenticat
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AppDemoTanstackFormRouteImport } from './routes/_app/demo/tanstack-form'
 import { Route as AppDemoShadcnRouteImport } from './routes/_app/demo/shadcn'
+import { Route as AppAuthenticatedDemoConvexOptimisticRouteImport } from './routes/_app/_authenticated/demo/convex-optimistic'
 import { Route as AppAuthenticatedDemoConvexRouteImport } from './routes/_app/_authenticated/demo/convex'
 
 const AuthRoute = AuthRouteImport.update({
@@ -63,6 +64,12 @@ const AppDemoShadcnRoute = AppDemoShadcnRouteImport.update({
   path: '/demo/shadcn',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAuthenticatedDemoConvexOptimisticRoute =
+  AppAuthenticatedDemoConvexOptimisticRouteImport.update({
+    id: '/demo/convex-optimistic',
+    path: '/demo/convex-optimistic',
+    getParentRoute: () => AppAuthenticatedRoute,
+  } as any)
 const AppAuthenticatedDemoConvexRoute =
   AppAuthenticatedDemoConvexRouteImport.update({
     id: '/demo/convex',
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/demo/tanstack-form': typeof AppDemoTanstackFormRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/convex': typeof AppAuthenticatedDemoConvexRoute
+  '/demo/convex-optimistic': typeof AppAuthenticatedDemoConvexOptimisticRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
@@ -89,6 +97,7 @@ export interface FileRoutesByTo {
   '/demo/tanstack-form': typeof AppDemoTanstackFormRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/convex': typeof AppAuthenticatedDemoConvexRoute
+  '/demo/convex-optimistic': typeof AppAuthenticatedDemoConvexOptimisticRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -102,6 +111,7 @@ export interface FileRoutesById {
   '/_app/demo/tanstack-form': typeof AppDemoTanstackFormRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_app/_authenticated/demo/convex': typeof AppAuthenticatedDemoConvexRoute
+  '/_app/_authenticated/demo/convex-optimistic': typeof AppAuthenticatedDemoConvexOptimisticRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
     | '/demo/tanstack-form'
     | '/api/auth/$'
     | '/demo/convex'
+    | '/demo/convex-optimistic'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -124,6 +135,7 @@ export interface FileRouteTypes {
     | '/demo/tanstack-form'
     | '/api/auth/$'
     | '/demo/convex'
+    | '/demo/convex-optimistic'
   id:
     | '__root__'
     | '/_app'
@@ -136,6 +148,7 @@ export interface FileRouteTypes {
     | '/_app/demo/tanstack-form'
     | '/api/auth/$'
     | '/_app/_authenticated/demo/convex'
+    | '/_app/_authenticated/demo/convex-optimistic'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -209,6 +222,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDemoShadcnRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/_authenticated/demo/convex-optimistic': {
+      id: '/_app/_authenticated/demo/convex-optimistic'
+      path: '/demo/convex-optimistic'
+      fullPath: '/demo/convex-optimistic'
+      preLoaderRoute: typeof AppAuthenticatedDemoConvexOptimisticRouteImport
+      parentRoute: typeof AppAuthenticatedRoute
+    }
     '/_app/_authenticated/demo/convex': {
       id: '/_app/_authenticated/demo/convex'
       path: '/demo/convex'
@@ -221,10 +241,13 @@ declare module '@tanstack/react-router' {
 
 interface AppAuthenticatedRouteChildren {
   AppAuthenticatedDemoConvexRoute: typeof AppAuthenticatedDemoConvexRoute
+  AppAuthenticatedDemoConvexOptimisticRoute: typeof AppAuthenticatedDemoConvexOptimisticRoute
 }
 
 const AppAuthenticatedRouteChildren: AppAuthenticatedRouteChildren = {
   AppAuthenticatedDemoConvexRoute: AppAuthenticatedDemoConvexRoute,
+  AppAuthenticatedDemoConvexOptimisticRoute:
+    AppAuthenticatedDemoConvexOptimisticRoute,
 }
 
 const AppAuthenticatedRouteWithChildren =

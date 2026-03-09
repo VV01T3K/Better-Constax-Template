@@ -10,26 +10,28 @@ import {
 import { Checkbox } from "@repo/ui/components/checkbox";
 import { Input } from "@repo/ui/components/input";
 import { Item, ItemActions, ItemContent, ItemTitle } from "@repo/ui/components/item";
+import { Label } from "@repo/ui/components/label";
+import { Switch } from "@repo/ui/components/switch";
 import { useForm } from "@tanstack/react-form";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Circle, Plus, Trash2 } from "lucide-react";
+import { Circle, Plus, RotateCcw, Trash2 } from "lucide-react";
+import { useState } from "react";
 
-import { staticCRPC, useCRPC } from "../../../../integrations/convex/crpc";
+import { useTodosOptimistic } from "@/hooks/useTodosOptimistic";
+import { staticCRPC } from "@/integrations/convex/crpc";
 
-export const Route = createFileRoute("/_app/_authenticated/demo/convex")({
+export const Route = createFileRoute("/_app/_authenticated/demo/convex-optimistic")({
 	loader: async ({ context }) => {
 		await context.queryClient.ensureQueryData(staticCRPC.func.todos.list.staticQueryOptions({}));
 	},
-	component: ConvexTodos,
+	component: ConvexOptimisticTodos,
 });
 
-function ConvexTodos() {
-	const c = useCRPC();
-	const { data: todos, isFetching } = useSuspenseQuery(c.func.todos.list.queryOptions({}));
-	const { mutateAsync: addTodo } = useMutation(c.func.todos.add.mutationOptions());
-	const { mutateAsync: toggleTodo } = useMutation(c.func.todos.toggle.mutationOptions());
-	const { mutateAsync: removeTodo } = useMutation(c.func.todos.remove.mutationOptions());
+function ConvexOptimisticTodos() {
+	const [simulateAddError, setSimulateAddError] = useState(false);
+	const { todos, addTodo, retryTodo, toggleTodo, removeTodo } = useTodosOptimistic({
+		simulateAddError,
+	});
 
 	const completedCount = todos.filter((todo) => todo.completed).length;
 	const totalCount = todos.length;
@@ -43,8 +45,8 @@ function ConvexTodos() {
 			onChange: todoSchema.add.input,
 			onSubmit: todoSchema.add.input,
 		},
-		onSubmit: async ({ value, formApi }) => {
-			await addTodo(value);
+		onSubmit: ({ value, formApi }) => {
+			addTodo(value);
 			formApi.reset();
 		},
 	});
@@ -105,6 +107,18 @@ function ConvexTodos() {
 								)}
 							</form.Subscribe>
 						</form>
+						<div className="mt-3 flex items-center justify-between rounded-md border border-dashed px-3 py-2">
+							<Label htmlFor="simulate-add-error" className="text-muted-foreground">
+								Simulate add error
+							</Label>
+							<Switch
+								id="simulate-add-error"
+								size="sm"
+								checked={simulateAddError}
+								onCheckedChange={setSimulateAddError}
+								aria-label="Simulate add todo error"
+							/>
+						</div>
 					</CardContent>
 				</Card>
 
@@ -118,35 +132,60 @@ function ConvexTodos() {
 						</CardContent>
 					) : (
 						<CardContent className="flex flex-col gap-0">
-							{todos.map((todo) => (
-								<Item
-									key={todo._id}
-									variant="outline"
-									className={todo.completed ? "opacity-75" : ""}
-								>
-									<Checkbox
-										checked={todo.completed}
-										onCheckedChange={() => void toggleTodo({ id: todo._id })}
-										aria-label={todo.completed ? "Mark as incomplete" : "Mark as complete"}
-									/>
-									<ItemContent>
-										<ItemTitle
-											className={todo.completed ? "text-muted-foreground line-through" : ""}
-										>
-											{todo.text}
-										</ItemTitle>
-									</ItemContent>
-									<ItemActions>
-										<Button
-											variant="destructive"
-											size="icon-xs"
-											onClick={() => void removeTodo({ id: todo._id })}
-										>
-											<Trash2 size={18} />
-										</Button>
-									</ItemActions>
-								</Item>
-							))}
+							{todos.map((todo) => {
+								const isFailed = todo.status === "failed";
+
+								return (
+									<Item
+										key={todo.id}
+										variant="outline"
+										className={`${todo.completed ? "opacity-75" : ""} ${isFailed ? "border-destructive/30 bg-destructive/5" : ""}`}
+									>
+										<Checkbox
+											checked={todo.completed}
+											disabled={isFailed}
+											onCheckedChange={() => {
+												if (isFailed) return;
+												toggleTodo({ id: todo.id });
+											}}
+											aria-label={todo.completed ? "Mark as incomplete" : "Mark as complete"}
+										/>
+										<ItemContent>
+											<ItemTitle
+												className={`${todo.completed ? "text-muted-foreground line-through" : ""} ${isFailed ? "text-destructive" : ""}`}
+											>
+												{todo.text}
+											</ItemTitle>
+											{isFailed && <p className="text-destructive/80 text-xs">Failed to save</p>}
+										</ItemContent>
+										<ItemActions>
+											{isFailed ? (
+												<Button
+													variant="outline"
+													size="icon-xs"
+													onClick={() =>
+														retryTodo({
+															text: todo.text,
+															failedSubmissionId: todo.failedSubmissionId,
+														})
+													}
+													aria-label="Retry todo"
+												>
+													<RotateCcw size={14} />
+												</Button>
+											) : (
+												<Button
+													variant="destructive"
+													size="icon-xs"
+													onClick={() => removeTodo({ id: todo.id })}
+												>
+													<Trash2 size={18} />
+												</Button>
+											)}
+										</ItemActions>
+									</Item>
+								);
+							})}
 						</CardContent>
 					)}
 				</Card>
@@ -157,10 +196,6 @@ function ConvexTodos() {
 						Built with Better Convex • Real-time updates • Always in sync
 					</p>
 				</div>
-
-				{isFetching && (
-					<p className="text-muted-foreground mt-3 text-center text-xs font-medium">Syncing...</p>
-				)}
 			</div>
 		</div>
 	);

@@ -45,7 +45,6 @@ export declare const api: {
           _id: Id<"todos">;
           completed: boolean;
           text: string;
-          userId: string;
         }>
       >;
       remove: FunctionReference<"mutation", "public", { id: any }, any>;
