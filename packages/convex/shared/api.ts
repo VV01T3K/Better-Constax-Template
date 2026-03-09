@@ -9,6 +9,12 @@ import { api as convexApi } from "../src/_generated/api.js";
 
 export const api = {
   func: {
+    files: {
+      generateUploadUrl: createApiLeaf<"mutation", typeof import("../src/func/files").generateUploadUrl>(convexApi["func"]["files"]["generateUploadUrl"], { auth: "required", type: "mutation" }),
+      list: createApiLeaf<"query", typeof import("../src/func/files").list>(convexApi["func"]["files"]["list"], { auth: "required", type: "query" }),
+      remove: createApiLeaf<"mutation", typeof import("../src/func/files").remove>(convexApi["func"]["files"]["remove"], { auth: "required", type: "mutation" }),
+      saveFile: createApiLeaf<"mutation", typeof import("../src/func/files").saveFile>(convexApi["func"]["files"]["saveFile"], { auth: "required", type: "mutation" }),
+    },
     session: {
       me: createApiLeaf<"query", typeof import("../src/func/session").me>(convexApi["func"]["session"]["me"], { type: "query" }),
     },

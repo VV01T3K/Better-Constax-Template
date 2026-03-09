@@ -1,5 +1,6 @@
 import { CRPCError } from "better-convex/server";
 
+import { parseId } from "../shared/schemas/ids";
 import type { Id } from "../src/_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../src/generated/server";
 
@@ -21,10 +22,8 @@ const getValidatedIdentity = async (
 	}
 
 	return {
-		// oxlint-disable-next-line no-unsafe-type-assertion
-		sessionId: identity.sessionId as Id<"session">,
-		// oxlint-disable-next-line no-unsafe-type-assertion
-		userId: identity.subject as Id<"user">,
+		sessionId: parseId("session", identity.sessionId),
+		userId: parseId("user", identity.subject),
 	};
 };
 

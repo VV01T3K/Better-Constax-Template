@@ -70,6 +70,36 @@ export type DataModel = {
     searchIndexes: {};
     vectorIndexes: {};
   };
+  files: {
+    document: {
+      detectedFileType?: string;
+      fileName: string;
+      fileSize: number;
+      fileType: string;
+      storageId: Id<"_storage">;
+      typeSource?: "magic-bytes" | "extension" | "content-sniff";
+      userId: Id<"user">;
+      _id: Id<"files">;
+      _creationTime: number;
+    };
+    fieldPaths:
+      | "_creationTime"
+      | "_id"
+      | "detectedFileType"
+      | "fileName"
+      | "fileSize"
+      | "fileType"
+      | "storageId"
+      | "typeSource"
+      | "userId";
+    indexes: {
+      by_id: ["_id"];
+      by_creation_time: ["_creationTime"];
+      by_user: ["userId", "_creationTime"];
+    };
+    searchIndexes: {};
+    vectorIndexes: {};
+  };
   jwks: {
     document: {
       createdAt: number;
@@ -130,7 +160,7 @@ export type DataModel = {
     document: {
       completed: boolean;
       text: string;
-      userId: string;
+      userId: Id<"user">;
       _id: Id<"todos">;
       _creationTime: number;
     };

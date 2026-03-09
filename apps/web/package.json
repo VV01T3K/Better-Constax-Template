@@ -37,6 +37,7 @@
 		"better-auth": "1.4.21",
 		"better-convex": "0.10.1",
 		"convex": "^1.32.0",
+		"file-type": "^21.3.0",
 		"lucide-react": "^0.577.0",
 		"next-themes": "^0.4.6",
 		"nitro": "npm:nitro-nightly@^3.0.1-20260227-181935-bfbb207c",

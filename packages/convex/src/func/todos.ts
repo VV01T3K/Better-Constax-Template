@@ -17,7 +17,6 @@ export const add = c.mutation
 	.meta({ auth: "required" })
 	.use(authMiddleware)
 	.input(todoSchema.add.input)
-	.output(todoSchema.add.output)
 	.mutation(async ({ ctx, input }) => {
 		return await ctx.db.insert("todos", {
 			text: input.text,

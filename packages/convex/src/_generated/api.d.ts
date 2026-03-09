@@ -21,6 +21,37 @@ import type { GenericId as Id } from "convex/values";
  */
 export declare const api: {
   func: {
+    files: {
+      generateUploadUrl: FunctionReference<"mutation", "public", {}, string>;
+      list: FunctionReference<
+        "query",
+        "public",
+        {},
+        Array<{
+          _creationTime: number;
+          _id: Id<"files">;
+          detectedFileType?: string;
+          fileName: string;
+          fileSize: number;
+          fileType: string;
+          typeSource?: "magic-bytes" | "extension" | "content-sniff";
+        }>
+      >;
+      remove: FunctionReference<"mutation", "public", { id: any }, any>;
+      saveFile: FunctionReference<
+        "mutation",
+        "public",
+        {
+          detectedFileType?: string;
+          fileName: string;
+          fileSize: number;
+          fileType: string;
+          storageId: Id<"_storage">;
+          typeSource?: "magic-bytes" | "extension" | "content-sniff";
+        },
+        any
+      >;
+    };
     session: {
       me: FunctionReference<
         "query",
@@ -30,12 +61,7 @@ export declare const api: {
       >;
     };
     todos: {
-      add: FunctionReference<
-        "mutation",
-        "public",
-        { text: string },
-        Id<"todos">
-      >;
+      add: FunctionReference<"mutation", "public", { text: string }, any>;
       list: FunctionReference<
         "query",
         "public",
@@ -62,6 +88,16 @@ export declare const api: {
  * ```
  */
 export declare const internal: {
+  func: {
+    files: {
+      getServeInfo: FunctionReference<
+        "query",
+        "internal",
+        { id: any },
+        { fileName: string; fileSize: number; fileType: string; storageId: any }
+      >;
+    };
+  };
   generated: {
     auth: {
       create: FunctionReference<
