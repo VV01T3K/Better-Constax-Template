@@ -21,9 +21,9 @@
 	},
 	"devDependencies": {
 		"@tanstack/eslint-plugin-query": "^5.91.4",
-		"@types/node": "^25.3.3",
-		"@typescript/native-preview": "^7.0.0-dev.20260304.1",
-		"nitro": "npm:nitro-nightly@^3.0.1-20260227-181935-bfbb207c",
+		"@types/node": "^25.4.0",
+		"@typescript/native-preview": "^7.0.0-dev.20260309.1",
+		"nitro": "npm:nitro-nightly@^3.0.1-20260309-141311-a2ee33b1",
 		"oxfmt": "^0.36.0",
 		"oxlint": "^1.51.0",
 		"oxlint-tsgolint": "^0.16.0",
