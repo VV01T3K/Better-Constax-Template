@@ -8,7 +8,30 @@ import {
 	type RedirectTarget,
 	sanitizeRedirectTarget,
 } from "../../integrations/convex/auth-redirect";
-import { refreshAuthIdentityUntilAuthenticated } from "../../integrations/convex/auth-state";
+import {
+	markAuthenticatedAuthIdentity,
+	refreshAuthIdentityUntilAuthenticated,
+} from "../../integrations/convex/auth-state";
+
+type AuthResponseUser = {
+	id?: string | null;
+	name?: string | null;
+	email?: string | null;
+};
+
+const getAuthResponseUser = (result: unknown): AuthResponseUser | null => {
+	if (typeof result !== "object" || result === null || !("data" in result)) {
+		return null;
+	}
+
+	const data = result.data;
+	if (typeof data !== "object" || data === null || !("user" in data)) {
+		return null;
+	}
+
+	const user = data.user;
+	return typeof user === "object" && user !== null ? (user as AuthResponseUser) : null;
+};
 
 type LoginSearch = {
 	redirect: RedirectTarget;
@@ -27,18 +50,25 @@ function LoginPage() {
 	const router = useRouter();
 	const redirectTarget = sanitizeRedirectTarget(redirectSearch ?? DEFAULT_REDIRECT_TARGET);
 
-	const completeAuthAndNavigate = async (failureMessage: string) => {
-		const authIdentity = await refreshAuthIdentityUntilAuthenticated(queryClient);
-		if (!authIdentity) {
-			throw new Error(failureMessage);
+	const completeAuthAndNavigate = async (result: unknown) => {
+		const user = getAuthResponseUser(result);
+
+		if (typeof user?.id === "string" && user.id.length > 0) {
+			await markAuthenticatedAuthIdentity(queryClient, {
+				userId: user.id,
+				name: user.name?.trim() || user.email?.trim() || "User",
+			});
+			void refreshAuthIdentityUntilAuthenticated(queryClient).catch(() => undefined);
 		}
+
+		await router.invalidate();
 		await router.navigate({ href: redirectTarget, replace: true });
 	};
 
 	const signInMutation = useMutation(
 		useSignInMutationOptions({
-			onSuccess: async () => {
-				await completeAuthAndNavigate("We couldn't complete sign-in yet. Please try again.");
+			onSuccess: async (result) => {
+				await completeAuthAndNavigate(result);
 			},
 		}),
 	);

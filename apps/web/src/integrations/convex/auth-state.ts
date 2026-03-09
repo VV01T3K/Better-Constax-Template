@@ -89,6 +89,15 @@ export const markSignedOutAuthIdentity = async (queryClient: QueryClient) => {
 	queryClient.setQueryData(queryKey, null);
 };
 
+export const markAuthenticatedAuthIdentity = async (
+	queryClient: QueryClient,
+	authIdentity: NonNullable<AuthIdentity>,
+) => {
+	const queryKey = getAuthIdentityQueryKey();
+	await queryClient.cancelQueries({ queryKey });
+	queryClient.setQueryData(queryKey, authIdentity);
+};
+
 export const prepareSignedOutSession = async (
 	queryClient: QueryClient,
 ): Promise<SignedOutSessionSnapshot> => {
