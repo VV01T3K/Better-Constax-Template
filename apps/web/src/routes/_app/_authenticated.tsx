@@ -3,10 +3,10 @@ import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import {
 	getAuthRedirectSearch,
 	getRedirectTargetFromRouterLocation,
-} from "../integrations/convex/auth-redirect";
-import { ensureAuthIdentity } from "../integrations/convex/auth-state";
+} from "../../integrations/convex/auth-redirect";
+import { ensureAuthIdentity } from "../../integrations/convex/auth-state";
 
-export const Route = createFileRoute("/_authenticated")({
+export const Route = createFileRoute("/_app/_authenticated")({
 	beforeLoad: async ({ context, location }) => {
 		const authIdentity = await ensureAuthIdentity(context.queryClient);
 
@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_authenticated")({
 			const redirectTarget = getRedirectTargetFromRouterLocation(location);
 
 			throw redirect({
-				to: "/auth",
+				to: "/auth/login",
 				search: getAuthRedirectSearch(redirectTarget),
 			});
 		}

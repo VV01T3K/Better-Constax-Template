@@ -3,7 +3,7 @@ import { Item, ItemContent, ItemTitle } from "@repo/ui/components/item";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/demo/tanstack-query")({
+export const Route = createFileRoute("/_app/demo/tanstack-query")({
 	component: TanStackQueryDemo,
 });
 

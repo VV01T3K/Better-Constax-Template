@@ -1,7 +1,9 @@
+import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
 import { Button } from "@repo/ui/components/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
+	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
@@ -33,8 +35,18 @@ import {
 	restoreSignedOutSession,
 } from "../integrations/convex/auth-state";
 
+function UserMenuAvatar() {
+	return (
+		<Avatar shape="square">
+			<AvatarFallback className="bg-sidebar-primary text-sidebar-primary-foreground">
+				<UserIcon className="size-4" />
+			</AvatarFallback>
+		</Avatar>
+	);
+}
+
 export function NavUser({ authIdentity }: { authIdentity: AuthIdentity }) {
-	const { isMobile } = useSidebar();
+	const { isMobile, state } = useSidebar();
 	const router = useRouter();
 	const location = useLocation();
 	const queryClient = useQueryClient();
@@ -78,7 +90,7 @@ export function NavUser({ authIdentity }: { authIdentity: AuthIdentity }) {
 						variant="outline"
 						className="w-full"
 						nativeButton={false}
-						render={<Link to="/auth" search={signInRedirectSearch} />}
+						render={<Link to="/auth/login" search={signInRedirectSearch} />}
 					>
 						<LogInIcon />
 						Sign In
@@ -95,30 +107,28 @@ export function NavUser({ authIdentity }: { authIdentity: AuthIdentity }) {
 					<DropdownMenuTrigger
 						render={<SidebarMenuButton size="lg" className="aria-expanded:bg-muted" />}
 					>
-						<div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-							<UserIcon className="size-4" />
-						</div>
+						<UserMenuAvatar />
 						<div className="grid flex-1 text-left text-sm leading-tight">
 							<span className="truncate font-medium">{authIdentity.name}</span>
 						</div>
 						<ChevronsUpDownIcon className="ml-auto size-4" />
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
-						className="min-w-56 rounded-lg"
-						side={isMobile ? "bottom" : "right"}
+						className="min-w-56 rounded-none"
+						side={isMobile ? "bottom" : state === "expanded" ? "top" : "right"}
 						align="end"
 						sideOffset={4}
 					>
-						<DropdownMenuLabel className="p-0 font-normal">
-							<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-								<div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-									<UserIcon className="size-4" />
+						<DropdownMenuGroup>
+							<DropdownMenuLabel className="text-foreground p-0 font-normal">
+								<div className="flex items-center gap-2 px-2 py-2 text-left text-xs">
+									<UserMenuAvatar />
+									<div className="grid flex-1 text-left text-sm leading-tight">
+										<span className="truncate font-medium">{authIdentity.name}</span>
+									</div>
 								</div>
-								<div className="grid flex-1 text-left text-sm leading-tight">
-									<span className="truncate font-medium">{authIdentity.name}</span>
-								</div>
-							</div>
-						</DropdownMenuLabel>
+							</DropdownMenuLabel>
+						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem onClick={() => void signOut()} disabled={isSigningOut}>
 							<LogOutIcon />

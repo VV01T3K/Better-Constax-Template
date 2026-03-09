@@ -15,9 +15,9 @@ import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Circle, Plus, Trash2 } from "lucide-react";
 
-import { staticCRPC, useCRPC } from "../../../integrations/convex/crpc";
+import { staticCRPC, useCRPC } from "../../../../integrations/convex/crpc";
 
-export const Route = createFileRoute("/_authenticated/demo/convex")({
+export const Route = createFileRoute("/_app/_authenticated/demo/convex")({
 	loader: async ({ context }) => {
 		await context.queryClient.ensureQueryData(staticCRPC.func.todos.list.staticQueryOptions({}));
 	},

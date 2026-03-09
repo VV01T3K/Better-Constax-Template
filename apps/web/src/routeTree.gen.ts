@@ -10,121 +10,149 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
-import { Route as DemoTanstackFormRouteImport } from './routes/demo/tanstack-form'
-import { Route as DemoShadcnRouteImport } from './routes/demo/shadcn'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AuthSignupRouteImport } from './routes/auth/signup'
+import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AppAuthenticatedRouteImport } from './routes/_app/_authenticated'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as AuthenticatedDemoConvexRouteImport } from './routes/_authenticated/demo/convex'
+import { Route as AppDemoTanstackQueryRouteImport } from './routes/_app/demo/tanstack-query'
+import { Route as AppDemoTanstackFormRouteImport } from './routes/_app/demo/tanstack-form'
+import { Route as AppDemoShadcnRouteImport } from './routes/_app/demo/shadcn'
+import { Route as AppAuthenticatedDemoConvexRouteImport } from './routes/_app/_authenticated/demo/convex'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRoute = AuthenticatedRouteImport.update({
-  id: '/_authenticated',
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRoute,
 } as any)
-const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
-  id: '/demo/tanstack-query',
-  path: '/demo/tanstack-query',
-  getParentRoute: () => rootRouteImport,
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => AuthRoute,
 } as any)
-const DemoTanstackFormRoute = DemoTanstackFormRouteImport.update({
-  id: '/demo/tanstack-form',
-  path: '/demo/tanstack-form',
-  getParentRoute: () => rootRouteImport,
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AuthRoute,
 } as any)
-const DemoShadcnRoute = DemoShadcnRouteImport.update({
-  id: '/demo/shadcn',
-  path: '/demo/shadcn',
-  getParentRoute: () => rootRouteImport,
+const AppAuthenticatedRoute = AppAuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => AppRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedDemoConvexRoute = AuthenticatedDemoConvexRouteImport.update({
-  id: '/demo/convex',
-  path: '/demo/convex',
-  getParentRoute: () => AuthenticatedRoute,
+const AppDemoTanstackQueryRoute = AppDemoTanstackQueryRouteImport.update({
+  id: '/demo/tanstack-query',
+  path: '/demo/tanstack-query',
+  getParentRoute: () => AppRoute,
 } as any)
+const AppDemoTanstackFormRoute = AppDemoTanstackFormRouteImport.update({
+  id: '/demo/tanstack-form',
+  path: '/demo/tanstack-form',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDemoShadcnRoute = AppDemoShadcnRouteImport.update({
+  id: '/demo/shadcn',
+  path: '/demo/shadcn',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAuthenticatedDemoConvexRoute =
+  AppAuthenticatedDemoConvexRouteImport.update({
+    id: '/demo/convex',
+    path: '/demo/convex',
+    getParentRoute: () => AppAuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
-  '/demo/shadcn': typeof DemoShadcnRoute
-  '/demo/tanstack-form': typeof DemoTanstackFormRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
-  '/demo/convex': typeof AuthenticatedDemoConvexRoute
+  '/': typeof AppIndexRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
+  '/demo/shadcn': typeof AppDemoShadcnRoute
+  '/demo/tanstack-form': typeof AppDemoTanstackFormRoute
+  '/demo/tanstack-query': typeof AppDemoTanstackQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/demo/convex': typeof AppAuthenticatedDemoConvexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
-  '/demo/shadcn': typeof DemoShadcnRoute
-  '/demo/tanstack-form': typeof DemoTanstackFormRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
-  '/demo/convex': typeof AuthenticatedDemoConvexRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/': typeof AppIndexRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
+  '/demo/shadcn': typeof AppDemoShadcnRoute
+  '/demo/tanstack-form': typeof AppDemoTanstackFormRoute
+  '/demo/tanstack-query': typeof AppDemoTanstackQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/demo/convex': typeof AppAuthenticatedDemoConvexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/auth': typeof AuthRoute
-  '/demo/shadcn': typeof DemoShadcnRoute
-  '/demo/tanstack-form': typeof DemoTanstackFormRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
-  '/_authenticated/demo/convex': typeof AuthenticatedDemoConvexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/auth': typeof AuthRouteWithChildren
+  '/_app/_authenticated': typeof AppAuthenticatedRouteWithChildren
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
+  '/_app/': typeof AppIndexRoute
+  '/_app/demo/shadcn': typeof AppDemoShadcnRoute
+  '/_app/demo/tanstack-form': typeof AppDemoTanstackFormRoute
+  '/_app/demo/tanstack-query': typeof AppDemoTanstackQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/_app/_authenticated/demo/convex': typeof AppAuthenticatedDemoConvexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/auth'
+    | '/auth/login'
+    | '/auth/signup'
     | '/demo/shadcn'
     | '/demo/tanstack-form'
     | '/demo/tanstack-query'
-    | '/demo/convex'
     | '/api/auth/$'
+    | '/demo/convex'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/auth'
+    | '/'
+    | '/auth/login'
+    | '/auth/signup'
     | '/demo/shadcn'
     | '/demo/tanstack-form'
     | '/demo/tanstack-query'
-    | '/demo/convex'
     | '/api/auth/$'
+    | '/demo/convex'
   id:
     | '__root__'
-    | '/'
-    | '/_authenticated'
+    | '/_app'
     | '/auth'
-    | '/demo/shadcn'
-    | '/demo/tanstack-form'
-    | '/demo/tanstack-query'
-    | '/_authenticated/demo/convex'
+    | '/_app/_authenticated'
+    | '/auth/login'
+    | '/auth/signup'
+    | '/_app/'
+    | '/_app/demo/shadcn'
+    | '/_app/demo/tanstack-form'
+    | '/_app/demo/tanstack-query'
     | '/api/auth/$'
+    | '/_app/_authenticated/demo/convex'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
-  AuthRoute: typeof AuthRoute
-  DemoShadcnRoute: typeof DemoShadcnRoute
-  DemoTanstackFormRoute: typeof DemoTanstackFormRoute
-  DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
+  AppRoute: typeof AppRouteWithChildren
+  AuthRoute: typeof AuthRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -137,40 +165,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated': {
-      id: '/_authenticated'
+    '/_app': {
+      id: '/_app'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteImport
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_app/': {
+      id: '/_app/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/demo/tanstack-query': {
-      id: '/demo/tanstack-query'
-      path: '/demo/tanstack-query'
-      fullPath: '/demo/tanstack-query'
-      preLoaderRoute: typeof DemoTanstackQueryRouteImport
-      parentRoute: typeof rootRouteImport
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof AuthRoute
     }
-    '/demo/tanstack-form': {
-      id: '/demo/tanstack-form'
-      path: '/demo/tanstack-form'
-      fullPath: '/demo/tanstack-form'
-      preLoaderRoute: typeof DemoTanstackFormRouteImport
-      parentRoute: typeof rootRouteImport
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof AuthRoute
     }
-    '/demo/shadcn': {
-      id: '/demo/shadcn'
-      path: '/demo/shadcn'
-      fullPath: '/demo/shadcn'
-      preLoaderRoute: typeof DemoShadcnRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_app/_authenticated': {
+      id: '/_app/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppAuthenticatedRouteImport
+      parentRoute: typeof AppRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -179,35 +207,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/demo/convex': {
-      id: '/_authenticated/demo/convex'
+    '/_app/demo/tanstack-query': {
+      id: '/_app/demo/tanstack-query'
+      path: '/demo/tanstack-query'
+      fullPath: '/demo/tanstack-query'
+      preLoaderRoute: typeof AppDemoTanstackQueryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/demo/tanstack-form': {
+      id: '/_app/demo/tanstack-form'
+      path: '/demo/tanstack-form'
+      fullPath: '/demo/tanstack-form'
+      preLoaderRoute: typeof AppDemoTanstackFormRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/demo/shadcn': {
+      id: '/_app/demo/shadcn'
+      path: '/demo/shadcn'
+      fullPath: '/demo/shadcn'
+      preLoaderRoute: typeof AppDemoShadcnRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/_authenticated/demo/convex': {
+      id: '/_app/_authenticated/demo/convex'
       path: '/demo/convex'
       fullPath: '/demo/convex'
-      preLoaderRoute: typeof AuthenticatedDemoConvexRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      preLoaderRoute: typeof AppAuthenticatedDemoConvexRouteImport
+      parentRoute: typeof AppAuthenticatedRoute
     }
   }
 }
 
-interface AuthenticatedRouteChildren {
-  AuthenticatedDemoConvexRoute: typeof AuthenticatedDemoConvexRoute
+interface AppAuthenticatedRouteChildren {
+  AppAuthenticatedDemoConvexRoute: typeof AppAuthenticatedDemoConvexRoute
 }
 
-const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedDemoConvexRoute: AuthenticatedDemoConvexRoute,
+const AppAuthenticatedRouteChildren: AppAuthenticatedRouteChildren = {
+  AppAuthenticatedDemoConvexRoute: AppAuthenticatedDemoConvexRoute,
 }
 
-const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
-  AuthenticatedRouteChildren,
-)
+const AppAuthenticatedRouteWithChildren =
+  AppAuthenticatedRoute._addFileChildren(AppAuthenticatedRouteChildren)
+
+interface AppRouteChildren {
+  AppAuthenticatedRoute: typeof AppAuthenticatedRouteWithChildren
+  AppIndexRoute: typeof AppIndexRoute
+  AppDemoShadcnRoute: typeof AppDemoShadcnRoute
+  AppDemoTanstackFormRoute: typeof AppDemoTanstackFormRoute
+  AppDemoTanstackQueryRoute: typeof AppDemoTanstackQueryRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppAuthenticatedRoute: AppAuthenticatedRouteWithChildren,
+  AppIndexRoute: AppIndexRoute,
+  AppDemoShadcnRoute: AppDemoShadcnRoute,
+  AppDemoTanstackFormRoute: AppDemoTanstackFormRoute,
+  AppDemoTanstackQueryRoute: AppDemoTanstackQueryRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
+interface AuthRouteChildren {
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthSignupRoute: typeof AuthSignupRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthLoginRoute: AuthLoginRoute,
+  AuthSignupRoute: AuthSignupRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AuthenticatedRoute: AuthenticatedRouteWithChildren,
-  AuthRoute: AuthRoute,
-  DemoShadcnRoute: DemoShadcnRoute,
-  DemoTanstackFormRoute: DemoTanstackFormRoute,
-  DemoTanstackQueryRoute: DemoTanstackQueryRoute,
+  AppRoute: AppRouteWithChildren,
+  AuthRoute: AuthRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

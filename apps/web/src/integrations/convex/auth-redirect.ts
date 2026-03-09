@@ -56,7 +56,7 @@ export const getAuthRedirectSearch = (redirect: RedirectTarget) => ({
 export const isAuthPath = (pathname: string) => pathname.startsWith("/auth");
 
 export const getAuthRouteNavigateOptions = (redirect: RedirectTarget) => ({
-	to: "/auth" as const,
+	to: "/auth/login" as const,
 	search: getAuthRedirectSearch(redirect),
 	replace: true,
 });
@@ -67,6 +67,6 @@ export const isProtectedRouteMatch = (matches: readonly MatchLike[]) =>
 
 		return (
 			typeof routeId === "string" &&
-			(routeId === "/_authenticated" || routeId.startsWith("/_authenticated/"))
+			(routeId === "/_app/_authenticated" || routeId.startsWith("/_app/_authenticated/"))
 		);
 	});

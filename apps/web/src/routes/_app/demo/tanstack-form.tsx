@@ -45,9 +45,9 @@ import {
 import { type ReactNode, useState } from "react";
 import { z } from "zod";
 
-import { useAppForm } from "../../integrations/tanstack/form";
+import { useAppForm } from "../../../integrations/tanstack/form";
 
-export const Route = createFileRoute("/demo/tanstack-form")({
+export const Route = createFileRoute("/_app/demo/tanstack-form")({
 	component: TanStackFormDemoPage,
 });
 

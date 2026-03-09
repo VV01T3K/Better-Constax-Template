@@ -3,8 +3,8 @@ import { cn } from "@repo/ui/lib/utils";
 import { ChevronRightIcon, CheckIcon } from "lucide-react";
 import * as React from "react";
 
-function DropdownMenu({ ...props }: MenuPrimitive.Root.Props) {
-	return <MenuPrimitive.Root data-slot="dropdown-menu" {...props} />;
+function DropdownMenu({ modal = false, ...props }: MenuPrimitive.Root.Props) {
+	return <MenuPrimitive.Root data-slot="dropdown-menu" modal={modal} {...props} />;
 }
 
 function DropdownMenuPortal({ ...props }: MenuPrimitive.Portal.Props) {
@@ -18,18 +18,23 @@ function DropdownMenuTrigger({ ...props }: MenuPrimitive.Trigger.Props) {
 function DropdownMenuContent({
 	align = "start",
 	alignOffset = 0,
+	positionMethod = "fixed",
 	side = "bottom",
 	sideOffset = 4,
 	className,
 	...props
 }: MenuPrimitive.Popup.Props &
-	Pick<MenuPrimitive.Positioner.Props, "align" | "alignOffset" | "side" | "sideOffset">) {
+	Pick<
+		MenuPrimitive.Positioner.Props,
+		"align" | "alignOffset" | "positionMethod" | "side" | "sideOffset"
+	>) {
 	return (
 		<MenuPrimitive.Portal>
 			<MenuPrimitive.Positioner
 				className="isolate z-50 outline-none"
 				align={align}
 				alignOffset={alignOffset}
+				positionMethod={positionMethod}
 				side={side}
 				sideOffset={sideOffset}
 			>

@@ -5,7 +5,14 @@ import {
 	FieldError,
 	FieldLabel,
 } from "@repo/ui/components/field";
-import { cn } from "@repo/ui/lib/utils";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@repo/ui/components/select";
 import type { ComponentProps } from "react";
 
 import { useFieldContext } from "./hooks";
@@ -20,13 +27,16 @@ type SelectOption = {
 };
 
 export type FormSelectProps = Omit<
-	ComponentProps<"select">,
-	"defaultValue" | "name" | "onBlur" | "onChange" | "value"
+	ComponentProps<"button">,
+	"children" | "defaultValue" | "name" | "onBlur" | "onChange" | "type" | "value"
 > & {
+	autoComplete?: string;
+	disabled?: boolean;
 	label: string;
 	description?: string;
 	options: ReadonlyArray<SelectOption>;
 	placeholder?: string;
+	required?: boolean;
 };
 
 const toFieldErrors = (errors: unknown[]) =>
@@ -63,28 +73,31 @@ export function FormSelect({
 		<Field data-invalid={isInvalid}>
 			<FieldLabel htmlFor={field.name}>{label}</FieldLabel>
 			<FieldContent>
-				<select
+				<Select<string>
 					{...props}
 					id={field.name}
 					name={field.name}
-					value={field.state.value ?? ""}
-					onBlur={field.handleBlur}
-					onChange={(event) => field.handleChange(event.target.value)}
-					aria-invalid={isInvalid}
-					className={cn(
-						"border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 disabled:bg-input/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 h-8 w-full min-w-0 rounded-none border bg-transparent px-2.5 py-1 text-xs transition-colors outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-1 md:text-xs",
-						className,
-					)}
+					value={field.state.value === "" ? null : (field.state.value ?? null)}
+					onOpenChange={(open) => {
+						if (!open) {
+							field.handleBlur();
+						}
+					}}
+					onValueChange={(value) => field.handleChange(value)}
 				>
-					<option value="" disabled>
-						{placeholder}
-					</option>
-					{options.map((option) => (
-						<option key={option.value} value={option.value}>
-							{option.label}
-						</option>
-					))}
-				</select>
+					<SelectTrigger className={className} aria-invalid={isInvalid}>
+						<SelectValue placeholder={placeholder} />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectGroup>
+							{options.map((option) => (
+								<SelectItem key={option.value} value={option.value}>
+									{option.label}
+								</SelectItem>
+							))}
+						</SelectGroup>
+					</SelectContent>
+				</Select>
 				{description ? <FieldDescription>{description}</FieldDescription> : null}
 				<FieldError errors={errors} />
 			</FieldContent>

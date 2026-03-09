@@ -4,6 +4,7 @@ import {
 	SidebarFooter,
 	SidebarHeader,
 	SidebarRail,
+	SidebarTrigger,
 } from "@repo/ui/components/sidebar";
 import { useQuery } from "@tanstack/react-query";
 
@@ -18,7 +19,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	return (
 		<Sidebar collapsible="icon" {...props}>
 			<SidebarHeader>
-				<TeamSwitcher />
+				<div className="flex items-center gap-2">
+					<TeamSwitcher />
+					<SidebarTrigger className="shrink-0 md:hidden" />
+				</div>
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain />
