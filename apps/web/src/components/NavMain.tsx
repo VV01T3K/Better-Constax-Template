@@ -6,12 +6,11 @@ import {
 	SidebarMenuItem,
 } from "@repo/ui/components/sidebar";
 import { Link, useLocation } from "@tanstack/react-router";
-import { FilePenLine, Globe, Home, Layers3, Network } from "lucide-react";
+import { FilePenLine, Globe, Home, Layers3 } from "lucide-react";
 
 const navLinks = [
 	{ to: "/", label: "Home", icon: Home },
 	{ to: "/demo/tanstack-form", label: "TanStack Form", icon: FilePenLine },
-	{ to: "/demo/tanstack-query", label: "TanStack Query", icon: Network },
 	{ to: "/demo/shadcn", label: "shadcn Demo", icon: Layers3 },
 	{ to: "/demo/convex", label: "Convex", icon: Globe },
 ] as const;

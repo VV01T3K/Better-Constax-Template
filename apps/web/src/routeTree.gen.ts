@@ -16,7 +16,6 @@ import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AppAuthenticatedRouteImport } from './routes/_app/_authenticated'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as AppDemoTanstackQueryRouteImport } from './routes/_app/demo/tanstack-query'
 import { Route as AppDemoTanstackFormRouteImport } from './routes/_app/demo/tanstack-form'
 import { Route as AppDemoShadcnRouteImport } from './routes/_app/demo/shadcn'
 import { Route as AppAuthenticatedDemoConvexRouteImport } from './routes/_app/_authenticated/demo/convex'
@@ -54,11 +53,6 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppDemoTanstackQueryRoute = AppDemoTanstackQueryRouteImport.update({
-  id: '/demo/tanstack-query',
-  path: '/demo/tanstack-query',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppDemoTanstackFormRoute = AppDemoTanstackFormRouteImport.update({
   id: '/demo/tanstack-form',
   path: '/demo/tanstack-form',
@@ -83,7 +77,6 @@ export interface FileRoutesByFullPath {
   '/auth/signup': typeof AuthSignupRoute
   '/demo/shadcn': typeof AppDemoShadcnRoute
   '/demo/tanstack-form': typeof AppDemoTanstackFormRoute
-  '/demo/tanstack-query': typeof AppDemoTanstackQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/convex': typeof AppAuthenticatedDemoConvexRoute
 }
@@ -94,7 +87,6 @@ export interface FileRoutesByTo {
   '/auth/signup': typeof AuthSignupRoute
   '/demo/shadcn': typeof AppDemoShadcnRoute
   '/demo/tanstack-form': typeof AppDemoTanstackFormRoute
-  '/demo/tanstack-query': typeof AppDemoTanstackQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/demo/convex': typeof AppAuthenticatedDemoConvexRoute
 }
@@ -108,7 +100,6 @@ export interface FileRoutesById {
   '/_app/': typeof AppIndexRoute
   '/_app/demo/shadcn': typeof AppDemoShadcnRoute
   '/_app/demo/tanstack-form': typeof AppDemoTanstackFormRoute
-  '/_app/demo/tanstack-query': typeof AppDemoTanstackQueryRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_app/_authenticated/demo/convex': typeof AppAuthenticatedDemoConvexRoute
 }
@@ -121,7 +112,6 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/demo/shadcn'
     | '/demo/tanstack-form'
-    | '/demo/tanstack-query'
     | '/api/auth/$'
     | '/demo/convex'
   fileRoutesByTo: FileRoutesByTo
@@ -132,7 +122,6 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/demo/shadcn'
     | '/demo/tanstack-form'
-    | '/demo/tanstack-query'
     | '/api/auth/$'
     | '/demo/convex'
   id:
@@ -145,7 +134,6 @@ export interface FileRouteTypes {
     | '/_app/'
     | '/_app/demo/shadcn'
     | '/_app/demo/tanstack-form'
-    | '/_app/demo/tanstack-query'
     | '/api/auth/$'
     | '/_app/_authenticated/demo/convex'
   fileRoutesById: FileRoutesById
@@ -207,13 +195,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/demo/tanstack-query': {
-      id: '/_app/demo/tanstack-query'
-      path: '/demo/tanstack-query'
-      fullPath: '/demo/tanstack-query'
-      preLoaderRoute: typeof AppDemoTanstackQueryRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/demo/tanstack-form': {
       id: '/_app/demo/tanstack-form'
       path: '/demo/tanstack-form'
@@ -254,7 +235,6 @@ interface AppRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
   AppDemoShadcnRoute: typeof AppDemoShadcnRoute
   AppDemoTanstackFormRoute: typeof AppDemoTanstackFormRoute
-  AppDemoTanstackQueryRoute: typeof AppDemoTanstackQueryRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -262,7 +242,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppIndexRoute: AppIndexRoute,
   AppDemoShadcnRoute: AppDemoShadcnRoute,
   AppDemoTanstackFormRoute: AppDemoTanstackFormRoute,
-  AppDemoTanstackQueryRoute: AppDemoTanstackQueryRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
