@@ -16,15 +16,6 @@ import { Button } from "@repo/ui/components/button";
 import { ButtonGroup } from "@repo/ui/components/button-group";
 import { Card, CardContent } from "@repo/ui/components/card";
 import { Checkbox } from "@repo/ui/components/checkbox";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuGroup,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@repo/ui/components/dropdown-menu";
 import { Field, FieldGroup } from "@repo/ui/components/field";
 import {
 	InputGroup,
@@ -37,8 +28,11 @@ import {
 	ItemActions,
 	ItemContent,
 	ItemDescription,
+	ItemGroup,
+	ItemSeparator,
 	ItemTitle,
 } from "@repo/ui/components/item";
+import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/components/popover";
 import { RadioGroup, RadioGroupItem } from "@repo/ui/components/radio-group";
 import { Slider } from "@repo/ui/components/slider";
 import { Switch } from "@repo/ui/components/switch";
@@ -63,17 +57,23 @@ import {
 	Trash2,
 } from "lucide-react";
 import * as React from "react";
+import { toast } from "sonner";
 
 type ColorSwatchStyle = React.CSSProperties & Record<"--color", string>;
 
 export function Demo() {
 	const [sliderValue, setSliderValue] = React.useState<number[]>([500]);
+	const [isActionMenuOpen, setIsActionMenuOpen] = React.useState(false);
 	const handleSliderValueChange = React.useCallback((value: number | readonly number[]) => {
 		if (typeof value === "number") {
 			setSliderValue([value]);
 		} else {
 			setSliderValue([...value]);
 		}
+	}, []);
+	const handleAction = React.useCallback((label: string) => {
+		setIsActionMenuOpen(false);
+		toast(label);
 	}, []);
 
 	return (
@@ -261,32 +261,86 @@ export function Demo() {
 								</AlertDialog>
 								<ButtonGroup>
 									<Button variant="outline">Button Group</Button>
-									<DropdownMenu modal={false}>
-										<DropdownMenuTrigger render={<Button variant="outline" size="icon" />}>
+									<Popover open={isActionMenuOpen} onOpenChange={setIsActionMenuOpen} modal={false}>
+										<PopoverTrigger render={<Button variant="outline" size="icon" />}>
 											<ArrowUp />
-										</DropdownMenuTrigger>
-										<DropdownMenuContent align="end" side="top" className="w-40">
-											<DropdownMenuGroup>
-												<DropdownMenuLabel>Quick Actions</DropdownMenuLabel>
-												<DropdownMenuItem>Mute Conversation</DropdownMenuItem>
-												<DropdownMenuItem>Mark as Read</DropdownMenuItem>
-												<DropdownMenuItem>Block User</DropdownMenuItem>
-											</DropdownMenuGroup>
-											<DropdownMenuSeparator />
-											<DropdownMenuGroup>
-												<DropdownMenuLabel>Conversation</DropdownMenuLabel>
-												<DropdownMenuItem>Share Conversation</DropdownMenuItem>
-												<DropdownMenuItem>Copy Conversation</DropdownMenuItem>
-												<DropdownMenuItem>Report Conversation</DropdownMenuItem>
-											</DropdownMenuGroup>
-											<DropdownMenuSeparator />
-											<DropdownMenuGroup>
-												<DropdownMenuItem variant="destructive">
-													Delete Conversation
-												</DropdownMenuItem>
-											</DropdownMenuGroup>
-										</DropdownMenuContent>
-									</DropdownMenu>
+										</PopoverTrigger>
+										<PopoverContent
+											align="end"
+											side="top"
+											sideOffset={0}
+											className="w-40 gap-0 p-1"
+										>
+											<div className="flex flex-col">
+												<div className="text-muted-foreground px-2 py-2 text-xs">Quick Actions</div>
+												<ItemGroup className="gap-0">
+													<Button
+														variant="ghost"
+														size="sm"
+														className="w-full justify-start border-transparent font-normal"
+														onClick={() => handleAction("Muted conversation")}
+													>
+														Mute Conversation
+													</Button>
+													<Button
+														variant="ghost"
+														size="sm"
+														className="w-full justify-start border-transparent font-normal"
+														onClick={() => handleAction("Marked as read")}
+													>
+														Mark as Read
+													</Button>
+													<Button
+														variant="ghost"
+														size="sm"
+														className="w-full justify-start border-transparent font-normal"
+														onClick={() => handleAction("Blocked user")}
+													>
+														Block User
+													</Button>
+												</ItemGroup>
+												<ItemSeparator className="my-1" />
+												<div className="text-muted-foreground px-2 py-2 text-xs">Conversation</div>
+												<ItemGroup className="gap-0">
+													<Button
+														variant="ghost"
+														size="sm"
+														className="w-full justify-start border-transparent font-normal"
+														onClick={() => handleAction("Shared conversation")}
+													>
+														Share Conversation
+													</Button>
+													<Button
+														variant="ghost"
+														size="sm"
+														className="w-full justify-start border-transparent font-normal"
+														onClick={() => handleAction("Copied conversation")}
+													>
+														Copy Conversation
+													</Button>
+													<Button
+														variant="ghost"
+														size="sm"
+														className="w-full justify-start border-transparent font-normal"
+														onClick={() => handleAction("Reported conversation")}
+													>
+														Report Conversation
+													</Button>
+												</ItemGroup>
+												<ItemSeparator className="my-1" />
+												<ItemGroup className="gap-0">
+													<Button
+														variant="ghost"
+														size="sm"
+														className="text-destructive hover:text-destructive w-full justify-start border-transparent font-normal"
+														onClick={() => handleAction("Deleted conversation")}
+													>
+														Delete Conversation
+													</Button>
+												</ItemGroup>
+											</div>
+										</PopoverContent>
+									</Popover>
 								</ButtonGroup>
 								<Switch defaultChecked className="ml-auto" />
 							</div>
