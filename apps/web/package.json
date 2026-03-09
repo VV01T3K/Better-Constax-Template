@@ -33,6 +33,7 @@
 		"@tanstack/react-router-devtools": "^1.166.4",
 		"@tanstack/react-router-ssr-query": "^1.166.4",
 		"@tanstack/react-start": "^1.166.4",
+		"@tanstack/react-table": "9.0.0-alpha.16",
 		"@tanstack/router-plugin": "^1.166.4",
 		"better-auth": "1.4.21",
 		"better-convex": "0.10.1",

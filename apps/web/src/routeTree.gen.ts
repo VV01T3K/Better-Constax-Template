@@ -17,6 +17,7 @@ import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AppAuthenticatedRouteImport } from './routes/_app/_authenticated'
 import { Route as ApiFilesSplatRouteImport } from './routes/api/files/$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as AppDemoTanstackTableRouteImport } from './routes/_app/demo/tanstack-table'
 import { Route as AppDemoTanstackFormRouteImport } from './routes/_app/demo/tanstack-form'
 import { Route as AppDemoShadcnRouteImport } from './routes/_app/demo/shadcn'
 import { Route as AppAuthenticatedDemoFileUploadRouteImport } from './routes/_app/_authenticated/demo/file-upload'
@@ -61,6 +62,11 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppDemoTanstackTableRoute = AppDemoTanstackTableRouteImport.update({
+  id: '/demo/tanstack-table',
+  path: '/demo/tanstack-table',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDemoTanstackFormRoute = AppDemoTanstackFormRouteImport.update({
   id: '/demo/tanstack-form',
   path: '/demo/tanstack-form',
@@ -97,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/auth/signup': typeof AuthSignupRoute
   '/demo/shadcn': typeof AppDemoShadcnRoute
   '/demo/tanstack-form': typeof AppDemoTanstackFormRoute
+  '/demo/tanstack-table': typeof AppDemoTanstackTableRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/files/$': typeof ApiFilesSplatRoute
   '/demo/convex': typeof AppAuthenticatedDemoConvexRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/auth/signup': typeof AuthSignupRoute
   '/demo/shadcn': typeof AppDemoShadcnRoute
   '/demo/tanstack-form': typeof AppDemoTanstackFormRoute
+  '/demo/tanstack-table': typeof AppDemoTanstackTableRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/files/$': typeof ApiFilesSplatRoute
   '/demo/convex': typeof AppAuthenticatedDemoConvexRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/_app/': typeof AppIndexRoute
   '/_app/demo/shadcn': typeof AppDemoShadcnRoute
   '/_app/demo/tanstack-form': typeof AppDemoTanstackFormRoute
+  '/_app/demo/tanstack-table': typeof AppDemoTanstackTableRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/files/$': typeof ApiFilesSplatRoute
   '/_app/_authenticated/demo/convex': typeof AppAuthenticatedDemoConvexRoute
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/demo/shadcn'
     | '/demo/tanstack-form'
+    | '/demo/tanstack-table'
     | '/api/auth/$'
     | '/api/files/$'
     | '/demo/convex'
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/demo/shadcn'
     | '/demo/tanstack-form'
+    | '/demo/tanstack-table'
     | '/api/auth/$'
     | '/api/files/$'
     | '/demo/convex'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
     | '/_app/'
     | '/_app/demo/shadcn'
     | '/_app/demo/tanstack-form'
+    | '/_app/demo/tanstack-table'
     | '/api/auth/$'
     | '/api/files/$'
     | '/_app/_authenticated/demo/convex'
@@ -241,6 +253,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/demo/tanstack-table': {
+      id: '/_app/demo/tanstack-table'
+      path: '/demo/tanstack-table'
+      fullPath: '/demo/tanstack-table'
+      preLoaderRoute: typeof AppDemoTanstackTableRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/demo/tanstack-form': {
       id: '/_app/demo/tanstack-form'
       path: '/demo/tanstack-form'
@@ -300,6 +319,7 @@ interface AppRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
   AppDemoShadcnRoute: typeof AppDemoShadcnRoute
   AppDemoTanstackFormRoute: typeof AppDemoTanstackFormRoute
+  AppDemoTanstackTableRoute: typeof AppDemoTanstackTableRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -307,6 +327,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppIndexRoute: AppIndexRoute,
   AppDemoShadcnRoute: AppDemoShadcnRoute,
   AppDemoTanstackFormRoute: AppDemoTanstackFormRoute,
+  AppDemoTanstackTableRoute: AppDemoTanstackTableRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

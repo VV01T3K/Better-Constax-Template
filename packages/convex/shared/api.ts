@@ -18,6 +18,9 @@ export const api = {
     session: {
       me: createApiLeaf<"query", typeof import("../src/func/session").me>(convexApi["func"]["session"]["me"], { type: "query" }),
     },
+    tanstackTableDemo: {
+      page: createApiLeaf<"query", typeof import("../src/func/tanstackTableDemo").page>(convexApi["func"]["tanstackTableDemo"]["page"], { type: "query" }),
+    },
     todos: {
       add: createApiLeaf<"mutation", typeof import("../src/func/todos").add>(convexApi["func"]["todos"]["add"], { auth: "required", type: "mutation" }),
       list: createApiLeaf<"query", typeof import("../src/func/todos").list>(convexApi["func"]["todos"]["list"], { auth: "required", type: "query" }),

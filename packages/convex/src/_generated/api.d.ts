@@ -60,6 +60,58 @@ export declare const api: {
         { name: string; userId: string } | null
       >;
     };
+    tanstackTableDemo: {
+      page: FunctionReference<
+        "query",
+        "public",
+        {
+          filter?: string;
+          pageIndex?: number;
+          pageSize?: number;
+          sortDirection?: "asc" | "desc";
+          sortKey?:
+            | "caseId"
+            | "name"
+            | "owner"
+            | "status"
+            | "priority"
+            | "region"
+            | "amountCents"
+            | "updatedAt";
+          status?: "queued" | "review" | "blocked" | "ready" | "all";
+        },
+        {
+          filter: string;
+          pageCount: number;
+          pageIndex: number;
+          pageSize: number;
+          rows: Array<{
+            _creationTime: number;
+            _id: Id<"tanstackTableDemoRows">;
+            amountCents: number;
+            caseId: string;
+            name: string;
+            owner: string;
+            priority: "low" | "medium" | "high" | "urgent";
+            region: "us" | "emea" | "apac";
+            status: "queued" | "review" | "blocked" | "ready";
+            updatedAt: number;
+          }>;
+          sortDirection: "asc" | "desc";
+          sortKey:
+            | "caseId"
+            | "name"
+            | "owner"
+            | "status"
+            | "priority"
+            | "region"
+            | "amountCents"
+            | "updatedAt";
+          status: "queued" | "review" | "blocked" | "ready" | "all";
+          totalRows: number;
+        }
+      >;
+    };
     todos: {
       add: FunctionReference<"mutation", "public", { text: string }, any>;
       list: FunctionReference<
@@ -241,6 +293,12 @@ export declare const internal: {
         fn?: string;
         next?: Array<string>;
       },
+      any
+    >;
+    seedTanstackTableDemoRows: FunctionReference<
+      "mutation",
+      "internal",
+      {},
       any
     >;
   };

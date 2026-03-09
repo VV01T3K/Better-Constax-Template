@@ -156,6 +156,37 @@ export type DataModel = {
     searchIndexes: {};
     vectorIndexes: {};
   };
+  tanstackTableDemoRows: {
+    document: {
+      amountCents: number;
+      caseId: string;
+      name: string;
+      owner: string;
+      priority: "low" | "medium" | "high" | "urgent";
+      region: "us" | "emea" | "apac";
+      status: "queued" | "review" | "blocked" | "ready";
+      updatedAt: number;
+      _id: Id<"tanstackTableDemoRows">;
+      _creationTime: number;
+    };
+    fieldPaths:
+      | "_creationTime"
+      | "_id"
+      | "amountCents"
+      | "caseId"
+      | "name"
+      | "owner"
+      | "priority"
+      | "region"
+      | "status"
+      | "updatedAt";
+    indexes: {
+      by_id: ["_id"];
+      by_creation_time: ["_creationTime"];
+    };
+    searchIndexes: {};
+    vectorIndexes: {};
+  };
   todos: {
     document: {
       completed: boolean;
