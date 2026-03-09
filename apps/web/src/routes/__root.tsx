@@ -1,10 +1,11 @@
 import { Alert, AlertDescription } from "@repo/ui/components/alert";
-import { Toaster } from "@repo/ui/components/sonner";
 import { TooltipProvider } from "@repo/ui/components/tooltip";
 import { HotkeysProvider } from "@tanstack/react-hotkeys";
 import type { QueryClient } from "@tanstack/react-query";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 
+import { ThemeProvider } from "../components/ThemeProvider";
+import { ThemeToaster } from "../components/ThemeToaster";
 import { env } from "../env";
 import { ensureAuthIdentity, warmAuthIdentity } from "../integrations/convex/auth-state";
 import { getConvexQueryClient } from "../integrations/convex/client";
@@ -118,18 +119,20 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en" className="dark" data-app-theme="web">
+		<html lang="en" data-app-theme="web" suppressHydrationWarning>
 			<head>
 				<HeadContent />
 			</head>
-			<body className="dark">
-				<ConvexProvider>
-					<HotkeysProvider>
-						<TooltipProvider>{children}</TooltipProvider>
-					</HotkeysProvider>
-					<Toaster />
-					{env.DEV ? <RootDevtools /> : null}
-				</ConvexProvider>
+			<body>
+				<ThemeProvider>
+					<ConvexProvider>
+						<HotkeysProvider>
+							<TooltipProvider>{children}</TooltipProvider>
+						</HotkeysProvider>
+						<ThemeToaster />
+						{env.DEV ? <RootDevtools /> : null}
+					</ConvexProvider>
+				</ThemeProvider>
 				<Scripts />
 			</body>
 		</html>

@@ -17,7 +17,6 @@ const toasterStyle: React.CSSProperties & Record<`--${string}`, string> = {
 const Toaster = ({ ...props }: ToasterProps) => {
 	return (
 		<Sonner
-			theme="dark"
 			className="toaster group"
 			icons={{
 				success: <CircleCheckIcon className="size-4" />,
