@@ -77,7 +77,7 @@ export function Demo() {
 	}, []);
 
 	return (
-		<div className="bg-muted dark:bg-background flex min-h-screen w-full flex-col items-center justify-center p-4 sm:p-6 lg:p-12">
+		<div className="flex min-h-screen w-full flex-col items-center justify-center p-4 sm:p-6 lg:p-12">
 			<div className="grid max-w-3xl gap-4 sm:grid-cols-2">
 				<div className="flex flex-col gap-4">
 					<Card>

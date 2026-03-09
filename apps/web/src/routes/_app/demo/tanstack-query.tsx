@@ -20,7 +20,7 @@ function TanStackQueryDemo() {
 	});
 
 	return (
-		<div className="bg-background flex min-h-screen items-center justify-center p-4">
+		<div className="flex min-h-screen items-center justify-center p-4">
 			<Card className="w-full max-w-2xl">
 				<CardContent className="flex flex-col gap-4">
 					<h1 className="text-2xl font-medium">TanStack Query Simple Promise Handling</h1>

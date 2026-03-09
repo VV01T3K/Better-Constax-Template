@@ -46,7 +46,7 @@ function App() {
 	];
 
 	return (
-		<div className="bg-background min-h-screen">
+		<div className="min-h-screen">
 			<section className="relative overflow-hidden px-6 py-20 text-center">
 				<div className="bg-primary/5 absolute inset-0" />
 				<div className="relative mx-auto max-w-5xl">
