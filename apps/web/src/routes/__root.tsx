@@ -1,5 +1,6 @@
 import { Alert, AlertDescription } from "@repo/ui/components/alert";
 import { TooltipProvider } from "@repo/ui/components/tooltip";
+import { HotkeysProvider } from "@tanstack/react-hotkeys";
 import type { QueryClient } from "@tanstack/react-query";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 
@@ -122,7 +123,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body className="dark">
 				<ConvexProvider>
-					<TooltipProvider>{children}</TooltipProvider>
+					<HotkeysProvider>
+						<TooltipProvider>{children}</TooltipProvider>
+					</HotkeysProvider>
 					{env.DEV ? <RootDevtools /> : null}
 				</ConvexProvider>
 				<Scripts />

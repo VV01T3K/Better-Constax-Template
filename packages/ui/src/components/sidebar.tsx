@@ -16,6 +16,7 @@ import { Skeleton } from "@repo/ui/components/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@repo/ui/components/tooltip";
 import { useIsMobile } from "@repo/ui/hooks/use-mobile";
 import { cn } from "@repo/ui/lib/utils";
+import { useHotkey } from "@tanstack/react-hotkeys";
 import { cva, type VariantProps } from "class-variance-authority";
 import { PanelLeftIcon } from "lucide-react";
 import * as React from "react";
@@ -25,7 +26,7 @@ const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = "16rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
-const SIDEBAR_KEYBOARD_SHORTCUT = "b";
+const SIDEBAR_KEYBOARD_SHORTCUT = "Mod+B";
 
 type SidebarContextProps = {
 	state: "expanded" | "collapsed";
@@ -88,18 +89,13 @@ function SidebarProvider({
 		return isMobile ? setOpenMobile((prev) => !prev) : setOpen((prev) => !prev);
 	}, [isMobile, setOpen, setOpenMobile]);
 
-	// Adds a keyboard shortcut to toggle the sidebar.
-	React.useEffect(() => {
-		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key === SIDEBAR_KEYBOARD_SHORTCUT && (event.metaKey || event.ctrlKey)) {
-				event.preventDefault();
-				toggleSidebar();
-			}
-		};
-
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [toggleSidebar]);
+	useHotkey(SIDEBAR_KEYBOARD_SHORTCUT, toggleSidebar, {
+		eventType: "keydown",
+		ignoreInputs: false,
+		preventDefault: true,
+		requireReset: true,
+		stopPropagation: false,
+	});
 
 	// We add a state so that we can do data-state="expanded" or "collapsed".
 	// This makes it easier to style the sidebar with Tailwind classes.
