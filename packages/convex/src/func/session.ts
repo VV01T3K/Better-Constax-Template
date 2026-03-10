@@ -2,9 +2,9 @@ import { CRPCError } from "better-convex/server";
 
 import { validateQueryOrMutationAuth } from "../../lib/auth-session";
 import { c } from "../../lib/crpc";
-import { authStateSchema } from "../../shared/schemas/auth-state";
+import { authSchema } from "../../shared/schemas/auth";
 
-export const me = c.query.output(authStateSchema.me.output).query(async ({ ctx }) => {
+export const me = c.query.output(authSchema.me.output).query(async ({ ctx }) => {
 	try {
 		const validated = await validateQueryOrMutationAuth(ctx);
 		// oxlint-disable-next-line no-unsafe-type-assertion

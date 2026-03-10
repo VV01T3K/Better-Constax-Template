@@ -49,7 +49,7 @@ export function useTodosOptimistic(options: UseTodosOptimisticOptions = {}) {
 		filters: { mutationKey: ["toggleTodo"], status: "pending" },
 		select: (mutation) => {
 			const parsedInput = todoSchema.toggle.input.safeParse(mutation.state.variables);
-			return parsedInput.success ? String(parsedInput.data.id) : null;
+			return parsedInput.success ? String(parsedInput.data._id) : null;
 		},
 	});
 
@@ -57,7 +57,7 @@ export function useTodosOptimistic(options: UseTodosOptimisticOptions = {}) {
 		filters: { mutationKey: ["removeTodo"], status: "pending" },
 		select: (mutation) => {
 			const parsedInput = todoSchema.remove.input.safeParse(mutation.state.variables);
-			return parsedInput.success ? String(parsedInput.data.id) : null;
+			return parsedInput.success ? String(parsedInput.data._id) : null;
 		},
 	});
 

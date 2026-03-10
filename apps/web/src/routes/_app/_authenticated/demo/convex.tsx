@@ -126,7 +126,7 @@ function ConvexTodos() {
 								>
 									<Checkbox
 										checked={todo.completed}
-										onCheckedChange={() => void toggleTodo({ id: todo._id })}
+										onCheckedChange={() => void toggleTodo({ _id: todo._id })}
 										aria-label={todo.completed ? "Mark as incomplete" : "Mark as complete"}
 									/>
 									<ItemContent>
@@ -140,7 +140,7 @@ function ConvexTodos() {
 										<Button
 											variant="destructive"
 											size="icon-xs"
-											onClick={() => void removeTodo({ id: todo._id })}
+											onClick={() => void removeTodo({ _id: todo._id })}
 										>
 											<Trash2 size={18} />
 										</Button>

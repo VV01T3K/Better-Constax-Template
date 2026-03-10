@@ -1,6 +1,5 @@
 import { assertOwnership, authMiddleware, c } from "../../lib/crpc";
 import { fileInternalSchema, fileSchema } from "../../shared/schemas/files";
-import { parseId } from "../../shared/schemas/ids";
 
 export const list = c.query
 	.meta({ auth: "required" })
@@ -40,8 +39,8 @@ export const remove = c.mutation
 	.use(authMiddleware)
 	.input(fileSchema.remove.input)
 	.mutation(async ({ ctx, input }) => {
-		const file = await assertOwnership(ctx, "files", input.id);
-		await ctx.storage.delete(parseId("_storage", file.storageId));
+		const file = await assertOwnership(ctx, "files", input._id);
+		await ctx.storage.delete(file.storageId);
 		await ctx.db.delete(file._id);
 		return null;
 	});
@@ -53,7 +52,7 @@ export const getServeInfo = c.query
 	.input(fileInternalSchema.getServeInfo.input)
 	.output(fileInternalSchema.getServeInfo.output)
 	.query(async ({ ctx, input }) => {
-		const file = await assertOwnership(ctx, "files", input.id);
+		const file = await assertOwnership(ctx, "files", input._id);
 
 		return {
 			fileName: file.fileName,

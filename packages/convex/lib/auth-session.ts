@@ -1,6 +1,5 @@
 import { CRPCError } from "better-convex/server";
 
-import { parseId } from "../shared/schemas/ids";
 import type { Id } from "../src/_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../src/generated/server";
 
@@ -10,7 +9,7 @@ export type ValidatedAuth = {
 };
 
 const getValidatedIdentity = async (
-	ctx: Pick<QueryCtx, "auth"> | Pick<MutationCtx, "auth">,
+	ctx: Pick<QueryCtx, "auth" | "db"> | Pick<MutationCtx, "auth" | "db">,
 ): Promise<ValidatedAuth> => {
 	const identity = await ctx.auth.getUserIdentity();
 
@@ -21,9 +20,19 @@ const getValidatedIdentity = async (
 		});
 	}
 
+	const sessionId = ctx.db.normalizeId("session", identity.sessionId);
+	const userId = ctx.db.normalizeId("user", identity.subject);
+
+	if (!sessionId || !userId) {
+		throw new CRPCError({
+			code: "UNAUTHORIZED",
+			message: "Authentication required",
+		});
+	}
+
 	return {
-		sessionId: parseId("session", identity.sessionId),
-		userId: parseId("user", identity.subject),
+		sessionId,
+		userId,
 	};
 };
 

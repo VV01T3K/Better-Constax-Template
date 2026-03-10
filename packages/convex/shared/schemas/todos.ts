@@ -1,34 +1,29 @@
-import { withSystemFields, zid } from "better-convex/server";
+import { zid } from "better-convex/server";
 import { z } from "zod";
 
-import { todoIdSchema } from "./ids";
+import { zodTable } from "../../lib/zodHelpers";
 
-// Zod-first app models; Convex validators are derived from these in `schema.ts`.
-export const todoShape = {
-	text: z.string().trim().min(1, "Todo text is required"),
-	completed: z.boolean(),
+export const todo = zodTable("todos", {
 	userId: zid("user"),
-};
-
-export const todoDocSchema = z.object(withSystemFields("todos", todoShape));
+	text: z
+		.string()
+		.trim()
+		.min(1, "Todo text is required")
+		.max(500, "Todo text must be 500 characters or less"),
+	completed: z.boolean(),
+});
 
 export const todoSchema = {
 	list: {
-		output: z.array(todoDocSchema.omit({ userId: true })),
+		output: z.array(todo.omit({ userId: true })),
 	},
 	add: {
-		input: z.object({
-			text: todoShape.text,
-		}),
+		input: todo.pick({ text: true }),
 	},
 	toggle: {
-		input: z.object({
-			id: todoIdSchema,
-		}),
+		input: todo.pick({ _id: true }),
 	},
 	remove: {
-		input: z.object({
-			id: todoIdSchema,
-		}),
+		input: todo.pick({ _id: true }),
 	},
 } as const;

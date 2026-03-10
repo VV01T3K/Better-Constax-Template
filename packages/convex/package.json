@@ -7,6 +7,10 @@
 			"types": "./shared/api.ts",
 			"default": "./shared/api.ts"
 		},
+		"./zodHelpers": {
+			"types": "./lib/zodHelpers.ts",
+			"default": "./lib/zodHelpers.ts"
+		},
 		"./schemas/*": {
 			"types": "./shared/schemas/*.ts",
 			"default": "./shared/schemas/*.ts"

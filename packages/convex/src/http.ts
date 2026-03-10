@@ -2,7 +2,7 @@ import { authMiddleware } from "better-convex/auth/http";
 import { CRPCError, createHttpRouter, createHttpRouterFactory } from "better-convex/server";
 import { Hono } from "hono";
 
-import { parseId } from "../shared/schemas/ids";
+import { fileInternalSchema } from "../shared/schemas/files";
 import { internal } from "./_generated/api";
 import type { ActionCtx } from "./_generated/server";
 import { getAuth } from "./generated/auth";
@@ -39,10 +39,37 @@ app.get("/files/:fileId", async (c) => {
 		return c.text("Missing file id", 400);
 	}
 
-	let file;
+	const parsedGetServeInfoInput = fileInternalSchema.getServeInfo.input.safeParse({
+		_id: decodeURIComponent(fileIdParam),
+	});
+	if (!parsedGetServeInfoInput.success) {
+		return c.text("Invalid file id", 400);
+	}
+
 	try {
-		file = await ctx.runQuery(internal.func.files.getServeInfo, {
-			id: parseId("files", decodeURIComponent(fileIdParam)),
+		const file = fileInternalSchema.getServeInfo.output.parse(
+			await ctx.runQuery(internal.func.files.getServeInfo, parsedGetServeInfoInput.data),
+		);
+		const blob = await ctx.storage.get(file.storageId);
+
+		if (!blob) {
+			return c.text("Not found", 404);
+		}
+
+		const isDownload = c.req.query("download") === "1";
+		const safeFileName = file.fileName.replaceAll('"', "");
+
+		c.header("Cache-Control", "private, no-store, max-age=0");
+		c.header(
+			"Content-Disposition",
+			`${isDownload ? "attachment" : "inline"}; filename="${safeFileName}"`,
+		);
+		c.header("Content-Length", String(file.fileSize));
+		c.header("Content-Type", file.fileType);
+
+		return new Response(blob, {
+			status: 200,
+			headers: c.res.headers,
 		});
 	} catch (error) {
 		const response = getFileErrorResponse(error);
@@ -50,28 +77,6 @@ app.get("/files/:fileId", async (c) => {
 
 		throw error;
 	}
-
-	const blob = await ctx.storage.get(parseId("_storage", file.storageId));
-
-	if (!blob) {
-		return c.text("Not found", 404);
-	}
-
-	const isDownload = c.req.query("download") === "1";
-	const safeFileName = file.fileName.replaceAll('"', "");
-
-	c.header("Cache-Control", "private, no-store, max-age=0");
-	c.header(
-		"Content-Disposition",
-		`${isDownload ? "attachment" : "inline"}; filename="${safeFileName}"`,
-	);
-	c.header("Content-Length", String(file.fileSize));
-	c.header("Content-Type", file.fileType);
-
-	return new Response(blob, {
-		status: 200,
-		headers: c.res.headers,
-	});
 });
 
 export default createHttpRouter(app, httpRouter);

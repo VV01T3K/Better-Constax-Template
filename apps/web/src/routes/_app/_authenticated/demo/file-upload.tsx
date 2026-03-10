@@ -1,5 +1,4 @@
 import { MAX_FILE_SIZE_LABEL, fileSchema } from "@repo/convex/schemas/files";
-import { parseId, type Id } from "@repo/convex/schemas/ids";
 import { Alert, AlertDescription, AlertTitle } from "@repo/ui/components/alert";
 import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
@@ -46,6 +45,7 @@ import {
 	UploadCloud,
 } from "lucide-react";
 import { useRef, useState } from "react";
+import type { z } from "zod";
 
 import { staticCRPC, useCRPC } from "@/integrations/convex/crpc";
 import { detectFileType } from "@/lib/file-type";
@@ -126,7 +126,9 @@ function FileIcon({ fileType }: { fileType: string }) {
 	return <File />;
 }
 
-function openProtectedFile(id: Id<"files">, download = false) {
+type FileId = z.output<typeof fileSchema.list.output>[number]["_id"];
+
+function openProtectedFile(id: FileId, download = false) {
 	const fileUrl = `/api/files/${id}${download ? "?download=1" : ""}`;
 
 	if (download) {
@@ -225,14 +227,16 @@ function FileUploadDemoPage() {
 				xhr.send(file);
 			});
 
-			await saveFile({
-				storageId: parseId("_storage", storageId),
-				fileName: file.name,
-				fileType: detected.mime,
-				fileSize: file.size,
-				detectedFileType: detected.detectedExt ?? undefined,
-				typeSource: detected.source,
-			});
+			await saveFile(
+				fileSchema.saveFile.input.parse({
+					storageId,
+					fileName: file.name,
+					fileType: detected.mime,
+					fileSize: file.size,
+					detectedFileType: detected.detectedExt ?? undefined,
+					typeSource: detected.source,
+				}),
+			);
 			await refreshFiles();
 		} catch (cause) {
 			setError(cause instanceof Error ? cause.message : "Upload failed");
@@ -241,11 +245,11 @@ function FileUploadDemoPage() {
 		}
 	};
 
-	const handleRemove = async (id: (typeof files)[number]["_id"]) => {
+	const handleRemove = async (_id: (typeof files)[number]["_id"]) => {
 		setError(null);
 
 		try {
-			await removeFile({ id });
+			await removeFile({ _id });
 			await refreshFiles();
 		} catch (cause) {
 			setError(cause instanceof Error ? cause.message : "Delete failed");

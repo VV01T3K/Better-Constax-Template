@@ -1,0 +1,13 @@
+diff --git a/dist/procedure-caller-kZJx_hmP.d.ts b/dist/procedure-caller-kZJx_hmP.d.ts
+index 7cdbe3251063ec0809356d363837b6cec0e3087a..18814fab91c53047f856b77c522a38d349d930c4 100644
+--- a/dist/procedure-caller-kZJx_hmP.d.ts
++++ b/dist/procedure-caller-kZJx_hmP.d.ts
+@@ -264,7 +264,7 @@ declare function zCustomAction<CustomArgsValidator extends PropertyValidators, C
+  */
+ declare const zid: <DataModel extends GenericDataModel, TableName extends TableNamesInDataModel<DataModel> = TableNamesInDataModel<DataModel>>(tableName: TableName) => Zid<TableName>;
+ /** The type of Convex validators in Zod */
+-type Zid<TableName extends string> = z$1.ZodCustom<GenericId<TableName>> & zCore.$ZodRecordKey;
++type Zid<TableName extends string> = z$1.ZodCustom<GenericId<TableName>, GenericId<TableName>> & zCore.$ZodRecordKey;
+ /**
+  * Useful to get the input context type for a custom function using Zod.
+  */

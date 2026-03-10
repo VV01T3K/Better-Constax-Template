@@ -37,7 +37,12 @@ export declare const api: {
           typeSource?: "magic-bytes" | "extension" | "content-sniff";
         }>
       >;
-      remove: FunctionReference<"mutation", "public", { id: any }, any>;
+      remove: FunctionReference<
+        "mutation",
+        "public",
+        { _id: Id<"files"> },
+        any
+      >;
       saveFile: FunctionReference<
         "mutation",
         "public",
@@ -57,7 +62,7 @@ export declare const api: {
         "query",
         "public",
         {},
-        { name: string; userId: string } | null
+        { name: string; userId: Id<"user"> } | null
       >;
     };
     todos: {
@@ -73,8 +78,18 @@ export declare const api: {
           text: string;
         }>
       >;
-      remove: FunctionReference<"mutation", "public", { id: any }, any>;
-      toggle: FunctionReference<"mutation", "public", { id: any }, any>;
+      remove: FunctionReference<
+        "mutation",
+        "public",
+        { _id: Id<"todos"> },
+        any
+      >;
+      toggle: FunctionReference<
+        "mutation",
+        "public",
+        { _id: Id<"todos"> },
+        any
+      >;
     };
   };
 };
@@ -93,8 +108,13 @@ export declare const internal: {
       getServeInfo: FunctionReference<
         "query",
         "internal",
-        { id: any },
-        { fileName: string; fileSize: number; fileType: string; storageId: any }
+        { _id: Id<"files"> },
+        {
+          fileName: string;
+          fileSize: number;
+          fileType: string;
+          storageId: Id<"_storage">;
+        }
       >;
     };
   };

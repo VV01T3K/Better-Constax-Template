@@ -30,7 +30,7 @@ export const toggle = c.mutation
 	.use(authMiddleware)
 	.input(todoSchema.toggle.input)
 	.mutation(async ({ ctx, input }) => {
-		const todo = await assertOwnership(ctx, "todos", input.id);
+		const todo = await assertOwnership(ctx, "todos", input._id);
 		await ctx.db.patch(todo._id, { completed: !todo.completed });
 		return null;
 	});
@@ -40,7 +40,7 @@ export const remove = c.mutation
 	.use(authMiddleware)
 	.input(todoSchema.remove.input)
 	.mutation(async ({ ctx, input }) => {
-		const todo = await assertOwnership(ctx, "todos", input.id);
+		const todo = await assertOwnership(ctx, "todos", input._id);
 		await ctx.db.delete(todo._id);
 		return null;
 	});
