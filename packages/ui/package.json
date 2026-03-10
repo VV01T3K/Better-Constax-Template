@@ -19,16 +19,15 @@
 		"./styles/*": "./src/styles/*"
 	},
 	"scripts": {
-		"build": "tsgo --noEmit",
-		"lint": "oxlint --deny-warnings --type-aware --type-check src",
+		"lint": "oxlint --deny-warnings --type-aware --type-check",
 		"format": "oxfmt",
-		"fix": "oxfmt && oxlint --deny-warnings --type-aware --type-check --fix src",
+		"fix": "oxfmt && oxlint --deny-warnings --type-aware --type-check --fix",
 		"check": "oxfmt --check && bun run lint && tsgo --noEmit"
 	},
 	"dependencies": {
 		"@base-ui/react": "^1.2.0",
 		"@fontsource-variable/geist-mono": "^5.2.7",
-		"@tanstack/react-hotkeys": "^0.4.0",
+		"@tanstack/react-hotkeys": "^0.4.1",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"lucide-react": "^0.577.0",

@@ -16,10 +16,9 @@
 		"dev": "better-convex dev",
 		"convex": "better-convex dev --once",
 		"convex:codegen": "better-convex codegen",
-		"build": "tsgo --noEmit",
-		"lint": "oxlint --deny-warnings --type-aware --type-check src lib shared",
+		"lint": "oxlint --deny-warnings --type-aware --type-check",
 		"format": "oxfmt",
-		"fix": "oxfmt && oxlint --deny-warnings --type-aware --type-check --fix src lib shared",
+		"fix": "oxfmt && oxlint --deny-warnings --type-aware --type-check --fix",
 		"check": "oxfmt --check && bun run lint && tsgo --noEmit",
 		"convex:migrations:run": "mise exec -- bunx convex run migrations:run",
 		"convex:migrations:run:prod": "mise exec -- bunx convex run --prod migrations:run",
@@ -35,7 +34,7 @@
 		"better-convex": "0.10.1",
 		"convex": "^1.32.0",
 		"convex-helpers": "^0.1.114",
-		"hono": "^4.12.5",
+		"hono": "^4.12.7",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {

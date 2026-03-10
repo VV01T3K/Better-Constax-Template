@@ -30,9 +30,6 @@
 			"outputs": [".output/**", "dist/**", "build/**"],
 			"env": ["CONVEX_SITE_URL", "CONVEX_URL"]
 		},
-		"@repo/convex#build": {
-			"outputs": []
-		},
 		"@repo/ui#build": {
 			"outputs": []
 		},
