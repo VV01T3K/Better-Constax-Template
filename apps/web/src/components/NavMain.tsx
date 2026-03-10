@@ -5,17 +5,36 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@repo/ui/components/sidebar";
-import { Link, useLocation } from "@tanstack/react-router";
+import { getHotkeyManager } from "@tanstack/react-hotkeys";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { FilePenLine, FolderUp, Globe, Home, Layers3 } from "lucide-react";
+import { useEffect } from "react";
 
 const navLinks = [
-	{ to: "/", label: "Home", icon: Home },
-	{ to: "/demo/tanstack-form", label: "TanStack Form", icon: FilePenLine },
-	{ to: "/demo/shadcn", label: "shadcn Demo", icon: Layers3 },
-	{ to: "/demo/convex", label: "Convex", icon: Globe },
-	{ to: "/demo/convex-optimistic", label: "Convex Optimistic", icon: Globe },
-	{ to: "/demo/file-upload", label: "File Upload", icon: FolderUp },
+	{ to: "/", label: "Home", icon: Home, hotkey: "1" },
+	{ to: "/demo/tanstack-form", label: "TanStack Form", icon: FilePenLine, hotkey: "2" },
+	{ to: "/demo/shadcn", label: "shadcn Demo", icon: Layers3, hotkey: "3" },
+	{ to: "/demo/convex", label: "Convex", icon: Globe, hotkey: "4" },
+	{ to: "/demo/convex-optimistic", label: "Convex Optimistic", icon: Globe, hotkey: "5" },
+	{ to: "/demo/file-upload", label: "File Upload", icon: FolderUp, hotkey: "6" },
 ] as const;
+
+function NavHotkeys() {
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		const hotkeyManager = getHotkeyManager();
+		const registrations = navLinks.map((link) =>
+			hotkeyManager.register(link.hotkey, () => navigate({ to: link.to })),
+		);
+
+		return () => {
+			registrations.forEach((registration) => registration.unregister());
+		};
+	}, [navigate]);
+
+	return null;
+}
 
 export function NavMain() {
 	const location = useLocation();
@@ -23,11 +42,12 @@ export function NavMain() {
 	return (
 		<SidebarGroup>
 			<SidebarGroupLabel>Navigation</SidebarGroupLabel>
+			<NavHotkeys />
 			<SidebarMenu>
 				{navLinks.map((link) => (
 					<SidebarMenuItem key={link.to}>
 						<SidebarMenuButton
-							tooltip={link.label}
+							tooltip={`${link.label} (${link.hotkey})`}
 							isActive={location.pathname === link.to}
 							render={<Link to={link.to} />}
 						>
