@@ -15,6 +15,9 @@ export const api = {
       remove: createApiLeaf<"mutation", typeof import("../src/func/files").remove>(convexApi["func"]["files"]["remove"], { auth: "required", type: "mutation" }),
       saveFile: createApiLeaf<"mutation", typeof import("../src/func/files").saveFile>(convexApi["func"]["files"]["saveFile"], { auth: "required", type: "mutation" }),
     },
+    paginationDemo: {
+      list: createApiLeaf<"query", typeof import("../src/func/paginationDemo").list>(convexApi["func"]["paginationDemo"]["list"], { auth: "required", limit: 40, type: "query" }),
+    },
     session: {
       me: createApiLeaf<"query", typeof import("../src/func/session").me>(convexApi["func"]["session"]["me"], { type: "query" }),
     },

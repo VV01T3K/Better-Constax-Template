@@ -57,6 +57,27 @@ export declare const api: {
         any
       >;
     };
+    paginationDemo: {
+      list: FunctionReference<
+        "query",
+        "public",
+        { cursor?: string | null; limit?: number },
+        {
+          continueCursor: string | null;
+          isDone: boolean;
+          page: Array<{
+            _creationTime: number;
+            _id: Id<"paginationDemoItems">;
+            category: "filing" | "audit" | "payroll" | "invoice";
+            position: number;
+            status: "queued" | "review" | "ready";
+            summary: string;
+            title: string;
+            updatedAt: number;
+          }>;
+        }
+      >;
+    };
     session: {
       me: FunctionReference<
         "query",
@@ -263,6 +284,7 @@ export declare const internal: {
       },
       any
     >;
+    seedPaginationDemoItems: FunctionReference<"mutation", "internal", {}, any>;
   };
 };
 

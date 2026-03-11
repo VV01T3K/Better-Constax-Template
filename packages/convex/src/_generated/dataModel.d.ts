@@ -123,6 +123,34 @@ export type DataModel = {
     searchIndexes: {};
     vectorIndexes: {};
   };
+  paginationDemoItems: {
+    document: {
+      category: "filing" | "audit" | "payroll" | "invoice";
+      position: number;
+      status: "queued" | "review" | "ready";
+      summary: string;
+      title: string;
+      updatedAt: number;
+      _id: Id<"paginationDemoItems">;
+      _creationTime: number;
+    };
+    fieldPaths:
+      | "_creationTime"
+      | "_id"
+      | "category"
+      | "position"
+      | "status"
+      | "summary"
+      | "title"
+      | "updatedAt";
+    indexes: {
+      by_id: ["_id"];
+      by_creation_time: ["_creationTime"];
+      by_position: ["position", "_creationTime"];
+    };
+    searchIndexes: {};
+    vectorIndexes: {};
+  };
   session: {
     document: {
       createdAt: number;

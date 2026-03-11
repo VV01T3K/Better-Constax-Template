@@ -7,7 +7,7 @@ import {
 } from "@repo/ui/components/sidebar";
 import { getHotkeyManager } from "@tanstack/react-hotkeys";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { FilePenLine, FolderUp, Globe, Home, Layers3 } from "lucide-react";
+import { FilePenLine, FolderUp, Globe, Home, Layers3, ListOrdered } from "lucide-react";
 import { useEffect } from "react";
 
 const navLinks = [
@@ -17,6 +17,7 @@ const navLinks = [
 	{ to: "/demo/convex", label: "Convex", icon: Globe, hotkey: "4" },
 	{ to: "/demo/convex-optimistic", label: "Convex Optimistic", icon: Globe, hotkey: "5" },
 	{ to: "/demo/file-upload", label: "File Upload", icon: FolderUp, hotkey: "6" },
+	{ to: "/demo/convex-pagination", label: "Convex Pagination", icon: ListOrdered, hotkey: "7" },
 ] as const;
 
 function NavHotkeys() {
