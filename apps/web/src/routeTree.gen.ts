@@ -22,6 +22,7 @@ import { Route as AppDemoShadcnRouteImport } from './routes/_app/demo/shadcn'
 import { Route as AppAuthenticatedDemoFileUploadRouteImport } from './routes/_app/_authenticated/demo/file-upload'
 import { Route as AppAuthenticatedDemoConvexPaginationRouteImport } from './routes/_app/_authenticated/demo/convex-pagination'
 import { Route as AppAuthenticatedDemoConvexOptimisticRouteImport } from './routes/_app/_authenticated/demo/convex-optimistic'
+import { Route as AppAuthenticatedDemoConvexInfiniteRouteImport } from './routes/_app/_authenticated/demo/convex-infinite'
 import { Route as AppAuthenticatedDemoConvexRouteImport } from './routes/_app/_authenticated/demo/convex'
 
 const AuthRoute = AuthRouteImport.update({
@@ -90,6 +91,12 @@ const AppAuthenticatedDemoConvexOptimisticRoute =
     path: '/demo/convex-optimistic',
     getParentRoute: () => AppAuthenticatedRoute,
   } as any)
+const AppAuthenticatedDemoConvexInfiniteRoute =
+  AppAuthenticatedDemoConvexInfiniteRouteImport.update({
+    id: '/demo/convex-infinite',
+    path: '/demo/convex-infinite',
+    getParentRoute: () => AppAuthenticatedRoute,
+  } as any)
 const AppAuthenticatedDemoConvexRoute =
   AppAuthenticatedDemoConvexRouteImport.update({
     id: '/demo/convex',
@@ -107,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/files/$': typeof ApiFilesSplatRoute
   '/demo/convex': typeof AppAuthenticatedDemoConvexRoute
+  '/demo/convex-infinite': typeof AppAuthenticatedDemoConvexInfiniteRoute
   '/demo/convex-optimistic': typeof AppAuthenticatedDemoConvexOptimisticRoute
   '/demo/convex-pagination': typeof AppAuthenticatedDemoConvexPaginationRoute
   '/demo/file-upload': typeof AppAuthenticatedDemoFileUploadRoute
@@ -121,6 +129,7 @@ export interface FileRoutesByTo {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/files/$': typeof ApiFilesSplatRoute
   '/demo/convex': typeof AppAuthenticatedDemoConvexRoute
+  '/demo/convex-infinite': typeof AppAuthenticatedDemoConvexInfiniteRoute
   '/demo/convex-optimistic': typeof AppAuthenticatedDemoConvexOptimisticRoute
   '/demo/convex-pagination': typeof AppAuthenticatedDemoConvexPaginationRoute
   '/demo/file-upload': typeof AppAuthenticatedDemoFileUploadRoute
@@ -138,6 +147,7 @@ export interface FileRoutesById {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/files/$': typeof ApiFilesSplatRoute
   '/_app/_authenticated/demo/convex': typeof AppAuthenticatedDemoConvexRoute
+  '/_app/_authenticated/demo/convex-infinite': typeof AppAuthenticatedDemoConvexInfiniteRoute
   '/_app/_authenticated/demo/convex-optimistic': typeof AppAuthenticatedDemoConvexOptimisticRoute
   '/_app/_authenticated/demo/convex-pagination': typeof AppAuthenticatedDemoConvexPaginationRoute
   '/_app/_authenticated/demo/file-upload': typeof AppAuthenticatedDemoFileUploadRoute
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/files/$'
     | '/demo/convex'
+    | '/demo/convex-infinite'
     | '/demo/convex-optimistic'
     | '/demo/convex-pagination'
     | '/demo/file-upload'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/files/$'
     | '/demo/convex'
+    | '/demo/convex-infinite'
     | '/demo/convex-optimistic'
     | '/demo/convex-pagination'
     | '/demo/file-upload'
@@ -184,6 +196,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/files/$'
     | '/_app/_authenticated/demo/convex'
+    | '/_app/_authenticated/demo/convex-infinite'
     | '/_app/_authenticated/demo/convex-optimistic'
     | '/_app/_authenticated/demo/convex-pagination'
     | '/_app/_authenticated/demo/file-upload'
@@ -289,6 +302,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAuthenticatedDemoConvexOptimisticRouteImport
       parentRoute: typeof AppAuthenticatedRoute
     }
+    '/_app/_authenticated/demo/convex-infinite': {
+      id: '/_app/_authenticated/demo/convex-infinite'
+      path: '/demo/convex-infinite'
+      fullPath: '/demo/convex-infinite'
+      preLoaderRoute: typeof AppAuthenticatedDemoConvexInfiniteRouteImport
+      parentRoute: typeof AppAuthenticatedRoute
+    }
     '/_app/_authenticated/demo/convex': {
       id: '/_app/_authenticated/demo/convex'
       path: '/demo/convex'
@@ -301,6 +321,7 @@ declare module '@tanstack/react-router' {
 
 interface AppAuthenticatedRouteChildren {
   AppAuthenticatedDemoConvexRoute: typeof AppAuthenticatedDemoConvexRoute
+  AppAuthenticatedDemoConvexInfiniteRoute: typeof AppAuthenticatedDemoConvexInfiniteRoute
   AppAuthenticatedDemoConvexOptimisticRoute: typeof AppAuthenticatedDemoConvexOptimisticRoute
   AppAuthenticatedDemoConvexPaginationRoute: typeof AppAuthenticatedDemoConvexPaginationRoute
   AppAuthenticatedDemoFileUploadRoute: typeof AppAuthenticatedDemoFileUploadRoute
@@ -308,6 +329,8 @@ interface AppAuthenticatedRouteChildren {
 
 const AppAuthenticatedRouteChildren: AppAuthenticatedRouteChildren = {
   AppAuthenticatedDemoConvexRoute: AppAuthenticatedDemoConvexRoute,
+  AppAuthenticatedDemoConvexInfiniteRoute:
+    AppAuthenticatedDemoConvexInfiniteRoute,
   AppAuthenticatedDemoConvexOptimisticRoute:
     AppAuthenticatedDemoConvexOptimisticRoute,
   AppAuthenticatedDemoConvexPaginationRoute:

@@ -15,6 +15,7 @@ import type { ActionCtx, MutationCtx, QueryCtx } from '../server';
 
 const procedureRegistry = {
   "list": ["query", typedProcedureResolver(api["func"]["paginationDemo"]["list"], () => (require("../../func/paginationDemo") as Record<string, unknown>)["list"])],
+  "listPage": ["query", typedProcedureResolver(api["func"]["paginationDemo"]["listPage"], () => (require("../../func/paginationDemo") as Record<string, unknown>)["listPage"])],
 } as const;
 
 type ProcedureCallerContext = QueryCtx | MutationCtx | ActionCtx;

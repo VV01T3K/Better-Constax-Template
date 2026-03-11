@@ -1,30 +1,36 @@
 import * as z from "zod";
 
 import { zodTable } from "../../lib/zodHelpers";
+import {
+	PAGINATION_DEMO_PAGE_SIZE,
+	PAGINATION_DEMO_PAGE_SIZE_OPTIONS,
+	PAGINATION_DEMO_SEED_COUNT,
+	type PaginationDemoPageSize,
+} from "./pagination-demo.constants";
 
-export const PAGINATION_DEMO_SEED_COUNT = 1200;
-export const PAGINATION_DEMO_PAGE_SIZE = 40;
+export { PAGINATION_DEMO_PAGE_SIZE, PAGINATION_DEMO_PAGE_SIZE_OPTIONS, PAGINATION_DEMO_SEED_COUNT };
+export type { PaginationDemoPageSize };
 
-export const paginationDemoCategoryValues = ["filing", "audit", "payroll", "invoice"] as const;
-export const paginationDemoStatusValues = ["queued", "review", "ready"] as const;
+export const paginationDemoRegionValues = ["NA", "EU", "APAC", "LATAM", "MEA"] as const;
+export const paginationDemoStatusValues = ["active", "idle", "paused", "error"] as const;
 
 export const paginationDemo = zodTable("paginationDemoItems", {
 	position: z
 		.number()
 		.int("Position must be a whole number")
 		.nonnegative("Position must not be negative"),
-	title: z
-		.string()
-		.trim()
-		.min(1, "Title is required")
-		.max(120, "Title must be 120 characters or less"),
-	category: z.enum(paginationDemoCategoryValues),
+	name: z.string().trim().min(1, "Name is required").max(80, "Name must be 80 characters or less"),
+	region: z.enum(paginationDemoRegionValues),
 	status: z.enum(paginationDemoStatusValues),
-	summary: z
-		.string()
-		.trim()
-		.min(1, "Summary is required")
-		.max(280, "Summary must be 280 characters or less"),
+	score: z.number().int("Score must be a whole number").nonnegative("Score must not be negative"),
+	throughput: z
+		.number()
+		.int("Throughput must be a whole number")
+		.nonnegative("Throughput must not be negative"),
+	latencyMs: z
+		.number()
+		.int("Latency must be a whole number")
+		.nonnegative("Latency must not be negative"),
 	updatedAt: z
 		.number()
 		.int("Updated timestamp must be a whole number")
@@ -36,48 +42,17 @@ export const paginationDemoSeedItemSchema = paginationDemo.omit({
 	_id: true,
 	_creationTime: true,
 });
+const paginationDemoPageSizeSchema = z.union([
+	z.literal(50),
+	z.literal(100),
+	z.literal(200),
+	z.literal(500),
+	z.literal(1000),
+	z.literal(2000),
+]);
 
-const paginationDemoTitles = {
-	filing: [
-		"Q1 state filing batch",
-		"Entity renewal packet",
-		"Nexus registration review",
-		"Sales tax closeout run",
-	] as const,
-	audit: [
-		"Invoice exception sweep",
-		"Cross-border reconciliation",
-		"Reserve variance audit",
-		"Merchant evidence review",
-	] as const,
-	payroll: [
-		"Payroll liability pass",
-		"Contractor withholding check",
-		"Benefits accrual sync",
-		"Net pay anomaly review",
-	] as const,
-	invoice: [
-		"Billing correction queue",
-		"Credit memo validation",
-		"Subscription proration pass",
-		"Deferred revenue release",
-	] as const,
-} satisfies Record<(typeof paginationDemoCategoryValues)[number], readonly string[]>;
-
-const paginationDemoCategories = [...paginationDemoCategoryValues];
+const paginationDemoRegions = [...paginationDemoRegionValues];
 const paginationDemoStatuses = [...paginationDemoStatusValues];
-const paginationDemoPrefixes = [
-	"Northwind",
-	"Beacon",
-	"Atlas",
-	"Signal",
-	"Summit",
-	"Meridian",
-	"Harbor",
-	"Kepler",
-	"Lumen",
-	"Orion",
-] as const;
 
 function seeded(index: number, salt: number) {
 	const value = (index * 9301 + salt * 49297 + 233280) % 233280;
@@ -90,22 +65,19 @@ function pickFrom<T>(values: readonly T[], index: number, salt: number): T {
 }
 
 export function buildPaginationDemoSeedItem(position: number) {
-	const category = pickFrom(paginationDemoCategories, position, 7);
-	const status = pickFrom(paginationDemoStatuses, position, 11);
-	const prefix = pickFrom(paginationDemoPrefixes, position, 13);
-	const title = pickFrom(paginationDemoTitles[category], position, 17);
-	const titleNumber = 4100 + position;
-	const updatedAt =
-		Date.UTC(2026, 2, 10, 18, 0, 0) -
-		position * 11 * 60 * 1000 -
-		Math.floor(seeded(position, 19) * 8 * 60 * 1000);
+	const score = Math.floor(seeded(position, 11) * 10_000);
+	const throughput = Math.floor(seeded(position, 17) * 2_000);
+	const latencyMs = 20 + Math.floor(seeded(position, 29) * 480);
+	const updatedAt = Date.UTC(2026, 2, 10, 18, 0, 0) - position * 30_000;
 
 	return paginationDemoSeedItemSchema.parse({
 		position,
-		title: `${prefix} ${title} #${titleNumber}`,
-		category,
-		status,
-		summary: `Synthetic record ${titleNumber} for ${category} operations, staged in ${status} to exercise Convex cursor pagination at scale.`,
+		name: `Record-${String(position).padStart(7, "0")}`,
+		region: pickFrom(paginationDemoRegions, position, 5),
+		status: pickFrom(paginationDemoStatuses, position, 7),
+		score,
+		throughput,
+		latencyMs,
 		updatedAt,
 	});
 }
@@ -121,6 +93,19 @@ export const paginationDemoSchema = {
 			continueCursor: z.string().nullable(),
 			isDone: z.boolean(),
 			page: z.array(paginationDemoListItemSchema),
+		}),
+	},
+	listPage: {
+		input: z.object({
+			page: z.number().int().nonnegative(),
+			pageSize: paginationDemoPageSizeSchema,
+		}),
+		output: z.object({
+			page: z.array(paginationDemoListItemSchema),
+			pageIndex: z.number().int().nonnegative(),
+			pageSize: paginationDemoPageSizeSchema,
+			totalPages: z.number().int().positive(),
+			totalRows: z.number().int().nonnegative(),
 		}),
 	},
 } as const;

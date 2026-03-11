@@ -68,13 +68,38 @@ export declare const api: {
           page: Array<{
             _creationTime: number;
             _id: Id<"paginationDemoItems">;
-            category: "filing" | "audit" | "payroll" | "invoice";
+            latencyMs: number;
+            name: string;
             position: number;
-            status: "queued" | "review" | "ready";
-            summary: string;
-            title: string;
+            region: "NA" | "EU" | "APAC" | "LATAM" | "MEA";
+            score: number;
+            status: "active" | "idle" | "paused" | "error";
+            throughput: number;
             updatedAt: number;
           }>;
+        }
+      >;
+      listPage: FunctionReference<
+        "query",
+        "public",
+        { page: number; pageSize: 50 | 100 | 200 | 500 | 1000 | 2000 },
+        {
+          page: Array<{
+            _creationTime: number;
+            _id: Id<"paginationDemoItems">;
+            latencyMs: number;
+            name: string;
+            position: number;
+            region: "NA" | "EU" | "APAC" | "LATAM" | "MEA";
+            score: number;
+            status: "active" | "idle" | "paused" | "error";
+            throughput: number;
+            updatedAt: number;
+          }>;
+          pageIndex: number;
+          pageSize: 50 | 100 | 200 | 500 | 1000 | 2000;
+          totalPages: number;
+          totalRows: number;
         }
       >;
     };

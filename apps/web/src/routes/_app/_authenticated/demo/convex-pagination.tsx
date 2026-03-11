@@ -1,33 +1,31 @@
-import { PAGINATION_DEMO_PAGE_SIZE } from "@repo/convex/schemas/pagination-demo";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { ConvexPaginationDemo } from "@/components/convex-pagination-demo";
 import { staticCRPC } from "@/integrations/convex/crpc";
-
-type PaginationSearch = {
-	mode: "paged" | "infinite";
-};
-
-const toMode = (value: unknown): PaginationSearch["mode"] =>
-	value === "infinite" ? "infinite" : "paged";
+import {
+	normalizePagedPaginationSearch,
+	PAGINATION_DEMO_PAGE_QUERY_STALE_TIME_MS,
+} from "@/lib/pagination-demo";
 
 export const Route = createFileRoute("/_app/_authenticated/demo/convex-pagination")({
-	validateSearch: (search: Record<string, unknown>): PaginationSearch => ({
-		mode: toMode(search.mode),
-	}),
-	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(
-			staticCRPC.func.paginationDemo.list.staticQueryOptions({
-				cursor: null,
-				limit: PAGINATION_DEMO_PAGE_SIZE,
+	validateSearch: normalizePagedPaginationSearch,
+	shouldReload: false,
+	loader: async ({ context, location }) => {
+		const search = normalizePagedPaginationSearch(location.search);
+
+		await context.queryClient.ensureQueryData({
+			...staticCRPC.func.paginationDemo.listPage.staticQueryOptions({
+				page: search.page,
+				pageSize: search.pageSize,
 			}),
-		);
+			staleTime: PAGINATION_DEMO_PAGE_QUERY_STALE_TIME_MS,
+		});
 	},
 	component: ConvexPaginationRoute,
 });
 
 function ConvexPaginationRoute() {
-	const { mode } = Route.useSearch();
+	const { page, pageSize } = Route.useSearch();
 
-	return <ConvexPaginationDemo mode={mode} />;
+	return <ConvexPaginationDemo page={page} pageSize={pageSize} />;
 }

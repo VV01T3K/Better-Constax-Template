@@ -13,11 +13,15 @@ export const seedPaginationDemoItems = internalMutation({
 	args: {},
 	handler: async ({ db }) => {
 		const existingRows = await db.query("paginationDemoItems").collect();
-		const existingPositions = new Set(existingRows.map((row) => row.position));
 		let inserted = 0;
+		let updated = 0;
+		const existingByPosition = new Map(existingRows.map((row) => [row.position, row] as const));
 
 		for (const row of paginationDemoSeedRows) {
-			if (existingPositions.has(row.position)) {
+			const existingRow = existingByPosition.get(row.position);
+			if (existingRow) {
+				await db.replace("paginationDemoItems", existingRow._id, row);
+				updated += 1;
 				continue;
 			}
 
@@ -27,7 +31,8 @@ export const seedPaginationDemoItems = internalMutation({
 
 		return {
 			inserted,
-			skipped: inserted === 0,
+			skipped: inserted === 0 && updated === 0,
+			updated,
 		};
 	},
 });

@@ -125,11 +125,13 @@ export type DataModel = {
   };
   paginationDemoItems: {
     document: {
-      category: "filing" | "audit" | "payroll" | "invoice";
+      latencyMs: number;
+      name: string;
       position: number;
-      status: "queued" | "review" | "ready";
-      summary: string;
-      title: string;
+      region: "NA" | "EU" | "APAC" | "LATAM" | "MEA";
+      score: number;
+      status: "active" | "idle" | "paused" | "error";
+      throughput: number;
       updatedAt: number;
       _id: Id<"paginationDemoItems">;
       _creationTime: number;
@@ -137,11 +139,13 @@ export type DataModel = {
     fieldPaths:
       | "_creationTime"
       | "_id"
-      | "category"
+      | "latencyMs"
+      | "name"
       | "position"
+      | "region"
+      | "score"
       | "status"
-      | "summary"
-      | "title"
+      | "throughput"
       | "updatedAt";
     indexes: {
       by_id: ["_id"];
