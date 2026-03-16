@@ -2,88 +2,70 @@
 
 Full-stack TanStack Start template with React 19, Convex, Better Auth, and TanStack Query.
 
-## Quick Start
+## What You Get
 
-1. Install tools via `mise` and dependencies:
+- Email/password auth with Better Auth
+- Role and permission-based access control
+- Admin user management with impersonation
+- Convex-backed demos for optimistic updates, file upload, forms, tables, and large datasets
+- SSR-ready app shell with TanStack Router, Query, and Convex integration
+
+## Stack
+
+- TanStack Start + React 19
+- Convex + `@convex-dev/react-query`
+- Better Auth
+- Tailwind CSS 4
+- Bun
+
+## Setup
+
+1. Install dependencies:
+
+```bash
+bun install
+```
+
+If Bun is not available locally, use `mise`:
 
 ```bash
 mise install
 mise exec -- bun install
 ```
 
-2. Configure environment in `.env.local`:
+2. Create `.env.local`:
 
 ```bash
 CONVEX_DEPLOYMENT=...
 VITE_CONVEX_URL=...
 VITE_CONVEX_SITE_URL=...
-BETTER_AUTH_ADMIN_EMAILS=admin@gmail.com
 ```
 
-3. Run app and Convex:
+3. Set Convex environment variables for auth:
+
+- `BETTER_AUTH_SECRET`
+- `SITE_URL` (for local dev: `http://localhost:3000`)
+- `BETTER_AUTH_ADMIN_EMAILS` (optional comma-separated admin allowlist)
+
+4. Start the app and Convex:
 
 ```bash
-mise exec -- bun run dev
-mise exec -- bunx convex dev
+bun run dev
+npx convex dev
 ```
 
-## Commands (Mise-first)
+## Commands
 
 ```bash
-mise exec -- bun run dev
-mise exec -- bun run build
-mise exec -- bun run preview
-mise exec -- bun run lint
-mise exec -- bun run format
-mise exec -- bun run check
-mise exec -- bun run auth:generate
+bun run dev
+bun run build
+bun run lint
+bun run format
+bun run check
+bun run auth:generate
 ```
-
-## Architecture
-
-- Framework: TanStack Start (TanStack Router + Nitro)
-- Backend: Convex (queries/mutations/actions)
-- Auth: Better Auth with Convex adapter
-- Server state: TanStack Query + `@convex-dev/react-query`
-- Styling: Tailwind CSS 4
-
-## Demo Navigation Model
-
-The side nav intentionally has two groups:
-
-- `Core`: actively maintained reference demos
-- `Legacy demos (may break)`: kept for reference, not actively hardened
-
-This keeps old demos available without forcing all of them to match current production patterns.
-
-## Core Data/Auth Defaults
-
-- Prefer Convex + TanStack Query integration
-- Prefer loader prefetch + suspense query consumption for critical route data
-- Keep auth parity across SSR and client (token bootstrap + query invalidation on auth transitions)
-- Treat TanStack Query optimistic flow as the default pattern for CRUD UIs
-
-## Massive Data Demo
-
-Route: `/demo/massive-data`
-
-What it demonstrates:
-
-- Convex-backed deterministic dataset (no seed step)
-- Paginated query mode
-- Infinite query mode
-- Virtualized rendering with TanStack Virtual for smooth scrolling on very large row counts
-
-Backend API:
-
-- `api.massiveDataset.page({ cursor, limit })`
-- Returns `{ rows, nextCursor, totalRows, hasMore, limit }`
 
 ## Notes
 
-- Files prefixed with `demo` remain safe to change/remove based on product needs.
-- If you regenerate auth schema, re-run:
-
-```bash
-mise exec -- bun run auth:generate
-```
+- `src/routeTree.gen.ts` and `convex/_generated/*` are generated files.
+- Files prefixed with `demo` are example code and can be removed or replaced.
